@@ -44,6 +44,7 @@ export default function Playground() {
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     alert("Submitted");
+    console.log({ data });
   }
 
   return (
@@ -127,8 +128,13 @@ export default function Playground() {
               <FormItem>
                 <FormLabel>Portrait</FormLabel>
                 <FormControl>
-                  {/* @ts-expect-error Zod doesn't understand file type */}
-                  <Input type="file" {...field} />
+                  <Input
+                    accept=".jpg, .jpeg, .png, .svg"
+                    type="file"
+                    onChange={(e) =>
+                      field.onChange(e.target.files ? e.target.files[0] : null)
+                    }
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,7 +149,7 @@ export default function Playground() {
           /* @ts-expect-error TODO: encode uploaded image */
           src={`/api/og?${new URLSearchParams(form.getValues()).toString()}`}
           alt="Preview of passport page"
-          className="aspect-video shadow-lg rounded-lg w-full bg-slate-100"
+          className="shadow-lg rounded-lg w-full bg-slate-100"
         />
       </aside>
     </main>
