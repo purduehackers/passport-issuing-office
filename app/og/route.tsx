@@ -1,14 +1,30 @@
 import { DataSection } from "@/components/passport/data";
 import { FooterSection } from "@/components/passport/footer";
 import { ImageSection } from "@/components/passport/image";
-import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
+import {
+  CURRENT_PASSPORT_VERSION,
+  IMAGE_GENERATION_SCALE_FACTOR,
+} from "@/config";
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
 export async function GET(
   request: Request,
-  { params }: { params: { name: string; origin: string; dob: string } }
+  {
+    params,
+  }: {
+    params: {
+      version?: string;
+      id?: string;
+      surname?: string;
+      givenName?: string;
+      dateOfBirth?: string;
+      placeOfOrigin?: string;
+      dateOfIssue?: string;
+      image?: string;
+    };
+  }
 ) {
   const interFontData = await fetch(
     new URL("../../assets/Inter-Regular.ttf", import.meta.url)
@@ -52,15 +68,23 @@ export async function GET(
             gap: 19 * IMAGE_GENERATION_SCALE_FACTOR,
           }}
         >
-          <ImageSection image={new Blob()} />
+          <ImageSection
+            image={params.image ?? "https://doggo.ninja/j8F9pT.png"}
+          />
           <DataSection
-            version={0}
-            no={1}
-            surname="Hacker"
-            givenName="Wack"
-            dateOfBirth={new Date("06 APR 1200")}
-            dateOfIssue={new Date(Date.now())}
-            placeOfOrigin="The Deep Sea"
+            version={CURRENT_PASSPORT_VERSION}
+            id={Number.parseInt(params.id ? params.id : `0`)}
+            surname={params.surname ? params.surname : "HACKER"}
+            givenName={params.givenName ? params.givenName : "WACK"}
+            dateOfBirth={
+              new Date(params.dateOfBirth ? params.dateOfBirth : "06 Apr 1200")
+            }
+            dateOfIssue={
+              new Date(params.dateOfIssue ? params.dateOfIssue : Date.now())
+            }
+            placeOfOrigin={
+              params.placeOfOrigin ? params.placeOfOrigin : "The woods"
+            }
           />
         </div>
         <FooterSection

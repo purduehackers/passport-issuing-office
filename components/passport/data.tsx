@@ -18,7 +18,7 @@ const monthCodes = [
 
 export function DataSection({
   version,
-  no,
+  id,
   surname,
   givenName,
   dateOfBirth,
@@ -26,7 +26,7 @@ export function DataSection({
   dateOfIssue,
 }: {
   version: number;
-  no: number;
+  id: number;
   surname: string;
   givenName: string;
   dateOfBirth: Date;
@@ -60,7 +60,7 @@ export function DataSection({
           content={"HAK"}
           width={64 * IMAGE_GENERATION_SCALE_FACTOR}
         />
-        <Description title="NO." content={(version + no * 0.0001).toFixed(4)} />
+        <Description title="NO." content={(version + id * 0.0001).toFixed(4)} />
       </div>
       <Description title="SURNAME" content={surname} />
       <Description title="GIVEN NAME" content={givenName} />

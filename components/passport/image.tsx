@@ -1,8 +1,7 @@
 import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
 import { Description } from "./description";
 
-//TODO: MAKE BLOB RENDERING WORK
-export function ImageSection({ image }: { image: Blob }) {
+export function ImageSection({ image }: { image: string }) {
   return (
     <div
       style={{
@@ -28,7 +27,7 @@ export function ImageSection({ image }: { image: Blob }) {
       </div>
 
       <img
-        src="https://media.istockphoto.com/id/185285553/photo/bottle-fed-orphaned-kitten.jpg?s=612x612&w=0&k=20&c=yKF0SkhtTTbHL4VRCmtpNvg_8ZM7SWB5SOPNaD5PjXY="
+        src={image}
         alt="Your Passport Photo Here!"
         style={{
           width: 148 * IMAGE_GENERATION_SCALE_FACTOR,

@@ -16,39 +16,45 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { convertP3ToSRGB, processImage } from "@/utils/process-image";
+import { processImage } from "@/utils/process-image";
+import { CropDemo } from "./crop";
+import { useState } from "react";
+import { CURRENT_PASSPORT_VERSION } from "@/config";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
 const FormSchema = z.object({
-  name: z.string().min(2, {
+  surname: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
-  origin: z.string(),
-  dob: z.string(),
-  portrait: z.custom<File>(
-    (val) => val instanceof File,
-    "Please upload a file"
-  ),
+  givenName: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  placeOfOrigin: z.string(),
+  dateOfBirth: z.string().optional(),
+  image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 });
 
 export default function Playground() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: "",
-      dob: "",
-      origin: ORIGINS[0],
-      portrait: undefined,
+      surname: "",
+      givenName: "",
+      dateOfBirth: undefined,
+      placeOfOrigin: ORIGINS[0],
+      image: undefined,
     },
   });
+
+  const [croppedImageSrc, setCroppedImageSrc] = useState("");
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     alert("Submitted");
     console.log({ data });
 
-    const imageData = await processImage(data.portrait);
-    document.getElementById("processTest").src = URL.createObjectURL(imageData);
+    const imageData = await processImage(data.image);
+    // document.getElementById("processTest").src = URL.createObjectURL(imageData);
     // fetch(api, POST, imageData as formdata)
   }
 
@@ -61,12 +67,12 @@ export default function Playground() {
         >
           <FormField
             control={form.control}
-            name="name"
+            name="surname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel>Surname (Last name)</FormLabel>
                 <FormControl>
-                  <Input placeholder="Fiona Hacker" {...field} />
+                  <Input placeholder="Hacker" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -74,7 +80,20 @@ export default function Playground() {
           />
           <FormField
             control={form.control}
-            name="origin"
+            name="givenName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Given name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Wack" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="placeOfOrigin"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Place of origin</FormLabel>
@@ -102,7 +121,7 @@ export default function Playground() {
                         Write your own…
                       </FormLabel>
                     </FormItem>
-                    {!ORIGINS.includes(form.getValues().origin) && (
+                    {!ORIGINS.includes(form.getValues().placeOfOrigin) && (
                       <div className="pl-6">
                         <Input {...field} className="h-8" autoFocus />
                       </div>
@@ -115,7 +134,7 @@ export default function Playground() {
           />
           <FormField
             control={form.control}
-            name="dob"
+            name="dateOfBirth"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Date of birth</FormLabel>
@@ -128,7 +147,7 @@ export default function Playground() {
           />
           <FormField
             control={form.control}
-            name="portrait"
+            name="image"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Portrait</FormLabel>
@@ -136,23 +155,47 @@ export default function Playground() {
                   <Input
                     accept=".jpg, .jpeg, .png, .svg"
                     type="file"
-                    onChange={(e) =>
-                      field.onChange(e.target.files ? e.target.files[0] : null)
-                    }
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        const reader = new FileReader();
+                        reader.addEventListener("load", () =>
+                          setCroppedImageSrc(reader.result?.toString() || "")
+                        );
+                        reader.readAsDataURL(e.target.files[0]);
+                      }
+
+                      return field.onChange(
+                        e.target.files ? e.target.files[0] : null
+                      );
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          <CropDemo src={croppedImageSrc} />
           <Button type="submit">Submit</Button>
         </form>
       </Form>
       <aside>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          /* @ts-expect-error TODO: encode uploaded image */
-          src={`/og?${new URLSearchParams(form.getValues()).toString()}`}
+          src={`/og?${new URLSearchParams(
+            (() => {
+              const currentFormData = form.getValues();
+              return {
+                version: `${CURRENT_PASSPORT_VERSION}`,
+                id: `0`,
+                surname: currentFormData.surname,
+                givenName: currentFormData.givenName,
+                dateOfBirth: `${new Date(
+                  currentFormData.dateOfBirth ?? new Date("06 Apr 1200")
+                ).toISOString()}`,
+                dateOfIssue: `${new Date(Date.now()).toISOString()}`,
+              };
+            })()
+          ).toString()}`}
           alt="Preview of passport page"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />
