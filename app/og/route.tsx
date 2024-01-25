@@ -15,7 +15,6 @@ export async function GET(
     params,
   }: {
     params: {
-      version?: string;
       id?: string;
       surname?: string;
       givenName?: string;
@@ -37,6 +36,14 @@ export async function GET(
   const OCRBProFontData = await fetch(
     new URL("../../assets/OCRB-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
+
+  const trueID = Number.parseInt(params.id ? params.id : `0`);
+
+  const trueSurname = params.surname ? params.surname : "HACKER";
+  const trueGivenName = params.givenName ? params.givenName : "WACK";
+
+  const trueDateOfBirth = new Date(params.dateOfBirth ? params.dateOfBirth : "06 Apr 1200");
+  const trueDateOfIssue = new Date(params.dateOfIssue ? params.dateOfIssue : Date.now());
 
   return new ImageResponse(
     (
@@ -73,23 +80,39 @@ export async function GET(
           />
           <DataSection
             version={CURRENT_PASSPORT_VERSION}
-            id={Number.parseInt(params.id ? params.id : `0`)}
-            surname={params.surname ? params.surname : "HACKER"}
-            givenName={params.givenName ? params.givenName : "WACK"}
-            dateOfBirth={
-              new Date(params.dateOfBirth ? params.dateOfBirth : "06 Apr 1200")
-            }
-            dateOfIssue={
-              new Date(params.dateOfIssue ? params.dateOfIssue : Date.now())
-            }
+            id={trueID}
+            surname={trueSurname}
+            givenName={trueGivenName}
+            dateOfBirth={trueDateOfBirth}
+            dateOfIssue={trueDateOfIssue}
             placeOfOrigin={
               params.placeOfOrigin ? params.placeOfOrigin : "The woods"
             }
           />
         </div>
         <FooterSection
-          topLine="P<HAKHACKER<WACK<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-          bottomLine="E042901AA3USA3299FF47983<<<<<<<<<<<<<<<<069"
+          topLine={`PH<HAK${trueSurname}<<${trueGivenName}`.padEnd(44, '<')}
+          bottomLine={`${
+            String(CURRENT_PASSPORT_VERSION).padStart(3, '0')
+          }${
+            String(trueID).padStart(6, '0')
+          }${
+            (CURRENT_PASSPORT_VERSION + trueID) % 10
+          }HAK${
+            String(trueDateOfBirth.getFullYear()).padStart(4, '0')
+          }${
+            String(trueDateOfBirth.getMonth() + 1).padStart(2, '0')
+          }${
+            String(trueDateOfBirth.getDate()).padStart(2, '0')
+          }${
+            (trueDateOfBirth.getFullYear() + trueDateOfBirth.getMonth() + trueDateOfBirth.getDate()) % 10
+          }<${
+            String(trueDateOfIssue.getFullYear()).padStart(4, '0')
+          }0101${
+            (trueDateOfIssue.getFullYear() + 2) % 10
+          }<<<<<<<<<<0${
+            ((CURRENT_PASSPORT_VERSION + trueID) + (trueDateOfBirth.getFullYear() + trueDateOfBirth.getMonth() + trueDateOfBirth.getDate()) + (trueDateOfIssue.getFullYear() + 2)) % 10
+          }`}
         />
       </div>
     ),
