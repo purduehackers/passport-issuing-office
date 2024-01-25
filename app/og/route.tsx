@@ -5,17 +5,19 @@ export const runtime = "edge";
 function Description({
   title,
   content,
-  size,
+  width,
 }: {
   title: string;
   content?: string;
-  size?: number;
+  width?: number;
 }) {
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
+        width: width ?? "auto",
+        gap: "6px",
       }}
     >
       <div
@@ -28,7 +30,6 @@ function Description({
           letterSpacing: "1.92px",
           textTransform: "uppercase",
           height: "30px",
-          marginBottom: "6px",
         }}
       >
         {title}
@@ -65,8 +66,9 @@ function Footer({
         width: "100%",
         flexDirection: "column",
         position: "absolute",
-        top: "867px",
+        top: "847px",
         left: "48px",
+        gap: "12px",
       }}
     >
       <div
@@ -78,7 +80,6 @@ function Footer({
           fontStyle: "normal",
           fontWeight: 500,
           textTransform: "uppercase",
-          marginBottom: "12px",
           height: "42px",
           width: "1320px",
           display: "flex",
@@ -153,8 +154,6 @@ function PrimaryData({
         display: "flex",
         flexDirection: "column",
         gap: "24px",
-        marginLeft: "57px",
-        background: "#ff0000",
         flexGrow: "4",
       }}
     >
@@ -163,12 +162,11 @@ function PrimaryData({
           fontSize: "40px",
           display: "flex",
           flexDirection: "row",
-          gap: "16px",
-          justifyContent: "space-between",
+          gap: "36px",
         }}
       >
-        <Description title="TYPE" content={"PH"} />
-        <Description title="CODE" content={"HAK"} />
+        <Description title="TYPE" content={"PH"} width={192} />
+        <Description title="CODE" content={"HAK"} width={192} />
         <Description title="NO." content={(version + no * 0.0001).toFixed(4)} />
       </div>
       <Description title="SURNAME" content={surname} />
@@ -179,8 +177,7 @@ function PrimaryData({
           fontSize: 40,
           display: "flex",
           flexDirection: "row",
-          justifyContent: "space-between",
-          background: "#00ff00",
+          gap: "144px",
         }}
       >
         <div
@@ -189,6 +186,7 @@ function PrimaryData({
             display: "flex",
             flexDirection: "column",
             gap: 16,
+            width: "312px",
           }}
         >
           <Description
@@ -256,7 +254,6 @@ export async function GET(
           padding: "48px 72px",
           display: "flex",
           flexDirection: "column",
-          gap: 16,
         }}
       >
         <div
@@ -268,14 +265,14 @@ export async function GET(
             top: "72px",
             left: "48px",
             right: "48px",
-            background: "#0000ff",
+            gap: "57px",
           }}
         >
           <div
             style={{
               display: "flex",
-              width: "444px",
               flexDirection: "column",
+              gap: "66px",
             }}
           >
             <div
@@ -298,7 +295,6 @@ export async function GET(
               src="https://media.istockphoto.com/id/185285553/photo/bottle-fed-orphaned-kitten.jpg?s=612x612&w=0&k=20&c=yKF0SkhtTTbHL4VRCmtpNvg_8ZM7SWB5SOPNaD5PjXY="
               alt="Your Passport Photo Here!"
               style={{
-                marginTop: "66px",
                 width: "444px",
                 height: "555px",
                 objectFit: "cover",
@@ -324,7 +320,7 @@ export async function GET(
     ),
     {
       width: 1416,
-      height: 996,
+      height: 966,
       fonts: [
         {
           name: "Inter",

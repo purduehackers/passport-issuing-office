@@ -1,17 +1,17 @@
 // Function to convert P3 to sRGB
-export async function convertP3ToSRGB(p3DataURL: string) {
+export async function convertP3ToSRGB(sourceImage: File): Promise<Blob> {
   // Create an OffscreenCanvas
   const offscreenCanvas = new OffscreenCanvas(1, 1);
   const offscreenContext = offscreenCanvas.getContext("2d", {
     colorSpace: "srgb",
   });
   if (!offscreenContext) {
-    return;
+    return Promise.reject();
   }
 
   // Load the P3 image into an HTMLImageElement
   const p3Image = new Image();
-  p3Image.src = p3DataURL;
+  p3Image.src = URL.createObjectURL(sourceImage);
 
   // Wait for the image to load
   await new Promise((resolve) => {
@@ -30,12 +30,16 @@ export async function convertP3ToSRGB(p3DataURL: string) {
 
   const blob = await offscreenCanvas.convertToBlob();
 
+  if (!blob) {
+    return Promise.reject();
+  }
+
   console.log("blob", blob);
 
   return blob;
 }
 
-export async function processImage(portraitImageFile: File) {
+export async function processImage(inputFile: File): Promise<Blob> {
   const scaling = 3;
   const width = 148 * scaling;
   const height = 185 * scaling;
@@ -43,7 +47,7 @@ export async function processImage(portraitImageFile: File) {
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext("2d");
   if (!ctx) {
-    return;
+    return Promise.reject();
   }
 
   const bgImage = new Image();
@@ -60,10 +64,23 @@ export async function processImage(portraitImageFile: File) {
   ctx.roundRect(0, 0, width, height, [8 * scaling]);
   ctx.stroke();
 
-  const userImageUrl = URL.createObjectURL(portraitImageFile);
+  const imageBlob = await convertP3ToSRGB(inputFile);
+
+  if (!imageBlob) {
+    return Promise.reject();
+  }
+
   const userImage = new Image();
-  userImage.src = userImageUrl;
-  userImage.onload = function () {
-    ctx.drawImage(userImage, 0, 0, width, height);
-  };
+  userImage.src = URL.createObjectURL(imageBlob);
+  await userImage.decode();
+
+  ctx.drawImage(userImage, 0, 0, width, height);
+
+  const finalImageData = await canvas.convertToBlob();
+
+  if (!finalImageData) {
+    return Promise.reject();
+  }
+
+  return finalImageData;
 }

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { processImage } from "@/utils/process-image";
+import { convertP3ToSRGB, processImage } from "@/utils/process-image";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -43,11 +43,13 @@ export default function Playground() {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     alert("Submitted");
     console.log({ data });
-    processImage(data.portrait);
-    // data.portrait.arrayBuffer().then((imgData) => processImage(imgData));
+
+    const imageData = await processImage(data.portrait);
+    document.getElementById("processTest").src = URL.createObjectURL(imageData);
+    // fetch(api, POST, imageData as formdata)
   }
 
   return (
@@ -152,6 +154,12 @@ export default function Playground() {
           /* @ts-expect-error TODO: encode uploaded image */
           src={`/og?${new URLSearchParams(form.getValues()).toString()}`}
           alt="Preview of passport page"
+          className="shadow-lg rounded-lg w-full bg-slate-100"
+        />
+        <img
+          id="processTest"
+          src={``}
+          alt="test"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />
       </aside>
