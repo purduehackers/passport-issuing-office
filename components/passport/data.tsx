@@ -63,7 +63,7 @@ export function DataSection({
         <Description title="NO." content={(version + id * 0.0001).toFixed(4)} />
       </div>
       <Description title="SURNAME" content={surname} />
-      <Description title="GIVEN NAME" content={firstName} />
+      <Description title="NAME" content={firstName} />
       <Description title="NATIONALITY" content={"REPUBLIC OF HACKERLAND"} />
       <div
         style={{

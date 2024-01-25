@@ -24,11 +24,11 @@ import { CURRENT_PASSPORT_VERSION } from "@/config";
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
 const FormSchema = z.object({
-  surname: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
+  surname: z.string().min(1, {
+    message: "Name must be at least 1 character.",
   }),
-  firstName: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
+  firstName: z.string().min(1, {
+    message: "Name must be at least 1 character.",
   }),
   placeOfOrigin: z.string(),
   dateOfBirth: z.string().optional(),
