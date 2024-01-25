@@ -1,3 +1,5 @@
+import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
+
 // Function to convert P3 to sRGB
 export async function convertP3ToSRGB(sourceImage: File): Promise<Blob> {
   // Create an OffscreenCanvas
@@ -40,9 +42,8 @@ export async function convertP3ToSRGB(sourceImage: File): Promise<Blob> {
 }
 
 export async function processImage(inputFile: File): Promise<Blob> {
-  const scaling = 3;
-  const width = 148 * scaling;
-  const height = 185 * scaling;
+  const width = 148 * IMAGE_GENERATION_SCALE_FACTOR;
+  const height = 185 * IMAGE_GENERATION_SCALE_FACTOR;
 
   const canvas = new OffscreenCanvas(width, height);
   const ctx = canvas.getContext("2d");
@@ -58,10 +59,10 @@ export async function processImage(inputFile: File): Promise<Blob> {
 
   ctx.globalCompositeOperation = "color-burn";
 
-  ctx.lineWidth = 16 * scaling;
+  ctx.lineWidth = 16 * IMAGE_GENERATION_SCALE_FACTOR;
   ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
   ctx.beginPath();
-  ctx.roundRect(0, 0, width, height, [8 * scaling]);
+  ctx.roundRect(0, 0, width, height, [8 * IMAGE_GENERATION_SCALE_FACTOR]);
   ctx.stroke();
 
   const imageBlob = await convertP3ToSRGB(inputFile);
