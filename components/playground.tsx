@@ -147,7 +147,7 @@ export default function Playground() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           /* @ts-expect-error TODO: encode uploaded image */
-          src={`/api/og?${new URLSearchParams(form.getValues()).toString()}`}
+          src={`/og?${new URLSearchParams(form.getValues()).toString()}`}
           alt="Preview of passport page"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />

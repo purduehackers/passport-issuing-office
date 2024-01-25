@@ -27,7 +27,7 @@ function Description({ title, content }: { title: string; content?: string }) {
       <div
         style={{
           color: "#000000",
-          fontFamily: '"OCR B Pro"',
+          fontFamily: '"OCR B"',
           fontSize: "33px",
           fontStyle: "normal",
           fontWeight: 500,
@@ -61,11 +61,10 @@ function Footer({
         style={{
           color: "#4A2BA6",
           textAlign: "center",
-          fontFamily: '"OCR B Pro"',
+          fontFamily: '"OCR B"',
           fontSize: "36px",
           fontStyle: "normal",
           fontWeight: 500,
-          lineHeight: "normal",
           letterSpacing: "4.86px",
           textTransform: "uppercase",
         }}
@@ -76,11 +75,10 @@ function Footer({
         style={{
           color: "#4A2BA6",
           textAlign: "center",
-          fontFamily: '"OCR B Pro"',
+          fontFamily: '"OCR B"',
           fontSize: "36px",
           fontStyle: "normal",
           fontWeight: 500,
-          lineHeight: "normal",
           letterSpacing: "4.86px",
           textTransform: "uppercase",
         }}
@@ -96,11 +94,11 @@ export async function GET(
   { params }: { params: { name: string; origin: string; dob: string } }
 ) {
   const interFontData = await fetch(
-    new URL("../../../assets/Inter.ttf", import.meta.url)
+    new URL("../../assets/Inter-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   const OCRBProFontData = await fetch(
-    new URL("../../../assets/OCRBPro.ttf", import.meta.url)
+    new URL("../../assets/OCRB-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
@@ -122,18 +120,18 @@ export async function GET(
       >
         <div
           style={{
-            fontSize: 40,
+            fontSize: "40px",
             display: "flex",
             flexDirection: "column",
-            gap: 24,
+            gap: "24px",
           }}
         >
           <div
             style={{
-              fontSize: 40,
+              fontSize: "40px",
               display: "flex",
               flexDirection: "row",
-              gap: 16,
+              gap: "16px",
             }}
           >
             <Description title="TYPE" content={"PH"} />
@@ -181,13 +179,74 @@ export async function GET(
           name: "Inter",
           data: interFontData,
           style: "normal",
+          weight: 500,
         },
         {
-          name: "OCR B Pro",
+          name: "OCR B",
           data: OCRBProFontData,
           style: "normal",
+          weight: 500,
         },
       ],
     }
   );
 }
+
+// import { ImageResponse } from "next/og";
+// // App router includes @vercel/og.
+// // No need to install it.
+
+// export const runtime = "edge";
+
+// export async function GET() {
+//   // Make sure the font exists in the specified path:
+//   const fontData = await fetch(
+//     new URL("../../assets/OCRB-Regular.ttf", import.meta.url)
+//   ).then((res) => res.arrayBuffer());
+
+//   return new ImageResponse(
+//     (
+//       <div
+//         style={{
+//           backgroundColor: "white",
+
+//           height: "100%",
+//           width: "100%",
+
+//           paddingTop: "100px",
+//           paddingLeft: "50px",
+//           display: "flex",
+//           flexDirection: "column",
+//         }}
+//       >
+//         <div
+//           style={{
+//             fontFamily: "'OCR B'",
+//             fontSize: 100,
+//             letterSpacing: "0.25em",
+//           }}
+//         >
+//           MATTHEW
+//         </div>
+//         <div
+//           style={{
+//             fontFamily: "'OCR B'",
+//             fontSize: 100,
+//           }}
+//         >
+//           SOMETHING
+//         </div>
+//       </div>
+//     ),
+//     {
+//       width: 1200,
+//       height: 630,
+//       fonts: [
+//         {
+//           name: "OCR B",
+//           data: fontData,
+//         },
+//       ],
+//     }
+//   );
+// }
