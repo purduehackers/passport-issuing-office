@@ -2,7 +2,15 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-function Description({ title, content }: { title: string; content?: string }) {
+function Description({
+  title,
+  content,
+  size,
+}: {
+  title: string;
+  content?: string;
+  size?: number;
+}) {
   return (
     <div
       style={{
@@ -17,9 +25,10 @@ function Description({ title, content }: { title: string; content?: string }) {
           fontSize: "24px",
           fontStyle: "normal",
           fontWeight: 500,
-          lineHeight: "normal",
           letterSpacing: "1.92px",
           textTransform: "uppercase",
+          height: "30px",
+          marginBottom: "6px",
         }}
       >
         {title}
@@ -31,9 +40,9 @@ function Description({ title, content }: { title: string; content?: string }) {
           fontSize: "33px",
           fontStyle: "normal",
           fontWeight: 500,
-          lineHeight: "normal",
-          letterSpacing: "4.785px",
+          letterSpacing: "8px",
           textTransform: "uppercase",
+          height: "39px",
         }}
       >
         {content}
@@ -55,6 +64,9 @@ function Footer({
         display: "flex",
         width: "100%",
         flexDirection: "column",
+        position: "absolute",
+        top: "867px",
+        left: "48px",
       }}
     >
       <div
@@ -65,11 +77,18 @@ function Footer({
           fontSize: "36px",
           fontStyle: "normal",
           fontWeight: 500,
-          letterSpacing: "4.86px",
           textTransform: "uppercase",
+          marginBottom: "12px",
+          height: "42px",
+          width: "1320px",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        {topLine}
+        {topLine.split("").map((char, i) => (
+          <span key={`footer-top-${i}`}>{char}</span>
+        ))}
       </div>
       <div
         style={{
@@ -79,12 +98,130 @@ function Footer({
           fontSize: "36px",
           fontStyle: "normal",
           fontWeight: 500,
-          letterSpacing: "4.86px",
           textTransform: "uppercase",
+          height: "42px",
+          width: "1320px",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
       >
-        {bottomLine}
+        {bottomLine.split("").map((char, i) => (
+          <span key={`footer-bottom-${i}`}>{char}</span>
+        ))}
       </div>
+    </div>
+  );
+}
+
+const monthCodes = [
+  "JAN",
+  "FEB",
+  "MAR",
+  "APR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AUG",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DEC",
+];
+
+function PrimaryData({
+  version,
+  no,
+  surname,
+  givenName,
+  dateOfBirth,
+  placeOfOrigin,
+  dateOfIssue,
+}: {
+  version: number;
+  no: number;
+  surname: string;
+  givenName: string;
+  dateOfBirth: Date;
+  placeOfOrigin: string;
+  dateOfIssue: Date;
+}) {
+  return (
+    <div
+      style={{
+        fontSize: "40px",
+        display: "flex",
+        flexDirection: "column",
+        gap: "24px",
+        marginLeft: "57px",
+        background: "#ff0000",
+        flexGrow: "4",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "40px",
+          display: "flex",
+          flexDirection: "row",
+          gap: "16px",
+          justifyContent: "space-between",
+        }}
+      >
+        <Description title="TYPE" content={"PH"} />
+        <Description title="CODE" content={"HAK"} />
+        <Description title="NO." content={(version + no * 0.0001).toFixed(4)} />
+      </div>
+      <Description title="SURNAME" content={surname} />
+      <Description title="GIVEN NAME" content={givenName} />
+      <Description title="NATIONALITY" content={"REPUBLIC OF HACKERLAND"} />
+      <div
+        style={{
+          fontSize: 40,
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          background: "#00ff00",
+        }}
+      >
+        <div
+          style={{
+            fontSize: 40,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          <Description
+            title="DATE OF BIRTH"
+            content={`${String(dateOfBirth.getDate()).padStart(2, "0")} ${
+              monthCodes[dateOfBirth.getMonth()]
+            } ${String(dateOfBirth.getFullYear()).padStart(4, "0")}`}
+          />
+          <Description
+            title="DATE OF ISSUE"
+            content={`${String(dateOfIssue.getDate()).padStart(2, "0")} ${
+              monthCodes[dateOfIssue.getMonth()]
+            } ${String(dateOfIssue.getFullYear()).padStart(4, "0")}`}
+          />
+        </div>
+        <div
+          style={{
+            fontSize: 40,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          <Description title="PLACE OF ORIGIN" content={placeOfOrigin} />
+          <Description
+            title="DATE OF EXPIRATION"
+            content={`01 JAN ${String(
+              dateOfIssue.getFullYear() + 1000
+            ).padStart(4, "0")}`}
+          />
+        </div>{" "}
+      </div>
+      <Description title="AUTHORITY" content={"id.purduehackers.com"} />
     </div>
   );
 }
@@ -95,6 +232,10 @@ export async function GET(
 ) {
   const interFontData = await fetch(
     new URL("../../assets/Inter-Regular.ttf", import.meta.url)
+  ).then((res) => res.arrayBuffer());
+
+  const interBoldFontData = await fetch(
+    new URL("../../assets/Inter-Bold.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   const OCRBProFontData = await fetch(
@@ -120,50 +261,60 @@ export async function GET(
       >
         <div
           style={{
-            fontSize: "40px",
             display: "flex",
-            flexDirection: "column",
-            gap: "24px",
+            width: "100%",
+            flexDirection: "row",
+            position: "absolute",
+            top: "72px",
+            left: "48px",
+            right: "48px",
+            background: "#0000ff",
           }}
         >
           <div
             style={{
-              fontSize: "40px",
               display: "flex",
-              flexDirection: "row",
-              gap: "16px",
+              width: "444px",
+              flexDirection: "column",
             }}
           >
-            <Description title="TYPE" content={"PH"} />
-            <Description title="CODE" content={"HAK"} />
-            <Description title="NO." content={"0000"} />
+            <div
+              style={{
+                color: "#4A2AA6",
+                fontFamily: '"Inter Bold"',
+                fontSize: "24px",
+                fontStyle: "normal",
+                fontWeight: 800,
+                letterSpacing: "3.48px",
+                textTransform: "uppercase",
+                height: "36px",
+                width: "219px",
+              }}
+            >
+              PASSPORT
+            </div>
+
+            <img
+              src="https://media.istockphoto.com/id/185285553/photo/bottle-fed-orphaned-kitten.jpg?s=612x612&w=0&k=20&c=yKF0SkhtTTbHL4VRCmtpNvg_8ZM7SWB5SOPNaD5PjXY="
+              alt="Your Passport Photo Here!"
+              style={{
+                marginTop: "66px",
+                width: "444px",
+                height: "555px",
+                objectFit: "cover",
+                borderRadius: "24px",
+              }}
+            />
           </div>
-          <Description title="SURNAME" content={"HACKER"} />
-          <Description title="GIVEN NAME" content={"WACK"} />
-          <Description title="NATIONALITY" content={"REPUBLIC OF HACKERLAND"} />
-          <div
-            style={{
-              fontSize: 40,
-              display: "flex",
-              flexDirection: "row",
-              gap: 16,
-            }}
-          >
-            <Description title="DATE OF BIRTH" content={"06 APR 1200"} />
-            <Description title="PLACE OF ORIGIN" content={"THE DEEP SEA"} />
-          </div>
-          <div
-            style={{
-              fontSize: 40,
-              display: "flex",
-              flexDirection: "row",
-              gap: 16,
-            }}
-          >
-            <Description title="DATE OF ISSUE" content={"12 NOV 2023"} />
-            <Description title="DATE OF EXPIRATION" content={"01 JAN 3023"} />
-          </div>
-          <Description title="AUTHORITY" content={"ID.PURDUEHACKERS.COM"} />
+          <PrimaryData
+            version={0}
+            no={1}
+            surname="Hacker"
+            givenName="Wack"
+            dateOfBirth={new Date("06 APR 1200")}
+            dateOfIssue={new Date(Date.now())}
+            placeOfOrigin="The Deep Sea"
+          />
         </div>
         <Footer
           topLine="P<HAKHACKER<WACK<<<<<<<<<<<<<<<<<<<<<<<<<<<"
@@ -182,6 +333,12 @@ export async function GET(
           weight: 500,
         },
         {
+          name: "Inter Bold",
+          data: interBoldFontData,
+          style: "normal",
+          weight: 800,
+        },
+        {
           name: "OCR B",
           data: OCRBProFontData,
           style: "normal",
@@ -191,62 +348,3 @@ export async function GET(
     }
   );
 }
-
-// import { ImageResponse } from "next/og";
-// // App router includes @vercel/og.
-// // No need to install it.
-
-// export const runtime = "edge";
-
-// export async function GET() {
-//   // Make sure the font exists in the specified path:
-//   const fontData = await fetch(
-//     new URL("../../assets/OCRB-Regular.ttf", import.meta.url)
-//   ).then((res) => res.arrayBuffer());
-
-//   return new ImageResponse(
-//     (
-//       <div
-//         style={{
-//           backgroundColor: "white",
-
-//           height: "100%",
-//           width: "100%",
-
-//           paddingTop: "100px",
-//           paddingLeft: "50px",
-//           display: "flex",
-//           flexDirection: "column",
-//         }}
-//       >
-//         <div
-//           style={{
-//             fontFamily: "'OCR B'",
-//             fontSize: 100,
-//             letterSpacing: "0.25em",
-//           }}
-//         >
-//           MATTHEW
-//         </div>
-//         <div
-//           style={{
-//             fontFamily: "'OCR B'",
-//             fontSize: 100,
-//           }}
-//         >
-//           SOMETHING
-//         </div>
-//       </div>
-//     ),
-//     {
-//       width: 1200,
-//       height: 630,
-//       fonts: [
-//         {
-//           name: "OCR B",
-//           data: fontData,
-//         },
-//       ],
-//     }
-//   );
-// }

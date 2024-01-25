@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { processImage } from "@/utils/process-image";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -45,6 +46,8 @@ export default function Playground() {
   function onSubmit(data: z.infer<typeof FormSchema>) {
     alert("Submitted");
     console.log({ data });
+    processImage(data.portrait);
+    // data.portrait.arrayBuffer().then((imgData) => processImage(imgData));
   }
 
   return (
