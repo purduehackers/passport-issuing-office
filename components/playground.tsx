@@ -27,7 +27,7 @@ const FormSchema = z.object({
   surname: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
-  givenName: z.string().min(2, {
+  firstName: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
   placeOfOrigin: z.string(),
@@ -39,7 +39,7 @@ export default function Playground() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      givenName: "",
+      firstName: "",
       surname: "",
       dateOfBirth: undefined,
       placeOfOrigin: ORIGINS[0],
@@ -67,10 +67,10 @@ export default function Playground() {
         >
           <FormField
             control={form.control}
-            name="givenName"
+            name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Given name</FormLabel>
+                <FormLabel>First name</FormLabel>
                 <FormControl>
                   <Input placeholder="Wack" {...field} />
                 </FormControl>
@@ -83,7 +83,7 @@ export default function Playground() {
             name="surname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Surname (Last name)</FormLabel>
+                <FormLabel>Last name</FormLabel>
                 <FormControl>
                   <Input placeholder="Hacker" {...field} />
                 </FormControl>
@@ -188,7 +188,7 @@ export default function Playground() {
                 version: `${CURRENT_PASSPORT_VERSION}`,
                 id: `0`,
                 surname: currentFormData.surname,
-                givenName: currentFormData.givenName,
+                firstName: currentFormData.firstName,
                 dateOfBirth: `${new Date(
                   currentFormData.dateOfBirth ?? new Date("06 Apr 1200")
                 ).toISOString()}`,

@@ -17,7 +17,7 @@ export async function GET(
     params: {
       id?: string;
       surname?: string;
-      givenName?: string;
+      firstName?: string;
       dateOfBirth?: string;
       placeOfOrigin?: string;
       dateOfIssue?: string;
@@ -40,10 +40,14 @@ export async function GET(
   const trueID = Number.parseInt(params.id ? params.id : `0`);
 
   const trueSurname = params.surname ? params.surname : "HACKER";
-  const trueGivenName = params.givenName ? params.givenName : "WACK";
+  const truefirstName = params.firstName ? params.firstName : "WACK";
 
-  const trueDateOfBirth = new Date(params.dateOfBirth ? params.dateOfBirth : "06 Apr 1200");
-  const trueDateOfIssue = new Date(params.dateOfIssue ? params.dateOfIssue : Date.now());
+  const trueDateOfBirth = new Date(
+    params.dateOfBirth ? params.dateOfBirth : "06 Apr 1200"
+  );
+  const trueDateOfIssue = new Date(
+    params.dateOfIssue ? params.dateOfIssue : Date.now()
+  );
 
   return new ImageResponse(
     (
@@ -82,7 +86,7 @@ export async function GET(
             version={CURRENT_PASSPORT_VERSION}
             id={trueID}
             surname={trueSurname}
-            givenName={trueGivenName}
+            firstName={truefirstName}
             dateOfBirth={trueDateOfBirth}
             dateOfIssue={trueDateOfIssue}
             placeOfOrigin={
@@ -91,27 +95,32 @@ export async function GET(
           />
         </div>
         <FooterSection
-          topLine={`PH<HAK${trueSurname}<<${trueGivenName}`.padEnd(44, '<')}
-          bottomLine={`${
-            String(CURRENT_PASSPORT_VERSION).padStart(3, '0')
-          }${
-            String(trueID).padStart(6, '0')
-          }${
+          topLine={`PH<HAK${trueSurname}<<${truefirstName}`.padEnd(44, "<")}
+          bottomLine={`${String(CURRENT_PASSPORT_VERSION).padStart(
+            3,
+            "0"
+          )}${String(trueID).padStart(6, "0")}${
             (CURRENT_PASSPORT_VERSION + trueID) % 10
-          }HAK${
-            String(trueDateOfBirth.getFullYear()).padStart(4, '0')
-          }${
-            String(trueDateOfBirth.getMonth() + 1).padStart(2, '0')
-          }${
-            String(trueDateOfBirth.getDate()).padStart(2, '0')
-          }${
-            (trueDateOfBirth.getFullYear() + trueDateOfBirth.getMonth() + trueDateOfBirth.getDate()) % 10
-          }<${
-            String(trueDateOfIssue.getFullYear()).padStart(4, '0')
-          }0101${
+          }HAK${String(trueDateOfBirth.getFullYear()).padStart(4, "0")}${String(
+            trueDateOfBirth.getMonth() + 1
+          ).padStart(2, "0")}${String(trueDateOfBirth.getDate()).padStart(
+            2,
+            "0"
+          )}${
+            (trueDateOfBirth.getFullYear() +
+              trueDateOfBirth.getMonth() +
+              trueDateOfBirth.getDate()) %
+            10
+          }<${String(trueDateOfIssue.getFullYear()).padStart(4, "0")}0101${
             (trueDateOfIssue.getFullYear() + 2) % 10
           }<<<<<<<<<<0${
-            ((CURRENT_PASSPORT_VERSION + trueID) + (trueDateOfBirth.getFullYear() + trueDateOfBirth.getMonth() + trueDateOfBirth.getDate()) + (trueDateOfIssue.getFullYear() + 2)) % 10
+            (CURRENT_PASSPORT_VERSION +
+              trueID +
+              (trueDateOfBirth.getFullYear() +
+                trueDateOfBirth.getMonth() +
+                trueDateOfBirth.getDate()) +
+              (trueDateOfIssue.getFullYear() + 2)) %
+            10
           }`}
         />
       </div>
