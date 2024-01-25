@@ -39,8 +39,8 @@ export default function Playground() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      surname: "",
       givenName: "",
+      surname: "",
       dateOfBirth: undefined,
       placeOfOrigin: ORIGINS[0],
       image: undefined,
@@ -67,12 +67,12 @@ export default function Playground() {
         >
           <FormField
             control={form.control}
-            name="surname"
+            name="givenName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Surname (Last name)</FormLabel>
+                <FormLabel>Given name</FormLabel>
                 <FormControl>
-                  <Input placeholder="Hacker" {...field} />
+                  <Input placeholder="Wack" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -80,12 +80,12 @@ export default function Playground() {
           />
           <FormField
             control={form.control}
-            name="givenName"
+            name="surname"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Given name</FormLabel>
+                <FormLabel>Surname (Last name)</FormLabel>
                 <FormControl>
-                  <Input placeholder="Wack" {...field} />
+                  <Input placeholder="Hacker" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
