@@ -21,7 +21,7 @@ export async function GET(
         style={{
           fontSize: 40,
           color: "black",
-          background: "white",
+          backgroundImage: `url('${"http://localhost:3000"}/passport/data-page-bg.png')`,
           width: "100%",
           height: "100%",
           padding: "50px 200px",
