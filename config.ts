@@ -1,0 +1,1 @@
+export const IMAGE_GENERATION_SCALE_FACTOR = 3;
