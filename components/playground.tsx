@@ -20,6 +20,7 @@ import { processImage } from "@/utils/process-image";
 import { CropDemo } from "./crop";
 import { useState } from "react";
 import { CURRENT_PASSPORT_VERSION } from "@/config";
+import { ImageResponse } from "next/og";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -48,12 +49,45 @@ export default function Playground() {
   });
 
   const [croppedImageSrc, setCroppedImageSrc] = useState("");
+  const [generatedPageUrl, setGeneratedPageUrl] = useState(
+    `/og?${new URLSearchParams(
+      (() => {
+        const currentFormData = form.getValues();
+        return {
+          version: `${CURRENT_PASSPORT_VERSION}`,
+          id: `0`,
+          surname: currentFormData.surname,
+          firstName: currentFormData.firstName,
+          dateOfBirth: `${new Date(
+            currentFormData.dateOfBirth ?? new Date("06 Apr 1200")
+          ).toISOString()}`,
+          dateOfIssue: `${new Date(Date.now()).toISOString()}`,
+        };
+      })()
+    ).toString()}`
+  );
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     alert("Submitted");
     console.log({ data });
 
     const imageData = await processImage(data.image);
+
+    const apiFormData = new FormData();
+    for (const [key, val] of Object.entries(data)) {
+      apiFormData.append(key, val);
+    }
+    apiFormData.append("portrait", imageData);
+
+    const postRes: ImageResponse = await fetch(`/og`, {
+      method: "POST",
+      body: apiFormData,
+    });
+    const generatedImageBlob = await postRes.blob();
+    console.log({ postRes });
+    setGeneratedPageUrl(
+      new URL(URL.createObjectURL(generatedImageBlob)).toString()
+    );
     // document.getElementById("processTest").src = URL.createObjectURL(imageData);
     // fetch(api, POST, imageData as formdata)
   }
@@ -181,21 +215,7 @@ export default function Playground() {
       <aside>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={`/og?${new URLSearchParams(
-            (() => {
-              const currentFormData = form.getValues();
-              return {
-                version: `${CURRENT_PASSPORT_VERSION}`,
-                id: `0`,
-                surname: currentFormData.surname,
-                firstName: currentFormData.firstName,
-                dateOfBirth: `${new Date(
-                  currentFormData.dateOfBirth ?? new Date("06 Apr 1200")
-                ).toISOString()}`,
-                dateOfIssue: `${new Date(Date.now()).toISOString()}`,
-              };
-            })()
-          ).toString()}`}
+          src={generatedPageUrl}
           alt="Preview of passport page"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />
