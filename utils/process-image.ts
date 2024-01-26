@@ -15,7 +15,10 @@ export async function convertP3ToSRGB(sourceImage: File): Promise<Blob> {
   const p3Image = new Image();
   p3Image.src = URL.createObjectURL(sourceImage);
 
-  await p3Image.decode();
+  // Wait for the image to load
+  await new Promise((resolve) => {
+    p3Image.onload = resolve;
+  });
 
   // Set canvas dimensions to match the image
   offscreenCanvas.width = p3Image.width;
@@ -48,9 +51,10 @@ export async function processImage(inputFile: File): Promise<Blob> {
 
   const bgImage = new Image();
   bgImage.src = "/passport/portrait-bg.png";
-  await bgImage.decode(); // waits for bgImage to be fully loaded before drawing
-
-  ctx.drawImage(bgImage, 0, 0, width, height);
+  bgImage.onload = async function () {
+    await bgImage.decode();
+    ctx.drawImage(bgImage, 0, 0, width, height);
+  };
 
   ctx.globalCompositeOperation = "color-burn";
 
