@@ -34,6 +34,7 @@ const FormSchema = z.object({
   placeOfOrigin: z.string(),
   dateOfBirth: z.string().optional(),
   image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
+  passportNumber: z.string(),
 });
 
 export default function Playground() {
@@ -45,6 +46,7 @@ export default function Playground() {
       dateOfBirth: undefined,
       placeOfOrigin: ORIGINS[0],
       image: undefined,
+      passportNumber: "1",
     },
   });
 
@@ -195,7 +197,23 @@ export default function Playground() {
               </FormItem>
             )}
           />
-          <CropDemo src={croppedImageSrc} />
+          <FormField
+            control={form.control}
+            name="passportNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Passport Number</FormLabel>
+                <FormDescription>
+                  Please ask Matthew for this number before generating your
+                  passport!
+                </FormDescription>
+                <FormControl>
+                  <Input placeholder="1" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Submitting..." : "Submit"}
           </Button>
@@ -207,12 +225,6 @@ export default function Playground() {
           alt="Preview of passport page"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />
-        {/* <img
-          id="processTest"
-          src={""}
-          alt="test"
-          className="shadow-lg rounded-lg w-full bg-slate-100"
-        /> */}
       </aside>
     </main>
   );
