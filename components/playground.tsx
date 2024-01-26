@@ -66,15 +66,12 @@ export default function Playground() {
       })()
     ).toString()}`
   );
-  const [testImg, setTestImg] = useState("");
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     alert("Submitted");
     console.log({ data });
 
     const imageData = await processImage(data.image);
-    const testImgUrl = URL.createObjectURL(imageData);
-    setTestImg(testImgUrl);
 
     const apiFormData = new FormData();
     for (const [key, val] of Object.entries(data)) {
@@ -223,12 +220,12 @@ export default function Playground() {
           alt="Preview of passport page"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />
-        <img
+        {/* <img
           id="processTest"
-          src={testImg}
+          src={""}
           alt="test"
           className="shadow-lg rounded-lg w-full bg-slate-100"
-        />
+        /> */}
       </aside>
     </main>
   );
