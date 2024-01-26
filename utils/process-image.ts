@@ -33,8 +33,6 @@ export async function convertP3ToSRGB(sourceImage: File): Promise<Blob> {
     return Promise.reject();
   }
 
-  console.log("blob", blob);
-
   return blob;
 }
 
@@ -50,7 +48,7 @@ export async function processImage(inputFile: File): Promise<Blob> {
 
   const bgImage = new Image();
   bgImage.src = "/passport/portrait-bg.png";
-  await bgImage.decode();
+  await bgImage.decode(); // waits for bgImage to be fully loaded before drawing
 
   ctx.drawImage(bgImage, 0, 0, width, height);
 
@@ -63,7 +61,6 @@ export async function processImage(inputFile: File): Promise<Blob> {
   ctx.stroke();
 
   const imageBlob = await convertP3ToSRGB(inputFile);
-
   if (!imageBlob) {
     return Promise.reject();
   }
@@ -72,7 +69,7 @@ export async function processImage(inputFile: File): Promise<Blob> {
   userImage.src = URL.createObjectURL(imageBlob);
   await userImage.decode();
 
-  //ctx.drawImage(userImage, 0, 0, width, height);
+  ctx.drawImage(userImage, 0, 0, width, height);
 
   const finalImageData = await canvas.convertToBlob();
 

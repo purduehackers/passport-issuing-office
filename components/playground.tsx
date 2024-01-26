@@ -66,12 +66,15 @@ export default function Playground() {
       })()
     ).toString()}`
   );
+  const [testImg, setTestImg] = useState("");
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     alert("Submitted");
     console.log({ data });
 
     const imageData = await processImage(data.image);
+    const testImgUrl = URL.createObjectURL(imageData);
+    setTestImg(testImgUrl);
 
     const apiFormData = new FormData();
     for (const [key, val] of Object.entries(data)) {
@@ -222,7 +225,7 @@ export default function Playground() {
         />
         <img
           id="processTest"
-          src={``}
+          src={testImg}
           alt="test"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />
