@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/utils/process-image";
-import { CropDemo } from "./crop";
+import { CropDemo } from "./CropDemo";
 import { useState } from "react";
 import { CURRENT_PASSPORT_VERSION } from "@/config";
 import { ImageResponse } from "next/og";
@@ -173,29 +173,21 @@ export default function Playground() {
               <FormItem>
                 <FormLabel>Portrait</FormLabel>
                 <FormControl>
-                  <Input
+                  {/* <Input
                     accept=".jpg, .jpeg, .png, .svg"
                     type="file"
                     onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        const reader = new FileReader();
-                        reader.addEventListener("load", () =>
-                          setCroppedImageSrc(reader.result?.toString() || "")
-                        );
-                        reader.readAsDataURL(e.target.files[0]);
-                      }
-
                       return field.onChange(
                         e.target.files ? e.target.files[0] : null
                       );
                     }}
-                  />
+                  /> */}
+                  <CropDemo control={form.control} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <CropDemo src={croppedImageSrc} />
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Submitting..." : "Submit"}
           </Button>
@@ -207,12 +199,6 @@ export default function Playground() {
           alt="Preview of passport page"
           className="shadow-lg rounded-lg w-full bg-slate-100"
         />
-        {/* <img
-          id="processTest"
-          src={""}
-          alt="test"
-          className="shadow-lg rounded-lg w-full bg-slate-100"
-        /> */}
       </aside>
     </main>
   );
