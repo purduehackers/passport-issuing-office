@@ -84,12 +84,13 @@ export default function Playground() {
       body: apiFormData,
     });
     const generatedImageBlob = await postRes.blob();
-    console.log({ postRes });
-    setGeneratedPageUrl(
-      new URL(URL.createObjectURL(generatedImageBlob)).toString()
+    const generatedImageBuffer = Buffer.from(
+      await generatedImageBlob.arrayBuffer()
     );
-    // document.getElementById("processTest").src = URL.createObjectURL(imageData);
-    // fetch(api, POST, imageData as formdata)
+    const generatedImageUrl =
+      "data:image/png;base64," + generatedImageBuffer.toString("base64");
+
+    setGeneratedPageUrl(generatedImageUrl);
   }
 
   return (
