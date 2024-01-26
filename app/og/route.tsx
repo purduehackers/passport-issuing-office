@@ -42,7 +42,8 @@ export async function POST(request: Request) {
   const portraitImage = formValues.get("portrait") as File;
   const portraitImageBuffer = Buffer.from(await portraitImage.arrayBuffer());
   const portraitUrlB64 =
-    "data:image/png;base64," + portraitImageBuffer.toString("base64");
+    `data:${portraitImage.type};base64,` +
+    portraitImageBuffer.toString("base64");
 
   const interFontData = await fetch(
     new URL("../../assets/Inter-Regular.ttf", import.meta.url)
