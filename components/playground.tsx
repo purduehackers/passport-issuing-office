@@ -50,27 +50,12 @@ export default function Playground() {
 
   const [croppedImageSrc, setCroppedImageSrc] = useState("");
   const [generatedPageUrl, setGeneratedPageUrl] = useState(
-    `/og?${new URLSearchParams(
-      (() => {
-        const currentFormData = form.getValues();
-        return {
-          version: `${CURRENT_PASSPORT_VERSION}`,
-          id: `0`,
-          surname: currentFormData.surname,
-          firstName: currentFormData.firstName,
-          dateOfBirth: `${new Date(
-            currentFormData.dateOfBirth ?? new Date("06 Apr 1200")
-          ).toISOString()}`,
-          dateOfIssue: `${new Date(Date.now()).toISOString()}`,
-        };
-      })()
-    ).toString()}`
+    "/passport/default.png"
   );
+  const [isLoading, setIsLoading] = useState(false); // TODO: do this better
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    alert("Submitted");
-    console.log({ data });
-
+    setIsLoading(true);
     const imageData = await processImage(data.image);
 
     const apiFormData = new FormData();
@@ -91,6 +76,7 @@ export default function Playground() {
       "data:image/png;base64," + generatedImageBuffer.toString("base64");
 
     setGeneratedPageUrl(generatedImageUrl);
+    setIsLoading(false);
   }
 
   return (
@@ -210,11 +196,12 @@ export default function Playground() {
             )}
           />
           <CropDemo src={croppedImageSrc} />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "Submitting..." : "Submit"}
+          </Button>
         </form>
       </Form>
       <aside>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={generatedPageUrl}
           alt="Preview of passport page"
