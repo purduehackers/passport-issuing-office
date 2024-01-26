@@ -1,7 +1,7 @@
 import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
 import { Description } from "./description";
 
-export function ImageSection({ image }: { image: string }) {
+export function ImageSection({ imageUrl }: { imageUrl: string }) {
   return (
     <div
       style={{
@@ -27,7 +27,7 @@ export function ImageSection({ image }: { image: string }) {
       </div>
 
       <img
-        src={image}
+        src={imageUrl}
         alt="Your Passport Photo Here!"
         style={{
           width: 148 * IMAGE_GENERATION_SCALE_FACTOR,
