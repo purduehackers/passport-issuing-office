@@ -17,9 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/utils/process-image";
-import { CropDemo } from "./crop";
+import { Crop } from "./crop";
 import { useState } from "react";
-import { CURRENT_PASSPORT_VERSION } from "@/config";
 import { ImageResponse } from "next/og";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
@@ -50,19 +49,24 @@ export default function Playground() {
     },
   });
 
-  const [croppedImageSrc, setCroppedImageSrc] = useState("");
   const [generatedPageUrl, setGeneratedPageUrl] = useState(
     "/passport/default.png"
   );
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
+  const [croppedImageFile, setCroppedImageFile] = useState<File>();
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    const imageData = await processImage(data.image);
+    if (!croppedImageFile) {
+      return; // TODO: handle error
+    }
+    const imageData = await processImage(croppedImageFile);
 
     const apiFormData = new FormData();
     for (const [key, val] of Object.entries(data)) {
-      apiFormData.append(key, val);
+      if (key !== "image") {
+        apiFormData.append(key, val);
+      }
     }
     apiFormData.append("portrait", imageData);
 
@@ -175,22 +179,10 @@ export default function Playground() {
               <FormItem>
                 <FormLabel>Portrait</FormLabel>
                 <FormControl>
-                  <Input
-                    accept=".jpg, .jpeg, .png, .svg"
-                    type="file"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files.length > 0) {
-                        const reader = new FileReader();
-                        reader.addEventListener("load", () =>
-                          setCroppedImageSrc(reader.result?.toString() || "")
-                        );
-                        reader.readAsDataURL(e.target.files[0]);
-                      }
-
-                      return field.onChange(
-                        e.target.files ? e.target.files[0] : null
-                      );
-                    }}
+                  <Crop
+                    field={field}
+                    croppedImageFile={croppedImageFile}
+                    setCroppedImageFile={setCroppedImageFile}
                   />
                 </FormControl>
                 <FormMessage />
