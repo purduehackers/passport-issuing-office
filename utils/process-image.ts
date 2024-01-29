@@ -39,15 +39,6 @@ export async function convertP3ToSRGB(sourceImage: File): Promise<Blob> {
   return blob;
 }
 
-function loadImage(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
-
 export async function processImage(inputFile: File): Promise<Blob> {
   const width = 148 * IMAGE_GENERATION_SCALE_FACTOR;
   const height = 185 * IMAGE_GENERATION_SCALE_FACTOR;
@@ -58,7 +49,9 @@ export async function processImage(inputFile: File): Promise<Blob> {
     return Promise.reject();
   }
 
-  const bgImage = await loadImage("/passport/portrait-bg.png");
+  const bgImage = new Image();
+  bgImage.src = "/passport/portrait-bg.png";
+  await bgImage.decode();
   ctx.drawImage(bgImage, 0, 0, width, height);
 
   ctx.lineWidth = 16 * IMAGE_GENERATION_SCALE_FACTOR;
