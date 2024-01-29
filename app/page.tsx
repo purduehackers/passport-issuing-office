@@ -2,9 +2,11 @@ import Playground from "@/components/playground";
 import { ImageResponse } from "next/og";
 
 export default async function Home() {
-  const defaultImageRes: ImageResponse = await fetch(
-    `https://passport-data-pages.vercel.app/og`
-  );
+  const baseUrl =
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : "https://passport-data-pages.vercel.app";
+  const defaultImageRes: ImageResponse = await fetch(`${baseUrl}/og`);
   const defaultImageBlob = await defaultImageRes.blob();
   const defaultImageBuffer = Buffer.from(await defaultImageBlob.arrayBuffer());
   const defaultImageUrl =
