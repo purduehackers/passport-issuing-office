@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/utils/process-image";
-import { CropDemo } from "./CropDemo";
+import { CropDemo } from "./crop";
 import { useState } from "react";
 import { CURRENT_PASSPORT_VERSION } from "@/config";
 import { ImageResponse } from "next/og";

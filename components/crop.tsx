@@ -27,6 +27,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 export function centerAspectCrop(
   mediaWidth: number,
@@ -99,26 +100,45 @@ export function CropDemo({ control }: { control: any }) {
       />
       <Dialog open={dialogOpen}>
         <DialogContent>
-          <div className="flex flex-row">
-            {!!imgSrc && (
+          <div className="flex flex-col gap-4">
+            <div>
               <ReactCrop
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
                 onComplete={(c) => setCompletedCrop(c)}
                 aspect={CROP_ASPECT}
                 ruleOfThirds
-                maxWidth={400}
               >
                 <img
-                  width={400}
                   ref={imgRef}
                   alt="Crop me"
                   src={imgSrc}
                   onLoad={onImageLoad}
                 />
               </ReactCrop>
-            )}
-            {!!completedCrop && (
+            </div>
+            <Button
+              type="button"
+              onClick={async (e) => {
+                if (!completedCrop) return;
+                const canvas = previewCanvasRef.current;
+                if (!canvas) return;
+                canvas.toBlob((blob) => {
+                  if (!blob) return;
+                  const croppedImageFile = new File(
+                    [blob],
+                    "cropped_data_page_portrait.png",
+                    {
+                      type: "image/png",
+                    }
+                  );
+                });
+              }}
+            >
+              Crop image
+            </Button>
+          </div>
+          {/* {!!completedCrop && (
               <div>
                 <canvas
                   ref={previewCanvasRef}
@@ -130,8 +150,7 @@ export function CropDemo({ control }: { control: any }) {
                   }}
                 />
               </div>
-            )}
-          </div>
+            )} */}
         </DialogContent>
       </Dialog>
     </>
