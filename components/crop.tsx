@@ -53,7 +53,6 @@ export function Crop({
 }) {
   //todo fix type
   const [imgSrc, setImgSrc] = useState("");
-  const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -77,22 +76,6 @@ export function Crop({
     const { width, height } = e.currentTarget;
     setCrop(centerAspectCrop(width, height, CROP_ASPECT));
   }
-
-  useDebounceEffect(
-    async () => {
-      if (
-        completedCrop?.width &&
-        completedCrop?.height &&
-        imgRef.current &&
-        previewCanvasRef.current
-      ) {
-        // We use cropPreview as it's much faster than imgPreview.
-        cropPreview(imgRef.current, previewCanvasRef.current, completedCrop);
-      }
-    },
-    100,
-    [completedCrop]
-  );
 
   return (
     <>
@@ -123,41 +106,25 @@ export function Crop({
             <Button
               type="button"
               disabled={cropping}
-              onClick={() => {
+              onClick={async () => {
                 setCropping(true);
-                const canvas = previewCanvasRef.current;
-                if (!canvas) return;
-                canvas.toBlob((blob) => {
-                  if (!blob) return;
-                  const croppedImageFile = new File(
-                    [blob],
-                    "cropped_data_page_portrait.png",
-                    {
-                      type: "image/png",
-                    }
+                if (
+                  imgRef.current &&
+                  completedCrop?.width &&
+                  completedCrop.height
+                ) {
+                  const newFile = await cropPreview(
+                    imgRef.current,
+                    completedCrop
                   );
-                  setCroppedImageFile(croppedImageFile);
+                  setCroppedImageFile(newFile);
                   setDialogOpen(false);
-                });
+                }
               }}
             >
               {cropping ? "Cropping..." : "Crop Image"}
             </Button>
           </div>
-          {!!completedCrop && (
-            // todo: do this in a better way
-            <div className="hidden">
-              <canvas
-                ref={previewCanvasRef}
-                style={{
-                  border: "1px solid black",
-                  objectFit: "contain",
-                  width: completedCrop.width,
-                  height: completedCrop.height,
-                }}
-              />
-            </div>
-          )}
         </DialogContent>
       </Dialog>
     </>

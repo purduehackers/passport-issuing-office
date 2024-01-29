@@ -4,11 +4,11 @@ const TO_RADIANS = Math.PI / 180;
 
 export async function cropPreview(
   image: HTMLImageElement,
-  canvas: HTMLCanvasElement,
   crop: PixelCrop,
   scale = 1,
   rotate = 0
 ) {
+  const canvas = new OffscreenCanvas(crop.width, crop.height);
   const ctx = canvas.getContext("2d");
 
   if (!ctx) {
@@ -62,4 +62,9 @@ export async function cropPreview(
   );
 
   ctx.restore();
+
+  const canvasBlob = await canvas.convertToBlob();
+  return new File([canvasBlob], "cropped_data_page_portrait.png", {
+    type: "image/png",
+  });
 }
