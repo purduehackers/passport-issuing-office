@@ -42,7 +42,7 @@ export function centerAspectCrop(
   );
 }
 
-export function CropDemo({
+export function Crop({
   field,
   croppedImageFile,
   setCroppedImageFile,

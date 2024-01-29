@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/utils/process-image";
-import { CropDemo } from "./crop";
+import { Crop } from "./crop";
 import { useState } from "react";
 import { ImageResponse } from "next/og";
 
@@ -179,16 +179,7 @@ export default function Playground() {
               <FormItem>
                 <FormLabel>Portrait</FormLabel>
                 <FormControl>
-                  {/* <Input
-                    accept=".jpg, .jpeg, .png, .svg"
-                    type="file"
-                    onChange={(e) => {
-                      return field.onChange(
-                        e.target.files ? e.target.files[0] : null
-                      );
-                    }}
-                  /> */}
-                  <CropDemo
+                  <Crop
                     field={field}
                     croppedImageFile={croppedImageFile}
                     setCroppedImageFile={setCroppedImageFile}
