@@ -9,14 +9,6 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "20mb",
-    },
-  },
-};
-
 export async function POST(request: Request) {
   const formValues = await request.formData();
   // console.log({ formValues });
