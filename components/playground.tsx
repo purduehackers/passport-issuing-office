@@ -33,7 +33,7 @@ const FormSchema = z.object({
   placeOfOrigin: z.string().max(13),
   dateOfBirth: z.string().optional(),
   image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
-  passportNumber: z.string(),
+  passportNumber: z.string().max(4),
 });
 
 export default function Playground({
@@ -78,7 +78,7 @@ export default function Playground({
     const apiFormData = new FormData();
     for (const [key, val] of Object.entries(data)) {
       if (key !== "image") {
-        apiFormData.append(key, val);
+        apiFormData.append(key, String(val));
       }
     }
     apiFormData.append("portrait", imageData);
@@ -214,7 +214,7 @@ export default function Playground({
                   passport!
                 </FormDescription>
                 <FormControl>
-                  <Input placeholder="1" {...field} />
+                  <Input type="number" placeholder="1" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

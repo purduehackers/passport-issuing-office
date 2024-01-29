@@ -45,7 +45,6 @@ export function Crop({
   croppedImageFile: File | undefined;
   setCroppedImageFile: Dispatch<SetStateAction<File | undefined>>;
 }) {
-  //todo fix type
   const [imgSrc, setImgSrc] = useState("");
   const imgRef = useRef<HTMLImageElement>(null);
   const [crop, setCrop] = useState<Crop>();
