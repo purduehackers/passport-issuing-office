@@ -64,7 +64,9 @@ export default function Playground() {
 
     const apiFormData = new FormData();
     for (const [key, val] of Object.entries(data)) {
-      apiFormData.append(key, val);
+      if (key !== "image") {
+        apiFormData.append(key, val);
+      }
     }
     apiFormData.append("portrait", imageData);
 
