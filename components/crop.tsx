@@ -43,9 +43,11 @@ export function centerAspectCrop(
 }
 
 export function CropDemo({
+  field,
   croppedImageFile,
   setCroppedImageFile,
 }: {
+  field: any;
   croppedImageFile: File | undefined;
   setCroppedImageFile: Dispatch<SetStateAction<File | undefined>>;
 }) {
@@ -56,9 +58,11 @@ export function CropDemo({
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [cropping, setCropping] = useState(false);
 
   function onSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
+      field.onChange(e.target.files ? e.target.files[0] : null);
       setCrop(undefined); // Makes crop preview update between images.
       const reader = new FileReader();
       reader.addEventListener("load", () =>
@@ -118,14 +122,13 @@ export function CropDemo({
             </div>
             <Button
               type="button"
-              onClick={async (e) => {
-                console.log("meow?");
+              disabled={cropping}
+              onClick={() => {
+                setCropping(true);
                 const canvas = previewCanvasRef.current;
                 if (!canvas) return;
-                console.log("there is a canvas");
                 canvas.toBlob((blob) => {
                   if (!blob) return;
-                  console.log("there is a blob");
                   const croppedImageFile = new File(
                     [blob],
                     "cropped_data_page_portrait.png",
@@ -138,7 +141,7 @@ export function CropDemo({
                 });
               }}
             >
-              Crop image
+              {cropping ? "Cropping..." : "Crop Image"}
             </Button>
           </div>
           {!!completedCrop && (

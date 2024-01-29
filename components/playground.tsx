@@ -187,6 +187,7 @@ export default function Playground() {
                     }}
                   /> */}
                   <CropDemo
+                    field={field}
                     croppedImageFile={croppedImageFile}
                     setCroppedImageFile={setCroppedImageFile}
                   />
