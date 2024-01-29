@@ -54,6 +54,7 @@ export default function Playground({
   });
 
   const [generatedPageUrl, setGeneratedPageUrl] = useState(defaultImageUrl);
+  const [isDefaultImage, setIsDefaultImage] = useState(true);
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
   const generatedImageRef = useRef(null);
@@ -95,6 +96,7 @@ export default function Playground({
 
     setGeneratedPageUrl(generatedImageUrl);
     setIsLoading(false);
+    setIsDefaultImage(false);
   }
 
   return (
@@ -231,7 +233,7 @@ export default function Playground({
             alt="Preview of passport page"
             className="shadow-lg rounded-lg w-full bg-slate-100"
           />
-          {generatedPageUrl !== "/passport/default.png" && (
+          {!isDefaultImage && (
             <a href={generatedPageUrl} download={generateDownloadName()}>
               <Button className="w-full" type="button">
                 Download
