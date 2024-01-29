@@ -4,21 +4,15 @@ import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
-  Crop,
   PixelCrop,
+  // for some reason the eslint plugin thinks Crop is unused
+  // eslint-disable-next-line unused-imports/no-unused-imports
+  type Crop,
 } from "react-image-crop";
 import { generateNewCroppedImageFile } from "../lib/generate-new-cropped-image-file";
-import { useDebounceEffect } from "../hooks/useDebounceEffect";
 import "react-image-crop/dist/ReactCrop.css";
 import { CROP_ASPECT } from "@/config";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
+import { Dialog, DialogContent } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
