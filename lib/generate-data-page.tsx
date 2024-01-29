@@ -1,14 +1,3 @@
-import { DataSection } from "@/components/passport/data";
-import { FooterSection } from "@/components/passport/footer";
-import { ImageSection } from "@/components/passport/image";
-import {
-  CURRENT_PASSPORT_VERSION,
-  IMAGE_GENERATION_SCALE_FACTOR,
-} from "@/config";
-import { ImageResponse } from "next/og";
-
-export const runtime = "edge";
-
 interface ExpectedData {
   passportNumber: number;
   surname: string;
@@ -19,22 +8,33 @@ interface ExpectedData {
   portrait: File;
 }
 
-async function SatoriImageResponse(data: ExpectedData) {
+import { DataSection } from "@/components/passport/data";
+import { FooterSection } from "@/components/passport/footer";
+import { ImageSection } from "@/components/passport/image";
+import {
+  CURRENT_PASSPORT_VERSION,
+  IMAGE_GENERATION_SCALE_FACTOR,
+} from "@/config";
+import { ImageResponse } from "next/og";
+
+export async function generateDataPage(
+  data: ExpectedData
+): Promise<ImageResponse> {
   const portraitImageBuffer = Buffer.from(await data.portrait.arrayBuffer());
   const portraitUrlB64 =
     `data:${data.portrait.type};base64,` +
     portraitImageBuffer.toString("base64");
 
   const interFontData = await fetch(
-    new URL("../../assets/Inter-Regular.ttf", import.meta.url)
+    new URL("../assets/Inter-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   const interBoldFontData = await fetch(
-    new URL("../../assets/Inter-Bold.ttf", import.meta.url)
+    new URL("../assets/Inter-Bold.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   const OCRBProFontData = await fetch(
-    new URL("../../assets/OCRB-Regular.ttf", import.meta.url)
+    new URL("../assets/OCRB-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
@@ -137,64 +137,4 @@ async function SatoriImageResponse(data: ExpectedData) {
       ],
     }
   );
-}
-
-export async function POST(request: Request) {
-  const formValues = await request.formData();
-
-  // TODO: fix types
-
-  const trueID = formValues.get("passportNumber")
-    ? Number(formValues.get("passportNumber") as string)
-    : 0;
-
-  const trueSurname = formValues.get("surname")
-    ? (formValues.get("surname") as string)
-    : "HACKER";
-  const trueFirstName = formValues.get("firstName")
-    ? (formValues.get("firstName") as string)
-    : "WACK";
-
-  const trueDateOfBirth = new Date(
-    formValues.get("dateOfBirth")
-      ? (formValues.get("dateOfBirth") as string)
-      : "06 Apr 1200"
-  );
-  const trueDateOfIssue = new Date(
-    formValues.get("dateOfIssue")
-      ? (formValues.get("dateOfIssue") as string)
-      : Date.now()
-  );
-  const placeOfOrigin = formValues.get("placeOfOrigin")
-    ? (formValues.get("placeOfOrigin") as string)
-    : "THE WOODS";
-  const portraitImage = formValues.get("portrait") as File;
-
-  return await SatoriImageResponse({
-    passportNumber: trueID,
-    surname: trueSurname,
-    firstName: trueFirstName,
-    dateOfBirth: trueDateOfBirth,
-    dateOfIssue: trueDateOfIssue,
-    placeOfOrigin,
-    portrait: portraitImage,
-  });
-}
-
-export async function GET(_req: Request) {
-  const defaultImageRes = await fetch("https://doggo.ninja/j8F9pT.png");
-  const defaultImageBlob = await defaultImageRes.blob();
-  const defaultImage = new File([defaultImageBlob], "default_image.png", {
-    type: "image/png",
-  });
-
-  return await SatoriImageResponse({
-    passportNumber: 0,
-    surname: "HACKER",
-    firstName: "WACK",
-    dateOfBirth: new Date("06 Apr 1200"),
-    dateOfIssue: new Date(),
-    placeOfOrigin: "THE WOODS",
-    portrait: defaultImage,
-  });
 }

@@ -1,12 +1,25 @@
 import Playground from "@/components/playground";
+import { generateDataPage } from "@/lib/generate-data-page";
 import { ImageResponse } from "next/og";
 
+export const runtime = "edge";
+
 export default async function Home() {
-  const baseUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : "https://passport-data-pages.vercel.app";
-  const defaultImageRes: ImageResponse = await fetch(`${baseUrl}/og`);
+  const defaultPortraitRes = await fetch("https://doggo.ninja/j8F9pT.png");
+  const defaultPortraitBlob = await defaultPortraitRes.blob();
+  const defaultImage = new File([defaultPortraitBlob], "default_portrait.png", {
+    type: "image/png",
+  });
+
+  const defaultImageRes: ImageResponse = await generateDataPage({
+    passportNumber: 0,
+    surname: "HACKER",
+    firstName: "WACK",
+    dateOfBirth: new Date("06 Apr 1200"),
+    dateOfIssue: new Date(),
+    placeOfOrigin: "THE WOODS",
+    portrait: defaultImage,
+  });
   const defaultImageBlob = await defaultImageRes.blob();
   const defaultImageBuffer = Buffer.from(await defaultImageBlob.arrayBuffer());
   const defaultImageUrl =
