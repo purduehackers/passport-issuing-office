@@ -7,7 +7,7 @@ import ReactCrop, {
   Crop,
   PixelCrop,
 } from "react-image-crop";
-import { generateNewCroppedImageFile } from "../utils/generateNewCroppedImageFile";
+import { generateNewCroppedImageFile } from "../lib/generateNewCroppedImageFile";
 import { useDebounceEffect } from "../hooks/useDebounceEffect";
 import "react-image-crop/dist/ReactCrop.css";
 import { CROP_ASPECT } from "@/config";
