@@ -87,7 +87,7 @@ export function Crop({
       <Dialog open={dialogOpen}>
         <DialogContent>
           <div className="flex flex-col gap-4">
-            <div>
+            <div className="flex justify-center">
               <ReactCrop
                 crop={crop}
                 onChange={(_, percentCrop) => setCrop(percentCrop)}
