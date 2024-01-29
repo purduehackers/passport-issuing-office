@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/utils/process-image";
 import { Crop } from "./crop";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
@@ -54,6 +54,16 @@ export default function Playground() {
   );
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
+  const generatedImageRef = useRef(null);
+
+  function generateDownloadName() {
+    const { firstName, surname } = form.getValues();
+
+    function processName(name: string) {
+      return name.replace(" ", "_").toLowerCase();
+    }
+    return `passport_${processName(firstName)}_${processName(surname)}`;
+  }
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
@@ -212,11 +222,21 @@ export default function Playground() {
         </form>
       </Form>
       <aside>
-        <img
-          src={generatedPageUrl}
-          alt="Preview of passport page"
-          className="shadow-lg rounded-lg w-full bg-slate-100"
-        />
+        <div className="flex flex-col gap-4">
+          <img
+            ref={generatedImageRef}
+            src={generatedPageUrl}
+            alt="Preview of passport page"
+            className="shadow-lg rounded-lg w-full bg-slate-100"
+          />
+          {generatedPageUrl !== "/passport/default.png" && (
+            <a href={generatedPageUrl} download={generateDownloadName()}>
+              <Button className="w-full" type="button">
+                Download
+              </Button>
+            </a>
+          )}
+        </div>
       </aside>
     </main>
   );
