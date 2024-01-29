@@ -113,7 +113,7 @@ export function Crop({
                   completedCrop?.width &&
                   completedCrop.height
                 ) {
-                  const newFile = await generateNewCroppedFile(
+                  const newFile = await generateNewCroppedImageFile(
                     imgRef.current,
                     completedCrop
                   );
