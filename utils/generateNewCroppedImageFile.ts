@@ -2,7 +2,7 @@ import { PixelCrop } from "react-image-crop";
 
 const TO_RADIANS = Math.PI / 180;
 
-export async function cropPreview(
+export async function generateNewCroppedImageFile(
   image: HTMLImageElement,
   crop: PixelCrop,
   scale = 1,

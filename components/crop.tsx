@@ -7,7 +7,7 @@ import ReactCrop, {
   Crop,
   PixelCrop,
 } from "react-image-crop";
-import { cropPreview } from "../utils/cropPreview";
+import { generateNewCroppedImageFile } from "../utils/generateNewCroppedImageFile";
 import { useDebounceEffect } from "../hooks/useDebounceEffect";
 import "react-image-crop/dist/ReactCrop.css";
 import { CROP_ASPECT } from "@/config";
@@ -113,7 +113,7 @@ export function Crop({
                   completedCrop?.width &&
                   completedCrop.height
                 ) {
-                  const newFile = await cropPreview(
+                  const newFile = await generateNewCroppedFile(
                     imgRef.current,
                     completedCrop
                   );
