@@ -39,6 +39,15 @@ export async function convertP3ToSRGB(sourceImage: File): Promise<Blob> {
   return blob;
 }
 
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
 export async function processImage(inputFile: File): Promise<Blob> {
   const width = 148 * IMAGE_GENERATION_SCALE_FACTOR;
   const height = 185 * IMAGE_GENERATION_SCALE_FACTOR;
@@ -49,20 +58,13 @@ export async function processImage(inputFile: File): Promise<Blob> {
     return Promise.reject();
   }
 
-  const bgImage = new Image();
-  bgImage.src = "/passport/portrait-bg.png";
-  bgImage.onload = async function () {
-    await bgImage.decode();
-    ctx.drawImage(bgImage, 0, 0, width, height);
-  };
+  const bgImage = await loadImage("/passport/portrait-bg.png");
+  // bgImage.onload = async function () {
+  //   ctx.drawImage(bgImage, 0, 0, width, height);
+  // };
+  ctx.drawImage(bgImage, 0, 0, width, height);
 
   ctx.globalCompositeOperation = "color-burn";
-
-  ctx.lineWidth = 16 * IMAGE_GENERATION_SCALE_FACTOR;
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
-  ctx.beginPath();
-  ctx.roundRect(0, 0, width, height, [8 * IMAGE_GENERATION_SCALE_FACTOR]);
-  ctx.stroke();
 
   const imageBlob = await convertP3ToSRGB(inputFile);
   if (!imageBlob) {
