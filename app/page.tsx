@@ -1,10 +1,19 @@
 import Playground from "@/components/playground";
+import { ImageResponse } from "next/og";
 
-export default function Home() {
+export default async function Home() {
+  const defaultImageRes: ImageResponse = await fetch(
+    `http://localhost:3000/og`
+  );
+  const defaultImageBlob = await defaultImageRes.blob();
+  const defaultImageBuffer = Buffer.from(await defaultImageBlob.arrayBuffer());
+  const defaultImageUrl =
+    "data:image/png;base64," + defaultImageBuffer.toString("base64");
+
   return (
     <main className="flex min-h-screen flex-col items-center gap-y-24 p-24">
       <h1 className="font-bold text-amber-400 text-6xl">Passport Data Pages</h1>
-      <Playground />
+      <Playground defaultImageUrl={defaultImageUrl} />
     </main>
   );
 }
