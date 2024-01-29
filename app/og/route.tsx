@@ -15,8 +15,8 @@ export async function POST(request: Request) {
 
   // TODO: fix types
 
-  const trueID = formValues.get("id")
-    ? (formValues.get("id") as unknown as number)
+  const trueID = formValues.get("passportNumber")
+    ? Number(formValues.get("passportNumber") as string)
     : 0;
 
   const trueSurname = formValues.get("surname")
@@ -92,6 +92,7 @@ export async function POST(request: Request) {
           />
           <DataSection
             version={CURRENT_PASSPORT_VERSION}
+            passportNumber={trueID}
             id={trueID}
             surname={trueSurname}
             firstName={trueFirstName}

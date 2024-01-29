@@ -18,6 +18,7 @@ const monthCodes = [
 
 export function DataSection({
   version,
+  passportNumber,
   id,
   surname,
   firstName,
@@ -26,6 +27,7 @@ export function DataSection({
   dateOfIssue,
 }: {
   version: number;
+  passportNumber: number;
   id: number;
   surname: string;
   firstName: string;

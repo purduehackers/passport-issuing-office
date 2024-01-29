@@ -51,18 +51,16 @@ export async function processImage(inputFile: File): Promise<Blob> {
 
   const bgImage = new Image();
   bgImage.src = "/passport/portrait-bg.png";
-  bgImage.onload = async function () {
-    await bgImage.decode();
-    ctx.drawImage(bgImage, 0, 0, width, height);
-  };
-
-  ctx.globalCompositeOperation = "color-burn";
+  await bgImage.decode();
+  ctx.drawImage(bgImage, 0, 0, width, height);
 
   ctx.lineWidth = 16 * IMAGE_GENERATION_SCALE_FACTOR;
   ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
   ctx.beginPath();
   ctx.roundRect(0, 0, width, height, [8 * IMAGE_GENERATION_SCALE_FACTOR]);
   ctx.stroke();
+
+  ctx.globalCompositeOperation = "color-burn";
 
   const imageBlob = await convertP3ToSRGB(inputFile);
   if (!imageBlob) {
