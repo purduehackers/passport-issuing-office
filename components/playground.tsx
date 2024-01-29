@@ -30,7 +30,7 @@ const FormSchema = z.object({
   firstName: z.string().min(1, {
     message: "Name must be at least 1 character.",
   }),
-  placeOfOrigin: z.string(),
+  placeOfOrigin: z.string().max(13),
   dateOfBirth: z.string().optional(),
   image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
   passportNumber: z.string(),
