@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 
 export default async function Home() {
   const defaultImageRes: ImageResponse = await fetch(
-    `${process.env.BASE_URL}/og`
+    `https://passport-data-pages.vercel.app/og`
   );
   const defaultImageBlob = await defaultImageRes.blob();
   const defaultImageBuffer = Buffer.from(await defaultImageBlob.arrayBuffer());
