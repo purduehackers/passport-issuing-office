@@ -119,6 +119,7 @@ export function Crop({
                   );
                   setCroppedImageFile(newFile);
                   setDialogOpen(false);
+                  setCropping(false);
                 }
               }}
             >
