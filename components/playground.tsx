@@ -19,7 +19,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/utils/process-image";
 import { CropDemo } from "./crop";
 import { useState } from "react";
-import { CURRENT_PASSPORT_VERSION } from "@/config";
 import { ImageResponse } from "next/og";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
@@ -50,15 +49,18 @@ export default function Playground() {
     },
   });
 
-  const [croppedImageSrc, setCroppedImageSrc] = useState("");
   const [generatedPageUrl, setGeneratedPageUrl] = useState(
     "/passport/default.png"
   );
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
+  const [croppedImageFile, setCroppedImageFile] = useState<File>();
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
-    const imageData = await processImage(data.image);
+    if (!croppedImageFile) {
+      return; // TODO: handle error
+    }
+    const imageData = await processImage(croppedImageFile);
 
     const apiFormData = new FormData();
     for (const [key, val] of Object.entries(data)) {
@@ -184,7 +186,10 @@ export default function Playground() {
                       );
                     }}
                   /> */}
-                  <CropDemo control={form.control} />
+                  <CropDemo
+                    croppedImageFile={croppedImageFile}
+                    setCroppedImageFile={setCroppedImageFile}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

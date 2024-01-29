@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Dispatch, SetStateAction } from "react";
 import ReactCrop, {
   centerCrop,
   makeAspectCrop,
@@ -19,13 +19,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
@@ -49,7 +42,13 @@ export function centerAspectCrop(
   );
 }
 
-export function CropDemo({ control }: { control: any }) {
+export function CropDemo({
+  croppedImageFile,
+  setCroppedImageFile,
+}: {
+  croppedImageFile: File | undefined;
+  setCroppedImageFile: Dispatch<SetStateAction<File | undefined>>;
+}) {
   //todo fix type
   const [imgSrc, setImgSrc] = useState("");
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -120,11 +119,13 @@ export function CropDemo({ control }: { control: any }) {
             <Button
               type="button"
               onClick={async (e) => {
-                if (!completedCrop) return;
+                console.log("meow?");
                 const canvas = previewCanvasRef.current;
                 if (!canvas) return;
+                console.log("there is a canvas");
                 canvas.toBlob((blob) => {
                   if (!blob) return;
+                  console.log("there is a blob");
                   const croppedImageFile = new File(
                     [blob],
                     "cropped_data_page_portrait.png",
@@ -132,25 +133,28 @@ export function CropDemo({ control }: { control: any }) {
                       type: "image/png",
                     }
                   );
+                  setCroppedImageFile(croppedImageFile);
+                  setDialogOpen(false);
                 });
               }}
             >
               Crop image
             </Button>
           </div>
-          {/* {!!completedCrop && (
-              <div>
-                <canvas
-                  ref={previewCanvasRef}
-                  style={{
-                    border: "1px solid black",
-                    objectFit: "contain",
-                    width: completedCrop.width,
-                    height: completedCrop.height,
-                  }}
-                />
-              </div>
-            )} */}
+          {!!completedCrop && (
+            // todo: do this in a better way
+            <div className="hidden">
+              <canvas
+                ref={previewCanvasRef}
+                style={{
+                  border: "1px solid black",
+                  objectFit: "contain",
+                  width: completedCrop.width,
+                  height: completedCrop.height,
+                }}
+              />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </>
