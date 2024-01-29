@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 
 export default async function Home() {
   const defaultImageRes: ImageResponse = await fetch(
-    `http://localhost:3000/og`
+    `${process.env.BASE_URL}/og`
   );
   const defaultImageBlob = await defaultImageRes.blob();
   const defaultImageBuffer = Buffer.from(await defaultImageBlob.arrayBuffer());
