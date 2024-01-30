@@ -33,13 +33,16 @@ export async function POST(request: Request) {
     : "THE WOODS";
   const portraitImage = formValues.get("portrait") as File;
 
-  return await generateDataPage({
-    passportNumber: trueID,
-    surname: trueSurname,
-    firstName: trueFirstName,
-    dateOfBirth: trueDateOfBirth,
-    dateOfIssue: trueDateOfIssue,
-    placeOfOrigin,
-    portrait: portraitImage,
-  });
+  return await generateDataPage(
+    {
+      passportNumber: trueID,
+      surname: trueSurname,
+      firstName: trueFirstName,
+      dateOfBirth: trueDateOfBirth,
+      dateOfIssue: trueDateOfIssue,
+      placeOfOrigin,
+      portrait: portraitImage,
+    },
+    request.url
+  );
 }

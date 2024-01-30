@@ -5,7 +5,7 @@ interface ExpectedData {
   dateOfBirth: Date;
   dateOfIssue: Date;
   placeOfOrigin: string;
-  portrait: File;
+  portrait?: File;
 }
 
 import { DataSection } from "@/components/passport/data";
@@ -18,12 +18,27 @@ import {
 import { ImageResponse } from "next/og";
 
 export async function generateDataPage(
-  data: ExpectedData
+  data: ExpectedData,
+  url?: string
 ): Promise<ImageResponse> {
-  const portraitImageBuffer = Buffer.from(await data.portrait.arrayBuffer());
+  let portrait: File;
+  if (data.portrait) {
+    portrait = data.portrait;
+  } else {
+    const defaultPortraitUrl = new URL(
+      "/passport/no-image.png",
+      url ?? "https://passport-data-pages.vercel.app"
+    ).href;
+    const defaultPortraitRes = await fetch(defaultPortraitUrl);
+    const defaultPortraitBlob = await defaultPortraitRes.blob();
+    portrait = new File([defaultPortraitBlob], "default_portrait.png", {
+      type: "image/png",
+    });
+  }
+
+  const portraitImageBuffer = Buffer.from(await portrait.arrayBuffer());
   const portraitUrlB64 =
-    `data:${data.portrait.type};base64,` +
-    portraitImageBuffer.toString("base64");
+    `data:${portrait.type};base64,` + portraitImageBuffer.toString("base64");
 
   const interFontData = await fetch(
     new URL("../assets/Inter-Regular.ttf", import.meta.url)
@@ -37,6 +52,11 @@ export async function generateDataPage(
     new URL("../assets/OCRB-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
+  const dataPageBgUrl = new URL(
+    "/passport/data-page-bg.png",
+    url ?? "https://passport-data-pages.vercel.app"
+  ).href;
+
   return new ImageResponse(
     (
       <div
@@ -44,7 +64,7 @@ export async function generateDataPage(
           fontSize: 13.333 * IMAGE_GENERATION_SCALE_FACTOR,
           fontFamily: '"Inter"',
           color: "black",
-          backgroundImage: `url('https://doggo.ninja/fVcYpE.png')`,
+          backgroundImage: `url('${dataPageBgUrl}')`,
           backgroundSize: "100% 100%",
           width: "100%",
           height: "100%",
@@ -67,9 +87,7 @@ export async function generateDataPage(
             gap: 19 * IMAGE_GENERATION_SCALE_FACTOR,
           }}
         >
-          <ImageSection
-            imageUrl={portraitUrlB64 ?? "https://doggo.ninja/j8F9pT.png"}
-          />
+          <ImageSection imageUrl={portraitUrlB64} />
           <DataSection
             version={CURRENT_PASSPORT_VERSION}
             passportNumber={data.passportNumber}
