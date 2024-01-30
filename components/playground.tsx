@@ -221,7 +221,7 @@ export default function Playground({
             )}
           />
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Submitting..." : "Submit"}
+            {isLoading ? "Generating..." : "Submit"}
           </Button>
         </form>
       </Form>
