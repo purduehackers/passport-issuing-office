@@ -43,21 +43,3 @@ export async function POST(request: Request) {
     portrait: portraitImage,
   });
 }
-
-export async function GET(_req: Request) {
-  const defaultImageRes = await fetch("https://doggo.ninja/j8F9pT.png");
-  const defaultImageBlob = await defaultImageRes.blob();
-  const defaultImage = new File([defaultImageBlob], "default_image.png", {
-    type: "image/png",
-  });
-
-  return await generateDataPage({
-    passportNumber: 0,
-    surname: "HACKER",
-    firstName: "WACK",
-    dateOfBirth: new Date("06 Apr 1200"),
-    dateOfIssue: new Date(),
-    placeOfOrigin: "THE WOODS",
-    portrait: defaultImage,
-  });
-}
