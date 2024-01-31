@@ -100,7 +100,10 @@ export async function generateDataPage(
           />
         </div>
         <FooterSection
-          topLine={`PH<HAK${data.surname}<<${data.firstName}`.padEnd(44, "<")}
+          topLine={`PH<HAK${data.surname.replace(
+            " ",
+            ""
+          )}<<${data.firstName.replace(" ", "")}`.padEnd(44, "<")}
           bottomLine={`${String(CURRENT_PASSPORT_VERSION).padStart(
             3,
             "0"
