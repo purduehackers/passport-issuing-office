@@ -100,7 +100,7 @@ export default function Playground({
   }
 
   return (
-    <main className="grid lg:grid-cols-[2fr_3fr] gap-8 lg:gap-12 w-full max-w-4xl">
+    <main className="grid lg:grid-cols-[2fr_3fr] gap-20 lg:gap-12 w-full max-w-4xl">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -221,7 +221,7 @@ export default function Playground({
             )}
           />
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Generating..." : "Submit"}
+            {isLoading ? "Generating..." : "Generate"}
           </Button>
         </form>
       </Form>
