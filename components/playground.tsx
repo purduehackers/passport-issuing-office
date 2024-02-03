@@ -36,11 +36,7 @@ const FormSchema = z.object({
   passportNumber: z.string().max(4),
 });
 
-export default function Playground({
-  defaultImageUrl,
-}: {
-  defaultImageUrl: string;
-}) {
+export default function Playground() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -53,7 +49,9 @@ export default function Playground({
     },
   });
 
-  const [generatedImageUrl, setGeneratedImageUrl] = useState(defaultImageUrl);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState(
+    "/passport/default.png"
+  );
   const [isDefaultImage, setIsDefaultImage] = useState(true);
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
