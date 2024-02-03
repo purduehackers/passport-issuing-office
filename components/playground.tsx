@@ -53,7 +53,7 @@ export default function Playground({
     },
   });
 
-  const [generatedPageUrl, setGeneratedPageUrl] = useState(defaultImageUrl);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState(defaultImageUrl);
   const [isDefaultImage, setIsDefaultImage] = useState(true);
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
@@ -94,7 +94,7 @@ export default function Playground({
     const generatedImageUrl =
       "data:image/png;base64," + generatedImageBuffer.toString("base64");
 
-    setGeneratedPageUrl(generatedImageUrl);
+    setGeneratedImageUrl(generatedImageUrl);
     setIsLoading(false);
     setIsDefaultImage(false);
   }
@@ -229,12 +229,12 @@ export default function Playground({
         <div className="flex flex-col gap-4">
           <img
             ref={generatedImageRef}
-            src={generatedPageUrl}
+            src={generatedImageUrl}
             alt="Preview of passport page"
             className="shadow-lg rounded-lg w-full bg-slate-100"
           />
           {!isDefaultImage && (
-            <a href={generatedPageUrl} download={generateDownloadName()}>
+            <a href={generatedImageUrl} download={generateDownloadName()}>
               <Button className="w-full" type="button">
                 Download
               </Button>
