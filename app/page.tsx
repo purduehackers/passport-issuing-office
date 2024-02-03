@@ -20,9 +20,9 @@ export default async function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-y-12 sm:gap-y-24 p-4 sm:p-24 bg-slate-900">
-      <div className="bg-slate-200 rounded-sm border-[3px] border-amber-400 flex flex-col justify-center gap-2 p-2 sm:p-4 my-4 print:my-0 print:mt-4 w-full md:w-9/12 print:w-9/12 mx-auto break-inside-avoid shadow-amber-500 shadow-blocks-sm font-main">
+      <div className="bg-slate-200 text-black rounded-sm border-[3px] border-amber-400 flex flex-col justify-center gap-2 p-2 sm:p-4 my-4 print:my-0 print:mt-4 w-full md:w-9/12 print:w-9/12 mx-auto break-inside-avoid shadow-amber-500 shadow-blocks-sm font-main">
         <div className="flex flex-row items-center">
-          <h1 className="font-bold text-2xl sm:text-6xl mx-auto sm:mb-4 flex justify-center items-center gap-2">
+          <h1 className="font-bold text-2xl sm:text-6xl mx-auto sm:mb-4 flex justify-center items-center gap-2 sm:gap-4">
             <img
               alt="passport cover"
               src="/cover-black.svg"
