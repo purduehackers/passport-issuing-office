@@ -20,6 +20,7 @@ import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
 import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
+import { Passport } from "./passport";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -225,11 +226,23 @@ export default function Playground() {
       </Form>
       <aside>
         <div className="flex flex-col gap-4">
-          <img
+          {/* <img
             ref={generatedImageRef}
             src={generatedImageUrl}
             alt="Preview of passport page"
             className="shadow-lg rounded-lg w-full bg-slate-100"
+          /> */}
+          <Passport
+            data={{
+              passportNumber: Number(form.getValues().passportNumber),
+              surname: form.getValues().surname,
+              firstName: form.getValues().firstName,
+              dateOfBirth: new Date(
+                form.getValues().dateOfBirth ?? "06 Apr 1200"
+              ),
+              dateOfIssue: new Date(),
+              placeOfOrigin: form.getValues().placeOfOrigin,
+            }}
           />
           {!isDefaultImage && (
             <a href={generatedImageUrl} download={generateDownloadName()}>

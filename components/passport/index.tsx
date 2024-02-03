@@ -1,26 +1,19 @@
-export interface ExpectedData {
-  passportNumber: number;
-  surname: string;
-  firstName: string;
-  dateOfBirth: Date;
-  dateOfIssue: Date;
-  placeOfOrigin: string;
-  portrait?: File;
-}
-
-import { DataSection } from "@/components/passport/data";
-import { FooterSection } from "@/components/passport/footer";
-import { ImageSection } from "@/components/passport/image";
 import {
   CURRENT_PASSPORT_VERSION,
   IMAGE_GENERATION_SCALE_FACTOR,
 } from "@/config";
-import { ImageResponse } from "next/og";
+import { ExpectedData } from "@/lib/generate-data-page";
+import { FooterSection } from "./footer";
+import { DataSection } from "./data";
+import { ImageSection } from "./image";
 
-export async function generateDataPage(
-  data: ExpectedData,
-  url?: string
-): Promise<ImageResponse> {
+export async function Passport({
+  data,
+  url,
+}: {
+  data: ExpectedData;
+  url?: string;
+}) {
   let portrait: File;
   if (data.portrait) {
     portrait = data.portrait;
@@ -40,25 +33,13 @@ export async function generateDataPage(
   const portraitUrlB64 =
     `data:${portrait.type};base64,` + portraitImageBuffer.toString("base64");
 
-  const interFontData = await fetch(
-    new URL("../assets/Inter-Regular.ttf", import.meta.url)
-  ).then((res) => res.arrayBuffer());
-
-  const interBoldFontData = await fetch(
-    new URL("../assets/Inter-Bold.ttf", import.meta.url)
-  ).then((res) => res.arrayBuffer());
-
-  const OCRBProFontData = await fetch(
-    new URL("../assets/OCRB-Regular.ttf", import.meta.url)
-  ).then((res) => res.arrayBuffer());
-
   const dataPageBgUrl = new URL(
     "/passport/data-page-bg.png",
     url ?? "https://passport-data-pages.vercel.app"
   ).href;
 
-  return new ImageResponse(
-    (
+  return (
+    <div className="w-6">
       <div
         style={{
           fontSize: 13.333 * IMAGE_GENERATION_SCALE_FACTOR,
@@ -132,30 +113,6 @@ export async function generateDataPage(
           }`}
         />
       </div>
-    ),
-    {
-      width: 472 * IMAGE_GENERATION_SCALE_FACTOR,
-      height: 322 * IMAGE_GENERATION_SCALE_FACTOR,
-      fonts: [
-        {
-          name: "Inter",
-          data: interFontData,
-          style: "normal",
-          weight: 500,
-        },
-        {
-          name: "Inter Bold",
-          data: interBoldFontData,
-          style: "normal",
-          weight: 800,
-        },
-        {
-          name: "OCR B",
-          data: OCRBProFontData,
-          style: "normal",
-          weight: 500,
-        },
-      ],
-    }
+    </div>
   );
 }
