@@ -56,6 +56,9 @@ export async function generateDataPage(
   //   "/passport/data-page-bg.png",
   //   url ?? "https://passport-data-pages.vercel.app"
   // ).href;
+
+  // ^ That randomly stopped working in production, no idea why.
+  // Temporary solution I guess?
   const dataPageBgUrl =
     "https://pub-84077b41cf284cf3a74ef394a9226674.r2.dev/data-page-bg.png";
 
