@@ -20,6 +20,8 @@ import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
 import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
+import { User } from "next-auth";
+import { Checkbox } from "./ui/checkbox";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -33,10 +35,11 @@ const FormSchema = z.object({
   placeOfOrigin: z.string().max(13),
   dateOfBirth: z.string().optional(),
   image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
-  passportNumber: z.string().max(4),
+  passportNumber: z.string().max(4).optional(),
+  sendToDb: z.boolean().optional().default(false),
 });
 
-export default function Playground() {
+export default function Playground({ user }: { user: User | undefined }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -45,7 +48,7 @@ export default function Playground() {
       dateOfBirth: undefined,
       placeOfOrigin: ORIGINS[0],
       image: undefined,
-      passportNumber: "1",
+      passportNumber: "0",
     },
   });
 
@@ -201,23 +204,30 @@ export default function Playground() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="passportNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Passport Number</FormLabel>
-                <FormDescription>
-                  Please ask Matthew for this number before generating your
-                  passport!
-                </FormDescription>
-                <FormControl>
-                  <Input type="number" placeholder="1" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {user ? (
+            <FormField
+              control={form.control}
+              name="sendToDb"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Register this passport?</FormLabel>
+                  <FormDescription>
+                    Checking this box will register you for the next passport
+                    ceremony. You can make as many changes as you want before
+                    the ceremony.
+                  </FormDescription>
+                  <FormControl>
+                    <Checkbox
+                      className="h-6 w-6"
+                      onCheckedChange={field.onChange}
+                      checked={field.value}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : null}
           <Button className="submitButton" type="submit" disabled={isLoading}>
             {isLoading ? "Generating..." : "Generate"}
           </Button>

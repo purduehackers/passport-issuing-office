@@ -46,7 +46,7 @@ export default async function Home() {
             </div>
           ) : null}
         </div>
-        <Playground />
+        <Playground user={session?.user} />
       </div>
     </main>
   );
