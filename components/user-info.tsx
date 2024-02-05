@@ -24,8 +24,7 @@ export default function UserInfo({
           </>
         ) : (
           <>
-            <p>Not signed in •</p>
-            <SignInButton dark={dark} />
+            <div className="h-8" />
           </>
         )}
       </div>
