@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { processImage } from "@/lib/process-image";
+import { processImage } from "@/utils/process-image";
 import { Crop } from "./crop";
 import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";

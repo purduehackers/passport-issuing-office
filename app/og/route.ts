@@ -1,4 +1,4 @@
-import { generateDataPage } from "@/lib/generate-data-page";
+import { generateDataPage } from "@/utils/generate-data-page";
 
 export const runtime = "edge";
 
