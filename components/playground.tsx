@@ -83,6 +83,9 @@ export default function Playground({ user }: { user: User | undefined }) {
       }
     }
     apiFormData.append("portrait", imageData);
+    if (user?.id) {
+      apiFormData.append("userId", user.id);
+    }
 
     const postRes: ImageResponse = await fetch(`/og`, {
       method: "POST",
