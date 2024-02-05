@@ -34,19 +34,17 @@ export default async function Home() {
               Matthew on Discord (hewillyeah).
             </p>
           </div>
-          {session?.user?.email ? (
-            <div className="bg-slate-200 text-black rounded-sm border-[3px] border-green-400 flex flex-col justify-center w-fit gap-2 p-2 sm:p-4 my-4 mx-auto break-inside-avoid shadow-green-500 shadow-blocks-sm font-main">
-              <pre>{JSON.stringify(session, null, 2)}</pre>
-            </div>
-          ) : (
-            <div className="bg-slate-200 text-black rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-fit gap-2 p-2 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-500 shadow-blocks-sm font-main">
+          {!session?.user?.email ? (
+            <div className="bg-slate-200 text-black rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-7/12 gap-2 p-2 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-500 shadow-blocks-sm font-main">
               <p>
-                In order to save your page and register for a passport ceremony,{" "}
+                You are currently in Playground Mode: you can play with a data
+                page, and it will not be shared with us. To save your page and
+                register for a passport ceremony,{" "}
                 <span className="font-bold">please sign in.</span>
               </p>
               <SignInButton />
             </div>
-          )}
+          ) : null}
         </div>
         <Playground />
       </div>
