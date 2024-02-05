@@ -75,3 +75,10 @@
     @apply bg-background dark text-foreground;
   }
 }
+
+@layer components {
+  form > .submitButton,
+  a > button {
+    @apply shadow-blocks-tiny shadow-amber-300;
+  }
+}
