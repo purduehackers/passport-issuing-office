@@ -52,10 +52,12 @@ export async function generateDataPage(
     new URL("../assets/OCRB-Regular.ttf", import.meta.url)
   ).then((res) => res.arrayBuffer());
 
-  const dataPageBgUrl = new URL(
-    "/passport/data-page-bg.png",
-    url ?? "https://passport-data-pages.vercel.app"
-  ).href;
+  // const dataPageBgUrl = new URL(
+  //   "/passport/data-page-bg.png",
+  //   url ?? "https://passport-data-pages.vercel.app"
+  // ).href;
+  const dataPageBgUrl =
+    "https://pub-84077b41cf284cf3a74ef394a9226674.r2.dev/data-page-bg.png";
 
   return new ImageResponse(
     (
