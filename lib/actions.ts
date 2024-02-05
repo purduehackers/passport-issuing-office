@@ -50,16 +50,17 @@ export async function createPassport(data: FormData) {
     userId,
   } = parseFormData(data);
   const generatedImage = data.get("generatedImage") as File;
+  const bigIntUserId = BigInt(`${userId}`);
 
   let user = await prisma.user.findFirst({
     where: {
-      discord_id: userId,
+      discord_id: bigIntUserId,
     },
   });
   if (!user) {
     user = await prisma.user.create({
       data: {
-        discord_id: userId,
+        discord_id: bigIntUserId,
         role: "hacker",
       },
     });
@@ -67,7 +68,7 @@ export async function createPassport(data: FormData) {
 
   const existingRecord = await prisma.passport.findFirst({
     where: {
-      owner_id: userId,
+      owner_id: user.id,
     },
   });
   if (existingRecord && !existingRecord.activated) {
