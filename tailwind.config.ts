@@ -52,6 +52,12 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        discord: {
+          light: "#9b98fa",
+          vibrant: "#5864f4",
+          deselected: "#404675",
+          "deselected-mention": "#c9cdfb",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
