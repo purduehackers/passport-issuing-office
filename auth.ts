@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
-const scopes = ["identify", "email"];
+const scopes = ["identify", "email", "guilds"];
 
 export const {
   handlers: { GET, POST },
@@ -19,8 +19,15 @@ export const {
     }),
   ],
   callbacks: {
-    //@ts-expect-error This expects to return an object of type Session, but the info we want is in `token`.
-    async session({ token }) {
+    async session({ session, token }) {
+      return { ...session, token };
+    },
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.access_token;
+
+        // TODO: fetch https://discord.com/api/users/@me/guilds and ensure user is in the Purdue Hackers server
+      }
       return token;
     },
   },

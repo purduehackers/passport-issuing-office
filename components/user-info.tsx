@@ -16,7 +16,7 @@ export default function UserInfo({
             <img
               alt="User avatar"
               className="rounded-full"
-              src={user?.picture || ""}
+              src={user?.picture || user?.image || ""}
               width="32px"
             />
             <p>{user?.name} •</p>

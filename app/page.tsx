@@ -9,7 +9,7 @@ export default async function Home() {
   let session = await auth();
   return (
     <main className="bg-slate-900 flex flex-col min-h-screen">
-      <UserInfo user={session} dark />
+      <UserInfo user={session?.user} dark />
       <div className="flex flex-col items-center gap-y-12 sm:gap-y-24 p-4 sm:p-24">
         <div>
           <div className="bg-slate-200 text-black rounded-sm border-[3px] border-amber-400 flex flex-col justify-center gap-2 p-2 sm:p-4 my-4 w-full md:w-9/12 mx-auto break-inside-avoid shadow-amber-500 shadow-blocks-sm font-main">
