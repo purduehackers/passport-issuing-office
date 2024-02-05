@@ -239,7 +239,7 @@ export default function Playground({ userId }: { userId: string | undefined }) {
               )}
             />
           ) : null}
-          <Button className="submitButton" type="submit" disabled={isLoading}>
+          <Button className="amberButton" type="submit" disabled={isLoading}>
             {isLoading ? "Generating..." : "Generate"}
           </Button>
         </form>
@@ -254,7 +254,7 @@ export default function Playground({ userId }: { userId: string | undefined }) {
           />
           {!isDefaultImage && (
             <a href={generatedImageUrl} download={generateDownloadName()}>
-              <Button className="w-full" type="button">
+              <Button className="w-full amberButton" type="button">
                 Download
               </Button>
             </a>
