@@ -52,6 +52,12 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        discord: {
+          light: "#9b98fa",
+          vibrant: "#5864f4",
+          deselected: "#404675",
+          "deselected-mention": "#c9cdfb",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -60,8 +66,9 @@ const config: Config = {
       },
       boxShadow: {
         blocks: "8px 8px",
-        "blocks-sm": "4px 4px",
         "blocks-md": "6px 6px",
+        "blocks-sm": "4px 4px",
+        "blocks-tiny": "2px 2px",
         email: "6px 6px",
         "footer-btn": "0px 6px",
         "email-btn": "2px 3px",
