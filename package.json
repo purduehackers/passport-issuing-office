@@ -12,6 +12,9 @@
     "schema": "prisma/schema.prisma"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.504.0",
+    "@aws-sdk/s3-request-presigner": "^3.504.0",
+    "@aws-sdk/signature-v4-crt": "^3.502.0",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "5.9.1",
     "@radix-ui/react-checkbox": "^1.0.4",

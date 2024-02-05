@@ -22,6 +22,7 @@ import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { User } from "next-auth";
 import { Checkbox } from "./ui/checkbox";
+import { getPreSignedUrl } from "@/lib/actions";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -97,6 +98,12 @@ export default function Playground({ user }: { user: User | undefined }) {
     );
     const generatedImageUrl =
       "data:image/png;base64," + generatedImageBuffer.toString("base64");
+
+    const preSignedUrl = await getPreSignedUrl("2");
+    await fetch(preSignedUrl, {
+      method: "PUT",
+      body: generatedImageBlob,
+    });
 
     setGeneratedImageUrl(generatedImageUrl);
     setIsLoading(false);

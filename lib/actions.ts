@@ -1,8 +1,34 @@
 "use server";
 
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import prisma from "@/lib/prisma";
 import { parseFormData } from "./parse-form-data";
 import { CURRENT_PASSPORT_VERSION } from "@/config";
+
+export async function getPreSignedUrl(passportNumber: string | undefined) {
+  const S3 = new S3Client({
+    region: "auto",
+    endpoint: `${process.env.R2_ENDPOINT}`,
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
+    },
+  });
+
+  const preSignedUrl = await getSignedUrl(
+    S3,
+    new PutObjectCommand({
+      Bucket: "passport-portraits",
+      Key: passportNumber || "0",
+    }),
+    {
+      expiresIn: 3600,
+    }
+  );
+
+  return preSignedUrl;
+}
 
 // NOTE: THIS DOES NOT WORK, AT THIS POINT IT'S BASICALLY PSEUDOCODE
 
