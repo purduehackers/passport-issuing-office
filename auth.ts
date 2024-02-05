@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
-const scopes = ["identify", "email", "guilds"];
+const scopes = ["identify", "guilds"];
 
 export const authConfig = {
   providers: [
