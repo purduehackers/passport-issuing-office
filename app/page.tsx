@@ -3,8 +3,6 @@ import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
 
-export const runtime = "edge";
-
 export default async function Home() {
   let session = await auth();
   return (
