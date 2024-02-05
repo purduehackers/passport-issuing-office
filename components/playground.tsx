@@ -22,7 +22,7 @@ import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { User } from "next-auth";
 import { Checkbox } from "./ui/checkbox";
-import { createPassport, getPreSignedUrl } from "@/lib/actions";
+import { createPassport } from "@/lib/actions";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -106,12 +106,6 @@ export default function Playground({ user }: { user: User | undefined }) {
       apiFormData.append("generatedImage", generatedImageFile);
       await createPassport(apiFormData);
     }
-
-    const preSignedUrl = await getPreSignedUrl("2");
-    await fetch(preSignedUrl, {
-      method: "PUT",
-      body: generatedImageBlob,
-    });
 
     setGeneratedImageUrl(generatedImageUrl);
     setIsLoading(false);
