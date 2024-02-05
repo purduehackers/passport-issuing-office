@@ -20,7 +20,6 @@ import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
 import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
-import { User } from "next-auth";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport } from "@/lib/actions";
 
@@ -40,7 +39,7 @@ const FormSchema = z.object({
   sendToDb: z.boolean().optional().default(false),
 });
 
-export default function Playground({ user }: { user: User | undefined }) {
+export default function Playground({ userId }: { userId: string | undefined }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -84,8 +83,8 @@ export default function Playground({ user }: { user: User | undefined }) {
       }
     }
     apiFormData.append("portrait", imageData);
-    if (user?.id) {
-      apiFormData.append("userId", user.id);
+    if (userId) {
+      apiFormData.append("userId", userId);
     }
 
     const postRes: ImageResponse = await fetch(`/og`, {
@@ -216,7 +215,7 @@ export default function Playground({ user }: { user: User | undefined }) {
               </FormItem>
             )}
           />
-          {user ? (
+          {userId ? (
             <FormField
               control={form.control}
               name="sendToDb"

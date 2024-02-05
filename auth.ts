@@ -13,9 +13,13 @@ export const authConfig = {
       authorization: { params: { scope: scopes.join(" ") } },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session }) {
-      return session;
+    //@ts-expect-error It tells me `token` doesn't exist, but it does, and I need it
+    async session({ session, token }) {
+      return { ...session, token };
     },
     async jwt({ token, account }) {
       if (account) {

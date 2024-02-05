@@ -2,9 +2,14 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
+import { Token } from "@/types/types";
 
 export default async function Home() {
   let session = await auth();
+  // TODO: FIX THIS OMG
+  //@ts-ignore It insists that token doesn't exist but it literally does
+  const userId = (session?.token as Token)?.sub || undefined;
+
   return (
     <main className="bg-slate-900 flex flex-col min-h-screen">
       <UserInfo user={session?.user} />
@@ -44,7 +49,7 @@ export default async function Home() {
             </div>
           ) : null}
         </div>
-        <Playground user={session?.user} />
+        <Playground userId={userId} />
       </div>
     </main>
   );
