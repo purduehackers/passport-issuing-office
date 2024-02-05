@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model passport {
+  id              Int      @id @default(autoincrement())
+  owner_id        Int
+  version         Int
+  sequence        Int
+  surname         String   @db.VarChar
+  name            String   @db.VarChar
+  date_of_birth   DateTime @db.Date
+  date_of_issue   DateTime @db.Date
+  place_of_origin String   @db.VarChar
+  user            user     @relation(fields: [owner_id], references: [id], onDelete: Cascade, map: "fk_passport_owner")
+}
+
+model seaql_migrations {
+  version    String @id @db.VarChar
+  applied_at BigInt
+}
+
+model user {
+  id         Int        @id @default(autoincrement())
+  discord_id BigInt     @unique
+  role       role_enum
+  passport   passport[]
+}
+
+enum role_enum {
+  hacker
+  admin
+}
