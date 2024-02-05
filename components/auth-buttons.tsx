@@ -35,7 +35,7 @@ export function SignOutButton() {
     <form
       action={async () => {
         "use server";
-        await signOut("discord");
+        await signOut();
       }}
       className="mx-auto shadow-blocks-tiny border-2 border-slate-400 shadow-slate-300"
     >

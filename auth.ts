@@ -1,14 +1,9 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
 const scopes = ["identify", "email", "guilds"];
 
-export const {
-  handlers: { GET, POST },
-  signIn,
-  signOut,
-  auth,
-} = NextAuth({
+export const authConfig = {
   providers: [
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID ?? "",
@@ -19,8 +14,8 @@ export const {
     }),
   ],
   callbacks: {
-    async session({ session, token }) {
-      return { ...session, token };
+    async session({ session }) {
+      return session;
     },
     async jwt({ token, account }) {
       if (account) {
@@ -31,4 +26,6 @@ export const {
       return token;
     },
   },
-});
+} satisfies NextAuthConfig
+
+export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth(authConfig);

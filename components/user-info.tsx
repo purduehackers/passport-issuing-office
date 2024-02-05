@@ -1,11 +1,11 @@
-import { User } from "@/types/types";
+import { User } from "next-auth";
 import { SignInButton, SignOutButton } from "./auth-buttons";
 
 export default function UserInfo({
   user,
   dark,
 }: {
-  user: User;
+  user: User | undefined;
   dark?: boolean;
 }) {
   return (
@@ -16,7 +16,7 @@ export default function UserInfo({
             <img
               alt="User avatar"
               className="rounded-full"
-              src={user?.picture || user?.image || ""}
+              src={user?.image || ""}
               width="32px"
             />
             <p>{user?.name} •</p>
