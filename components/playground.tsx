@@ -21,7 +21,7 @@ import { Crop } from "./crop";
 import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
-import { createPassport } from "@/lib/actions";
+import { createPassport, uploadImageToR2 } from "@/lib/actions";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -71,6 +71,9 @@ export default function Playground({ userId }: { userId: string | undefined }) {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
+
+    let generatedPassportNumber = data.passportNumber || "0";
+
     if (!croppedImageFile) {
       return; // TODO: handle error
     }
@@ -87,6 +90,12 @@ export default function Playground({ userId }: { userId: string | undefined }) {
       apiFormData.append("userId", userId);
     }
 
+    if (data.sendToDb) {
+      const { passportNumber } = await createPassport(apiFormData);
+      generatedPassportNumber = String(passportNumber);
+      apiFormData.set("passportNumber", String(passportNumber));
+    }
+
     const postRes: ImageResponse = await fetch(`/og`, {
       method: "POST",
       body: apiFormData,
@@ -95,16 +104,15 @@ export default function Playground({ userId }: { userId: string | undefined }) {
     const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
       type: "image/png",
     });
+
+    apiFormData.append("generatedImage", generatedImageFile);
+    await uploadImageToR2(apiFormData, generatedPassportNumber);
+
     const generatedImageBuffer = Buffer.from(
       await generatedImageBlob.arrayBuffer()
     );
     const generatedImageUrl =
       "data:image/png;base64," + generatedImageBuffer.toString("base64");
-
-    if (data.sendToDb) {
-      apiFormData.append("generatedImage", generatedImageFile);
-      await createPassport(apiFormData);
-    }
 
     setGeneratedImageUrl(generatedImageUrl);
     setIsLoading(false);

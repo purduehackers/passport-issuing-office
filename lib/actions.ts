@@ -30,11 +30,12 @@ export async function getPreSignedUrl(passportNumber: string | undefined) {
   return preSignedUrl;
 }
 
-async function uploadImageToR2(image: File, passportNumber: string) {
+export async function uploadImageToR2(data: FormData, passportNumber: string) {
+  const generatedImage = data.get("generatedImage") as File;
   const preSignedUrl = await getPreSignedUrl(passportNumber);
   await fetch(preSignedUrl, {
     method: "PUT",
-    body: image,
+    body: generatedImage,
   });
 }
 
@@ -49,7 +50,6 @@ export async function createPassport(data: FormData) {
     placeOfOrigin,
     userId,
   } = parseFormData(data);
-  const generatedImage = data.get("generatedImage") as File;
   const bigIntUserId = BigInt(`${userId}`);
 
   let user = await prisma.user.findFirst({
@@ -89,10 +89,10 @@ export async function createPassport(data: FormData) {
         place_of_origin: placeOfOrigin,
       },
     });
-
-    // Replace image in R2
-    const passportNumber = String(existingRecord.id);
-    await uploadImageToR2(generatedImage, passportNumber);
+    return {
+      success: true,
+      passportNumber: existingRecord.id,
+    };
   } else {
     const newRecord = await prisma.passport.create({
       data: {
@@ -105,10 +105,9 @@ export async function createPassport(data: FormData) {
         place_of_origin: placeOfOrigin,
       },
     });
-
-    const newPassportNumber = String(newRecord.id);
-    await uploadImageToR2(generatedImage, newPassportNumber);
+    return {
+      success: true,
+      passportNumber: newRecord.id,
+    };
   }
-
-  return { success: true };
 }
