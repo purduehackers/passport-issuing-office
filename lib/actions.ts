@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "@/utils/prisma";
+import prisma from "@/lib/prisma";
 import { parseFormData } from "./parse-form-data";
 import { CURRENT_PASSPORT_VERSION } from "@/config";
 

@@ -1,5 +1,5 @@
-import { generateDataPage } from "@/utils/generate-data-page";
-import { parseFormData } from "@/utils/parse-form-data";
+import { generateDataPage } from "@/lib/generate-data-page";
+import { parseFormData } from "@/lib/parse-form-data";
 
 export const runtime = "edge";
 

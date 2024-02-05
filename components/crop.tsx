@@ -9,7 +9,7 @@ import ReactCrop, {
   // eslint-disable-next-line unused-imports/no-unused-imports
   type Crop,
 } from "react-image-crop";
-import { generateNewCroppedImageFile } from "@/utils/generate-new-cropped-image-file";
+import { generateNewCroppedImageFile } from "@/lib/generate-new-cropped-image-file";
 import "react-image-crop/dist/ReactCrop.css";
 import { CROP_ASPECT } from "@/config";
 import { Dialog, DialogContent } from "./ui/dialog";
