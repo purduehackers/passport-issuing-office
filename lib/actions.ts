@@ -70,6 +70,9 @@ export async function createPassport(data: FormData) {
     where: {
       owner_id: user.id,
     },
+    orderBy: {
+      id: "desc",
+    },
   });
   if (existingRecord && !existingRecord.activated) {
     await prisma.passport.update({
