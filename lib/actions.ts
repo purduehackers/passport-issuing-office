@@ -30,19 +30,26 @@ export async function getPreSignedUrl(passportNumber: string | undefined) {
   return preSignedUrl;
 }
 
+async function uploadImageToR2(image: File, passportNumber: string) {
+  const preSignedUrl = await getPreSignedUrl(passportNumber);
+  await fetch(preSignedUrl, {
+    method: "PUT",
+    body: image,
+  });
+}
+
 // NOTE: THIS DOES NOT WORK, AT THIS POINT IT'S BASICALLY PSEUDOCODE
 
 export async function createPassport(data: FormData) {
   const {
-    trueID,
     trueSurname,
     trueFirstName,
     trueDateOfBirth,
     trueDateOfIssue,
     placeOfOrigin,
-    portraitImage,
     userId,
   } = parseFormData(data);
+  const generatedImage = data.get("generatedImage") as File;
 
   if (userId) {
     const existingRecord = await prisma.passport.findFirst({
@@ -50,21 +57,7 @@ export async function createPassport(data: FormData) {
         owner_id: userId,
       },
     });
-    if (!existingRecord) {
-      await prisma.passport.create({
-        data: {
-          owner_id: userId,
-          version: CURRENT_PASSPORT_VERSION,
-          sequence: 0, // TODO,
-          surname: trueSurname,
-          name: trueFirstName,
-          date_of_birth: trueDateOfBirth,
-          date_of_issue: trueDateOfIssue,
-          place_of_origin: placeOfOrigin,
-          // TODO: portrait
-        },
-      });
-    } else {
+    if (existingRecord && !existingRecord.activated) {
       await prisma.passport.update({
         where: {
           id: existingRecord.id,
@@ -72,16 +65,48 @@ export async function createPassport(data: FormData) {
         data: {
           owner_id: userId,
           version: CURRENT_PASSPORT_VERSION,
-          sequence: 0, // TODO,
           surname: trueSurname,
           name: trueFirstName,
           date_of_birth: trueDateOfBirth,
           date_of_issue: trueDateOfIssue,
           place_of_origin: placeOfOrigin,
-          // TODO: portrait
         },
       });
+
+      // Replace image in R2
+      const passportNumber = String(existingRecord.id);
+      await uploadImageToR2(generatedImage, passportNumber);
+    } else {
+      const newRecord = await prisma.passport.create({
+        data: {
+          owner_id: userId,
+          version: CURRENT_PASSPORT_VERSION,
+          surname: trueSurname,
+          name: trueFirstName,
+          date_of_birth: trueDateOfBirth,
+          date_of_issue: trueDateOfIssue,
+          place_of_origin: placeOfOrigin,
+        },
+      });
+
+      const newPassportNumber = String(newRecord.id);
+      await uploadImageToR2(generatedImage, newPassportNumber);
     }
+  } else {
+    const newRecord = await prisma.passport.create({
+      data: {
+        owner_id: userId,
+        version: CURRENT_PASSPORT_VERSION,
+        surname: trueSurname,
+        name: trueFirstName,
+        date_of_birth: trueDateOfBirth,
+        date_of_issue: trueDateOfIssue,
+        place_of_origin: placeOfOrigin,
+      },
+    });
+
+    const newPassportNumber = String(newRecord.id);
+    await uploadImageToR2(generatedImage, newPassportNumber);
   }
 
   return { success: true };
