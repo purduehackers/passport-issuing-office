@@ -20,8 +20,12 @@ import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
 import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
+import { Checkbox } from "./ui/checkbox";
+import { createPassport, uploadImageToR2 } from "@/lib/actions";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
+
+const maxDate = new Date();
 
 const FormSchema = z.object({
   surname: z.string().min(1, {
@@ -31,12 +35,26 @@ const FormSchema = z.object({
     message: "Name must be at least 1 character.",
   }),
   placeOfOrigin: z.string().max(13),
-  dateOfBirth: z.string().optional(),
+  dateOfBirth: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid date format. Please enter a valid date.",
+    })
+    .refine(
+      (val) => {
+        const inputDate = new Date(val);
+        return inputDate < maxDate;
+      },
+      {
+        message: "Date of birth cannot be later than today.",
+      }
+    ),
   image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
-  passportNumber: z.string().max(4),
+  passportNumber: z.string().max(4).optional(),
+  sendToDb: z.boolean().optional().default(false),
 });
 
-export default function Playground() {
+export default function Playground({ userId }: { userId: string | undefined }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -45,7 +63,7 @@ export default function Playground() {
       dateOfBirth: undefined,
       placeOfOrigin: ORIGINS[0],
       image: undefined,
-      passportNumber: "1",
+      passportNumber: "0",
     },
   });
 
@@ -68,6 +86,9 @@ export default function Playground() {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
+
+    let generatedPassportNumber = data.passportNumber || "0";
+
     if (!croppedImageFile) {
       return; // TODO: handle error
     }
@@ -80,12 +101,28 @@ export default function Playground() {
       }
     }
     apiFormData.append("portrait", imageData);
+    if (userId) {
+      apiFormData.append("userId", userId);
+    }
+
+    if (data.sendToDb) {
+      const { passportNumber } = await createPassport(apiFormData);
+      generatedPassportNumber = String(passportNumber);
+      apiFormData.set("passportNumber", String(passportNumber));
+    }
 
     const postRes: ImageResponse = await fetch(`/og`, {
       method: "POST",
       body: apiFormData,
     });
     const generatedImageBlob = await postRes.blob();
+    const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
+      type: "image/png",
+    });
+
+    apiFormData.append("generatedImage", generatedImageFile);
+    await uploadImageToR2(apiFormData, generatedPassportNumber);
+
     const generatedImageBuffer = Buffer.from(
       await generatedImageBlob.arrayBuffer()
     );
@@ -201,24 +238,31 @@ export default function Playground() {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="passportNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Passport Number</FormLabel>
-                <FormDescription>
-                  Please ask Matthew for this number before generating your
-                  passport!
-                </FormDescription>
-                <FormControl>
-                  <Input type="number" placeholder="1" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button className="submitButton" type="submit" disabled={isLoading}>
+          {userId ? (
+            <FormField
+              control={form.control}
+              name="sendToDb"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Register this passport?</FormLabel>
+                  <FormDescription>
+                    Checking this box will register you for the next passport
+                    ceremony. You can make as many changes as you want before
+                    the ceremony.
+                  </FormDescription>
+                  <FormControl>
+                    <Checkbox
+                      className="h-6 w-6"
+                      onCheckedChange={field.onChange}
+                      checked={field.value}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ) : null}
+          <Button className="amberButton" type="submit" disabled={isLoading}>
             {isLoading ? "Generating..." : "Generate"}
           </Button>
         </form>
@@ -233,7 +277,7 @@ export default function Playground() {
           />
           {!isDefaultImage && (
             <a href={generatedImageUrl} download={generateDownloadName()}>
-              <Button className="w-full" type="button">
+              <Button className="w-full amberButton" type="button">
                 Download
               </Button>
             </a>

@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import prisma from "@/lib/prisma";
 
 const scopes = ["identify", "guilds"];
 
@@ -13,9 +14,28 @@ export const authConfig = {
       authorization: { params: { scope: scopes.join(" ") } },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session }) {
-      return session;
+    //@ts-expect-error It tells me `token` doesn't exist, but it does, and I need it
+    async session({ session, token }) {
+      const bigIntUserId = BigInt(`${token.sub}`);
+      const user = await prisma.user.findFirst({
+        where: {
+          discord_id: bigIntUserId,
+        },
+      });
+      if (!user) {
+        await prisma.user.create({
+          data: {
+            discord_id: bigIntUserId,
+            role: "hacker",
+          },
+        });
+      }
+
+      return { ...session, token };
     },
     async jwt({ token, account }) {
       if (account) {

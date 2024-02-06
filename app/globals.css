@@ -77,8 +77,8 @@
 }
 
 @layer components {
-  form > .submitButton,
-  a > button {
+  form > .amberButton,
+  a > .amberButton {
     @apply shadow-blocks-tiny shadow-amber-300;
   }
 }
