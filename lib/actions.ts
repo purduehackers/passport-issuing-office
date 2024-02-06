@@ -39,8 +39,6 @@ export async function uploadImageToR2(data: FormData, passportNumber: string) {
   });
 }
 
-// NOTE: THIS DOES NOT WORK, AT THIS POINT IT'S BASICALLY PSEUDOCODE
-
 export async function createPassport(data: FormData) {
   const {
     trueSurname,
