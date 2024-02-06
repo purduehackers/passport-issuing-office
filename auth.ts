@@ -18,7 +18,6 @@ export const authConfig = {
     strategy: "jwt",
   },
   callbacks: {
-    //@ts-expect-error It tells me `token` doesn't exist, but it does, and I need it
     async session({ session, token }) {
       const bigIntUserId = BigInt(`${token.sub}`);
       const user = await prisma.user.findFirst({

@@ -2,13 +2,15 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
-import { Token } from "@/types/types";
+import { MySession } from "@/types/types";
 
 export default async function Home() {
-  let session = await auth();
-  // TODO: FIX THIS OMG
-  //@ts-ignore It insists that token doesn't exist but it literally does
-  const userId = (session?.token as Token)?.sub || undefined;
+  // Although the session includes the JWT token type from `auth.ts`, when it gets here
+  // next-auth still thinks it doesn't exist, even though it does when I log it.
+  // As a temporary workaround, I've created my own Session type which contains
+  // what I'm actually getting from next-auth.
+  let session = (await auth()) as MySession | null;
+  const userId = session?.token.sub;
 
   return (
     <main className="bg-slate-900 flex flex-col min-h-screen">
