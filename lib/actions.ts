@@ -39,7 +39,7 @@ export async function uploadImageToR2(data: FormData, passportNumber: string) {
   });
 }
 
-export async function createPassport(data: FormData) {
+export async function createPassport(formData: FormData) {
   const {
     trueSurname,
     trueFirstName,
@@ -47,7 +47,7 @@ export async function createPassport(data: FormData) {
     trueDateOfIssue,
     placeOfOrigin,
     userId,
-  } = parseFormData(data);
+  } = parseFormData(formData);
   const bigIntUserId = BigInt(`${userId}`);
 
   let user = await prisma.user.findFirst({
@@ -64,6 +64,16 @@ export async function createPassport(data: FormData) {
     });
   }
 
+  const data = {
+    owner_id: user.id,
+    version: CURRENT_PASSPORT_VERSION,
+    surname: trueSurname,
+    name: trueFirstName,
+    date_of_birth: trueDateOfBirth,
+    date_of_issue: trueDateOfIssue,
+    place_of_origin: placeOfOrigin,
+  };
+
   const existingRecord = await prisma.passport.findFirst({
     where: {
       owner_id: user.id,
@@ -77,15 +87,7 @@ export async function createPassport(data: FormData) {
       where: {
         id: existingRecord.id,
       },
-      data: {
-        owner_id: user.id,
-        version: CURRENT_PASSPORT_VERSION,
-        surname: trueSurname,
-        name: trueFirstName,
-        date_of_birth: trueDateOfBirth,
-        date_of_issue: trueDateOfIssue,
-        place_of_origin: placeOfOrigin,
-      },
+      data,
     });
     return {
       success: true,
@@ -93,15 +95,7 @@ export async function createPassport(data: FormData) {
     };
   } else {
     const newRecord = await prisma.passport.create({
-      data: {
-        owner_id: user.id,
-        version: CURRENT_PASSPORT_VERSION,
-        surname: trueSurname,
-        name: trueFirstName,
-        date_of_birth: trueDateOfBirth,
-        date_of_issue: trueDateOfIssue,
-        place_of_origin: placeOfOrigin,
-      },
+      data,
     });
     return {
       success: true,
