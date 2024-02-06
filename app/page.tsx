@@ -12,10 +12,11 @@ export default async function Home() {
   let session = (await auth()) as MySession | null;
   const userId = session?.token.sub;
   const latestPassport = session?.passport;
+
+  // This is temporary. In the future, we can render the preview as a DOM element directly,
+  // since we have access to all the data.
   let latestPassportImageUrl: string | null = null;
   if (latestPassport) {
-    // This is temporary. In the future, we can render the preview as a DOM element directly,
-    // since we have access to all the data.
     latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}`;
   }
 
