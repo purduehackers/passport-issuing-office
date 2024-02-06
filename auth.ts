@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import prisma from "@/lib/prisma";
+import { Token } from "./types/types";
 
 const scopes = ["identify", "guilds"];
 
@@ -17,8 +18,15 @@ export const authConfig = {
   session: {
     strategy: "jwt",
   },
+  secret: process.env.AUTH_SECRET,
   callbacks: {
-    async session({ session, token }) {
+    // next-auth thinks `token` doesn't exist. This is an issue on 5.0.0@beta.5.
+    // Later beta versions fixed this, but introduced new problems that broke auth entirely.
+    // I will check in periodically & fix this once new beta versions of next-auth
+    // are released.
+    //@ts-expect-error
+    async session({ session, token: jwtToken }) {
+      const token = jwtToken as Token
       const bigIntUserId = BigInt(`${token.sub}`);
       const user = await prisma.user.findFirst({
         where: {
@@ -36,7 +44,7 @@ export const authConfig = {
 
       return { ...session, token };
     },
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account) {
         token.accessToken = account.access_token;
 
