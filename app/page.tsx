@@ -14,6 +14,8 @@ export default async function Home() {
   const latestPassport = session?.passport;
   let latestPassportImageUrl: string | null = null;
   if (latestPassport) {
+    // This is temporary. In the future, we can render the preview as a DOM element directly,
+    // since we have access to all the data.
     latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}`;
   }
 
