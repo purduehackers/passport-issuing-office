@@ -4,6 +4,7 @@ export interface MySession {
   user: User;
   expires: string;
   token: Token;
+  passport: Passport | null;
 }
 
 export interface Token {
@@ -15,4 +16,17 @@ export interface Token {
   iat: number;
   exp: number;
   jti: string;
+}
+
+export interface Passport {
+  id: number;
+  owner_id: number;
+  version: number;
+  surname: string;
+  name: string;
+  date_of_birth: Date;
+  date_of_issue: Date;
+  place_of_origin: string;
+  secret: string;
+  activated: boolean;
 }
