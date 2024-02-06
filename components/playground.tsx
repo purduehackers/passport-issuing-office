@@ -125,7 +125,7 @@ export default function Playground({
       apiFormData.set("passportNumber", String(passportNumber));
     }
 
-    const postRes: ImageResponse = await fetch(`/og`, {
+    const postRes: ImageResponse = await fetch(`/generate`, {
       method: "POST",
       body: apiFormData,
     });
