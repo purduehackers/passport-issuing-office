@@ -45,6 +45,7 @@ export const authConfig = {
           }
         })
         if (latestPassport) {
+          //@ts-expect-error it thinks it's a Date but it's actually an ISO string — TODO FIX TYPE
           passport = latestPassport
         }
       } else {

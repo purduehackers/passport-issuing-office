@@ -11,6 +11,11 @@ export default async function Home() {
   // what I'm actually getting from next-auth.
   let session = (await auth()) as MySession | null;
   const userId = session?.token.sub;
+  const latestPassport = session?.passport;
+  let latestPassportImageUrl: string | null = null;
+  if (latestPassport) {
+    latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}`;
+  }
 
   return (
     <main className="bg-slate-900 flex flex-col min-h-screen">
@@ -53,7 +58,11 @@ export default async function Home() {
             </div>
           ) : null}
         </div>
-        <Playground userId={userId} />
+        <Playground
+          userId={userId}
+          latestPassport={latestPassport}
+          latestPassportImageUrl={latestPassportImageUrl}
+        />
       </div>
     </main>
   );
