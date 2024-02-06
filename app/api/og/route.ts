@@ -40,7 +40,7 @@ export async function GET(request: Request) {
     }
   );
 
-  return await generateDataPage({
+  return generateDataPage({
     passportNumber: 0, // Intentionally obscuring passport image
     surname: latestPassport.surname,
     firstName: latestPassport.name,
