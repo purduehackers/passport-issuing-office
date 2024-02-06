@@ -59,8 +59,7 @@ export async function generateDataPage(
 
   // ^ That randomly stopped working in production, no idea why.
   // Temporary solution I guess?
-  const dataPageBgUrl =
-    "https://pub-84077b41cf284cf3a74ef394a9226674.r2.dev/data-page-bg.png";
+  const dataPageBgUrl = `${process.env.R2_PUBLIC_URL}/data-page-bg.png`;
 
   return new ImageResponse(
     (

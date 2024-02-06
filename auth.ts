@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import prisma from "@/lib/prisma";
-import { Token } from "./types/types";
+import { Passport, Token } from "./types/types";
 
 const scopes = ["identify", "guilds"];
 
@@ -27,14 +27,33 @@ export const authConfig = {
     //@ts-expect-error
     async session({ session, token: jwtToken }) {
       const token = jwtToken as Token
+      let passport: Passport | null = null;
       const bigIntUserId = BigInt(`${token.sub}`);
-      const user = await prisma.user.findFirst({
+
+      let user = await prisma.user.findFirst({
         where: {
           discord_id: bigIntUserId,
         },
       });
-      if (!user) {
-        await prisma.user.create({
+      if (user) {
+        const latestPassport = await prisma.passport.findFirst({
+          where: {
+            owner_id: user.id
+          },
+          orderBy: {
+            id: 'desc'
+          }
+        })
+        if (latestPassport) {
+          const updatedPassport = {
+            ...latestPassport,
+            date_of_birth: latestPassport.date_of_birth.toISOString(),
+            date_of_issue: latestPassport.date_of_issue.toISOString(),
+          }
+          passport = updatedPassport
+        }
+      } else {
+        user = await prisma.user.create({
           data: {
             discord_id: bigIntUserId,
             role: "hacker",
@@ -42,9 +61,9 @@ export const authConfig = {
         });
       }
 
-      return { ...session, token };
+      return { ...session, token, passport };
     },
-    async jwt({ token, account, user }) {
+    async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
 
