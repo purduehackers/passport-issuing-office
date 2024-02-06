@@ -35,15 +35,20 @@ const FormSchema = z.object({
     message: "Name must be at least 1 character.",
   }),
   placeOfOrigin: z.string().max(13),
-  dateOfBirth: z.string().refine(
-    (val) => {
-      const inputDate = new Date(val);
-      return inputDate < maxDate;
-    },
-    {
-      message: "Date of birth cannot be later than today.",
-    }
-  ),
+  dateOfBirth: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), {
+      message: "Invalid date format. Please enter a valid date.",
+    })
+    .refine(
+      (val) => {
+        const inputDate = new Date(val);
+        return inputDate < maxDate;
+      },
+      {
+        message: "Date of birth cannot be later than today.",
+      }
+    ),
   image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
   passportNumber: z.string().max(4).optional(),
   sendToDb: z.boolean().optional().default(false),
