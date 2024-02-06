@@ -45,8 +45,12 @@ export const authConfig = {
           }
         })
         if (latestPassport) {
-          //@ts-expect-error it thinks it's a Date but it's actually an ISO string — TODO FIX TYPE
-          passport = latestPassport
+          const updatedPassport = {
+            ...latestPassport,
+            date_of_birth: latestPassport.date_of_birth.toISOString(),
+            date_of_issue: latestPassport.date_of_issue.toISOString(),
+          }
+          passport = updatedPassport
         }
       } else {
         user = await prisma.user.create({
