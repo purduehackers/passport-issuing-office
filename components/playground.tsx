@@ -23,6 +23,7 @@ import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
 import { Passport } from "@/types/types";
+import { formatDefaultDate } from "@/lib/format-default-date";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -69,8 +70,10 @@ export default function Playground({
     defaultValues: {
       firstName: latestPassport?.name || "",
       surname: latestPassport?.surname || "",
-      dateOfBirth: latestPassport?.date_of_birth || "",
-      placeOfOrigin: ORIGINS[0], // TODO
+      dateOfBirth: latestPassport
+        ? formatDefaultDate(latestPassport.date_of_birth)
+        : undefined,
+      placeOfOrigin: latestPassport?.place_of_origin || ORIGINS[0],
       image: undefined,
       passportNumber: "0",
     },
