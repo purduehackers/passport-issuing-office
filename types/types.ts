@@ -30,3 +30,22 @@ export interface Passport {
   secret: string;
   activated: boolean;
 }
+
+export type GenerationStatus = "pending" | "completed" | "failed";
+export type GenerationStepId =
+  | "processing_portrait"
+  | "generating"
+  | "assigning_passport_number"
+  | "uploading"
+  | "summoning_elves";
+
+export interface GenerationStep {
+  id: GenerationStepId;
+  name: string;
+  status: GenerationStatus;
+}
+
+export interface GenerationSteps {
+  base: GenerationStep[];
+  register: GenerationStep[];
+}

@@ -25,7 +25,7 @@ export function parseFormData(formValues: FormData) {
     : "THE WOODS";
   const portraitImage = formValues.get("portrait") as File;
   const userId = formValues.get("userId") as string | undefined;
-  const bigIntUserId = BigInt(`${userId}`);
+  const bigIntUserId = BigInt(`${userId || "0"}`);
 
   return {
     trueID,
