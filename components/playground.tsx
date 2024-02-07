@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
@@ -97,14 +97,6 @@ export default function Playground({
   const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
     GENERATION_STEPS.base
   );
-
-  useEffect(() => {
-    if (form.getValues().sendToDb) {
-      setGenerationSteps(GENERATION_STEPS.register);
-    } else {
-      setGenerationSteps(GENERATION_STEPS.base);
-    }
-  }, [form]);
 
   function updateGenerationStepState(
     stepId: GenerationStepId,
@@ -312,7 +304,15 @@ export default function Playground({
                   <FormControl>
                     <Checkbox
                       className="h-6 w-6"
-                      onCheckedChange={field.onChange}
+                      onCheckedChange={(e) => {
+                        // it hasn't updated the value at this point yet, so it's the opposite actually
+                        if (field.value === true) {
+                          setGenerationSteps(GENERATION_STEPS.base);
+                        } else {
+                          setGenerationSteps(GENERATION_STEPS.register);
+                        }
+                        return field.onChange(e);
+                      }}
                       checked={field.value}
                     />
                   </FormControl>
@@ -355,7 +355,7 @@ export default function Playground({
               ))}
             </ul>
           ) : null}
-          {!isDefaultImage && (
+          {!isDefaultImage && !isLoading && (
             <a href={generatedImageUrl} download={generateDownloadName()}>
               <Button className="w-full amberButton" type="button">
                 Download
