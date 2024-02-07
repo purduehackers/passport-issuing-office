@@ -22,8 +22,14 @@ import { useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
-import { Passport } from "@/types/types";
+import {
+  GenerationStatus,
+  GenerationStep,
+  GenerationStepId,
+  Passport,
+} from "@/types/types";
 import { formatDefaultDate } from "@/lib/format-default-date";
+import { GENERATION_STEPS } from "@/config";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -88,6 +94,28 @@ export default function Playground({
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
   const generatedImageRef = useRef(null);
+  const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
+    GENERATION_STEPS.base
+  );
+
+  function updateGenerationStepState(
+    stepId: GenerationStepId,
+    status: GenerationStatus
+  ) {
+    setGenerationSteps((currentSteps) =>
+      currentSteps.map((step) =>
+        step.id === stepId ? { ...step, status } : step
+      )
+    );
+  }
+
+  function resetGenerationSteps() {
+    setGenerationSteps((currentSteps) =>
+      currentSteps.map((step) => {
+        return { ...step, status: "pending" };
+      })
+    );
+  }
 
   function generateDownloadName() {
     const { firstName, surname } = form.getValues();
@@ -107,6 +135,7 @@ export default function Playground({
       return; // TODO: handle error
     }
     const imageData = await processImage(croppedImageFile);
+    updateGenerationStepState("processing_portrait", "completed");
 
     const apiFormData = new FormData();
     for (const [key, val] of Object.entries(data)) {
@@ -123,6 +152,8 @@ export default function Playground({
       const { passportNumber } = await createPassport(apiFormData);
       generatedPassportNumber = String(passportNumber);
       apiFormData.set("passportNumber", String(passportNumber));
+
+      updateGenerationStepState("assigning_passport_number", "completed");
     }
 
     const postRes: ImageResponse = await fetch(`/og`, {
@@ -133,19 +164,25 @@ export default function Playground({
     const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
       type: "image/png",
     });
+    updateGenerationStepState("generating", "completed");
 
-    apiFormData.append("generatedImage", generatedImageFile);
-    await uploadImageToR2(apiFormData, generatedPassportNumber);
+    if (data.sendToDb) {
+      apiFormData.append("generatedImage", generatedImageFile);
+      await uploadImageToR2(apiFormData, generatedPassportNumber);
+      updateGenerationStepState("uploading", "completed");
+    }
 
     const generatedImageBuffer = Buffer.from(
       await generatedImageBlob.arrayBuffer()
     );
     const generatedImageUrl =
       "data:image/png;base64," + generatedImageBuffer.toString("base64");
+    updateGenerationStepState("summoning_elves", "completed");
 
     setGeneratedImageUrl(generatedImageUrl);
     setIsLoading(false);
     setIsDefaultImage(false);
+    resetGenerationSteps();
   }
 
   return (
@@ -267,7 +304,15 @@ export default function Playground({
                   <FormControl>
                     <Checkbox
                       className="h-6 w-6"
-                      onCheckedChange={field.onChange}
+                      onCheckedChange={(e) => {
+                        // it hasn't updated the value at this point yet, so it's the opposite actually
+                        if (field.value === true) {
+                          setGenerationSteps(GENERATION_STEPS.base);
+                        } else {
+                          setGenerationSteps(GENERATION_STEPS.register);
+                        }
+                        return field.onChange(e);
+                      }}
                       checked={field.value}
                     />
                   </FormControl>
@@ -289,7 +334,25 @@ export default function Playground({
             alt="Preview of passport page"
             className="shadow-lg rounded-lg w-full bg-slate-100"
           />
-          {!isDefaultImage && (
+          {isLoading ? (
+            <ul>
+              {generationSteps.map((step, index) => (
+                <li
+                  key={index}
+                  className={`${
+                    step.status === "completed"
+                      ? "text-success"
+                      : step.status === "failed"
+                      ? "text-destructive"
+                      : "text-gray-400"
+                  }`}
+                >
+                  {step.name}...
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {!isDefaultImage && !isLoading && (
             <a href={generatedImageUrl} download={generateDownloadName()}>
               <Button className="w-full amberButton" type="button">
                 Download
