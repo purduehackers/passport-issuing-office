@@ -344,11 +344,8 @@ export default function Playground({
                       ? "text-success"
                       : step.status === "failed"
                       ? "text-destructive"
-                      : "text-foreground"
+                      : "text-gray-400"
                   }`}
-                  style={{
-                    color: step.status === "completed" ? "green" : "grey",
-                  }}
                 >
                   {step.name}...
                 </li>
