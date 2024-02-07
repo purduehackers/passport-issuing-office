@@ -335,7 +335,7 @@ export default function Playground({
             className="shadow-lg rounded-lg w-full bg-slate-100"
           />
           {isLoading ? (
-            <ul className="steps">
+            <ul>
               {generationSteps.map((step, index) => (
                 <li
                   key={index}

@@ -78,6 +78,17 @@
   body {
     @apply bg-background dark text-foreground;
   }
+
+  ul {
+    counter-reset: item;
+    list-style-type: none;
+  }
+
+  ul li:before {
+    content: "> ";
+    counter-increment: item;
+    @apply text-gray-400;
+  }
 }
 
 @layer components {
