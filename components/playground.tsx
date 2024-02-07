@@ -18,12 +18,15 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
-import { Passport } from "@/types/types";
+import { Passport, PassportGenData } from "@/types/types";
 import { formatDefaultDate } from "@/lib/format-default-date";
+import { Passport as PassportComponent } from "./passport";
+import { PassportContainer } from "./passport-container";
+import { parseFormData } from "@/lib/parse-form-data";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -88,6 +91,11 @@ export default function Playground({
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
   const generatedImageRef = useRef(null);
+  const [parsedData, setParsedData] = useState<PassportGenData | null>(null);
+
+  useEffect(() => {
+    console.log({ data: form.getValues() });
+  }, [form]);
 
   function generateDownloadName() {
     const { firstName, surname } = form.getValues();
@@ -124,6 +132,16 @@ export default function Playground({
       generatedPassportNumber = String(passportNumber);
       apiFormData.set("passportNumber", String(passportNumber));
     }
+
+    const parsedData = parseFormData(apiFormData);
+    setParsedData({
+      firstName: parsedData.trueFirstName,
+      surname: parsedData.trueSurname,
+      dateOfBirth: parsedData.trueDateOfBirth,
+      dateOfIssue: parsedData.trueDateOfIssue,
+      placeOfOrigin: parsedData.placeOfOrigin,
+      passportNumber: parsedData.trueID,
+    });
 
     const postRes: ImageResponse = await fetch(`/og`, {
       method: "POST",
@@ -283,18 +301,28 @@ export default function Playground({
       </Form>
       <aside>
         <div className="flex flex-col gap-4">
-          <img
-            ref={generatedImageRef}
-            src={generatedImageUrl}
-            alt="Preview of passport page"
-            className="shadow-lg rounded-lg w-full bg-slate-100"
-          />
-          {!isDefaultImage && (
-            <a href={generatedImageUrl} download={generateDownloadName()}>
-              <Button className="w-full amberButton" type="button">
-                Download
-              </Button>
-            </a>
+          {parsedData ? (
+            <div className="relative pointer-events-none">
+              <PassportContainer>
+                <PassportComponent data={parsedData} directToDom />
+              </PassportContainer>
+            </div>
+          ) : (
+            <>
+              <img
+                ref={generatedImageRef}
+                src={generatedImageUrl}
+                alt="Preview of passport page"
+                className="shadow-lg rounded-lg w-full bg-slate-100"
+              />
+              {!isDefaultImage && (
+                <a href={generatedImageUrl} download={generateDownloadName()}>
+                  <Button className="w-full amberButton" type="button">
+                    Download
+                  </Button>
+                </a>
+              )}
+            </>
           )}
         </div>
       </aside>

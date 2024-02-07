@@ -7,33 +7,39 @@ import { FooterSection } from "./footer";
 import { ImageSection } from "./image";
 import { PassportGenData } from "@/types/types";
 
-export async function Passport({
+export const runtime = "edge";
+
+export function Passport({
   data,
   directToDom,
 }: {
   data: PassportGenData;
   directToDom?: boolean;
 }) {
-  let portrait: File;
+  console.log({ data });
+  let portrait: File | Blob;
   if (data.portrait) {
     portrait = data.portrait;
-  } else {
-    const defaultPortraitUrl = new URL(
-      "/passport/no-image.png",
-      "https://passport-data-pages.vercel.app"
-    ).href;
-    const defaultPortraitRes = await fetch(defaultPortraitUrl);
-    const defaultPortraitBlob = await defaultPortraitRes.blob();
-    portrait = new File([defaultPortraitBlob], "default_portrait.png", {
-      type: "image/png",
-    });
   }
+  // else {
+  //   const defaultPortraitUrl = new URL(
+  //     "/passport/no-image.png",
+  //     "https://passport-data-pages.vercel.app"
+  //   ).href;
+  //   const defaultPortraitRes = await fetch(defaultPortraitUrl);
+  //   const defaultPortraitBlob = await defaultPortraitRes.blob();
+  //   // portrait = new File([defaultPortraitBlob], "default_portrait.png", {
+  //   //   type: "image/png",
+  //   // });
+  //   portrait = defaultPortraitBlob;
+  // }
 
-  const portraitImageBuffer = Buffer.from(await portrait.arrayBuffer());
-  const portraitUrlB64 =
-    `data:${portrait.type};base64,` + portraitImageBuffer.toString("base64");
+  // const portraitImageBuffer = Buffer.from(await portrait.arrayBuffer());
+  // const portraitUrlB64 =
+  //   `data:${portrait.type};base64,` + portraitImageBuffer.toString("base64");
+  const portraitUrlB64 = "";
 
-  const dataPageBgUrl = `${process.env.R2_PUBLIC_URL}/data-page-bg.png`;
+  const dataPageBgUrl = `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/data-page-bg.png`;
 
   return (
     <div

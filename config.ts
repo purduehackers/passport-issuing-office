@@ -1,4 +1,4 @@
-export const IMAGE_GENERATION_SCALE_FACTOR = 3;
+export const IMAGE_GENERATION_SCALE_FACTOR = 1;
 
 export const CURRENT_PASSPORT_VERSION = 0;
 
