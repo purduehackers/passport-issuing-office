@@ -109,7 +109,7 @@ export default function Playground({
     );
   }
 
-  function clearGenerationSteps() {
+  function resetGenerationSteps() {
     setGenerationSteps((currentSteps) =>
       currentSteps.map((step) => {
         return { ...step, status: "pending" };
@@ -182,7 +182,7 @@ export default function Playground({
     setGeneratedImageUrl(generatedImageUrl);
     setIsLoading(false);
     setIsDefaultImage(false);
-    clearGenerationSteps();
+    resetGenerationSteps();
   }
 
   return (
