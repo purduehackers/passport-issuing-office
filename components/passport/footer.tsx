@@ -3,9 +3,11 @@ import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
 export function FooterSection({
   topLine,
   bottomLine,
+  directToDom,
 }: {
   topLine: string;
   bottomLine: string;
+  directToDom?: boolean;
 }) {
   return (
     <div
@@ -23,7 +25,7 @@ export function FooterSection({
         style={{
           color: "#4A2BA6",
           textAlign: "center",
-          fontFamily: '"OCR B"',
+          fontFamily: directToDom ? "var(--font-ocr)" : '"OCR B"',
           fontSize: 12 * IMAGE_GENERATION_SCALE_FACTOR,
           fontStyle: "normal",
           fontWeight: 500,
@@ -43,7 +45,7 @@ export function FooterSection({
         style={{
           color: "#4A2BA6",
           textAlign: "center",
-          fontFamily: '"OCR B"',
+          fontFamily: directToDom ? "var(--font-ocr)" : '"OCR B"',
           fontSize: 12 * IMAGE_GENERATION_SCALE_FACTOR,
           fontStyle: "normal",
           fontWeight: 500,

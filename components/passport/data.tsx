@@ -18,22 +18,22 @@ const monthCodes = [
 
 export function DataSection({
   version,
-  passportNumber,
   id,
   surname,
   firstName,
   dateOfBirth,
   placeOfOrigin,
   dateOfIssue,
+  directToDom,
 }: {
   version: number;
-  passportNumber: number;
   id: number;
   surname: string;
   firstName: string;
   dateOfBirth: Date;
   placeOfOrigin: string;
   dateOfIssue: Date;
+  directToDom?: boolean;
 }) {
   return (
     <div
@@ -56,17 +56,31 @@ export function DataSection({
           title="TYPE"
           content={"PH"}
           width={64 * IMAGE_GENERATION_SCALE_FACTOR}
+          directToDom={directToDom}
         />
         <Description
           title="CODE"
           content={"HAK"}
           width={64 * IMAGE_GENERATION_SCALE_FACTOR}
+          directToDom={directToDom}
         />
-        <Description title="NO." content={(version + id * 0.0001).toFixed(4)} />
+        <Description
+          title="NO."
+          content={(version + id * 0.0001).toFixed(4)}
+          directToDom={directToDom}
+        />
       </div>
-      <Description title="SURNAME" content={surname} />
-      <Description title="NAME" content={firstName} />
-      <Description title="NATIONALITY" content={"REPUBLIC OF HACKERLAND"} />
+      <Description
+        title="SURNAME"
+        content={surname}
+        directToDom={directToDom}
+      />
+      <Description title="NAME" content={firstName} directToDom={directToDom} />
+      <Description
+        title="NATIONALITY"
+        content={"REPUBLIC OF HACKERLAND"}
+        directToDom={directToDom}
+      />
       <div
         style={{
           fontSize: 13.333 * IMAGE_GENERATION_SCALE_FACTOR,
@@ -89,12 +103,14 @@ export function DataSection({
             content={`${String(dateOfBirth.getDate()).padStart(2, "0")} ${
               monthCodes[dateOfBirth.getMonth()]
             } ${String(dateOfBirth.getFullYear()).padStart(4, "0")}`}
+            directToDom={directToDom}
           />
           <Description
             title="DATE OF ISSUE"
             content={`${String(dateOfIssue.getDate()).padStart(2, "0")} ${
               monthCodes[dateOfIssue.getMonth()]
             } ${String(dateOfIssue.getFullYear()).padStart(4, "0")}`}
+            directToDom={directToDom}
           />
         </div>
         <div
@@ -105,16 +121,25 @@ export function DataSection({
             gap: 8 * IMAGE_GENERATION_SCALE_FACTOR,
           }}
         >
-          <Description title="PLACE OF ORIGIN" content={placeOfOrigin} />
+          <Description
+            title="PLACE OF ORIGIN"
+            content={placeOfOrigin}
+            directToDom={directToDom}
+          />
           <Description
             title="DATE OF EXPIRATION"
             content={`01 JAN ${String(
               dateOfIssue.getFullYear() + 1000
             ).padStart(4, "0")}`}
+            directToDom={directToDom}
           />
         </div>{" "}
       </div>
-      <Description title="AUTHORITY" content={"id.purduehackers.com"} />
+      <Description
+        title="AUTHORITY"
+        content={"id.purduehackers.com"}
+        directToDom={directToDom}
+      />
     </div>
   );
 }

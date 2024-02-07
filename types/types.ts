@@ -30,3 +30,13 @@ export interface Passport {
   secret: string;
   activated: boolean;
 }
+
+export interface PassportGenData {
+  passportNumber: number;
+  surname: string;
+  firstName: string;
+  dateOfBirth: Date;
+  dateOfIssue: Date;
+  placeOfOrigin: string;
+  portrait?: File;
+}

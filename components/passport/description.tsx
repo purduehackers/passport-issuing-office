@@ -4,10 +4,12 @@ export function Description({
   title,
   content,
   width,
+  directToDom,
 }: {
   title: string;
   content?: string;
   width?: number;
+  directToDom?: boolean;
 }) {
   return (
     <div
@@ -21,7 +23,7 @@ export function Description({
       <div
         style={{
           color: "#4A2AA6",
-          fontFamily: '"Inter"',
+          fontFamily: directToDom ? "var(--font-inter)" : '"Inter"',
           fontSize: 8 * IMAGE_GENERATION_SCALE_FACTOR,
           fontStyle: "normal",
           fontWeight: 500,
@@ -35,7 +37,7 @@ export function Description({
       <div
         style={{
           color: "#000000",
-          fontFamily: '"OCR B"',
+          fontFamily: directToDom ? "var(--font-ocr)" : '"OCR B"',
           fontSize: 11 * IMAGE_GENERATION_SCALE_FACTOR,
           fontStyle: "normal",
           fontWeight: 500,

@@ -1,7 +1,12 @@
 import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
-import { Description } from "./description";
 
-export function ImageSection({ imageUrl }: { imageUrl: string }) {
+export function ImageSection({
+  imageUrl,
+  directToDom,
+}: {
+  imageUrl: string;
+  directToDom?: boolean;
+}) {
   return (
     <div
       style={{
@@ -13,7 +18,7 @@ export function ImageSection({ imageUrl }: { imageUrl: string }) {
       <div
         style={{
           color: "#4A2AA6",
-          fontFamily: '"Inter Bold"',
+          fontFamily: directToDom ? "var(--font-inter)" : '"Inter Bold"',
           fontSize: 8 * IMAGE_GENERATION_SCALE_FACTOR,
           fontStyle: "normal",
           fontWeight: 800,
