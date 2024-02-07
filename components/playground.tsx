@@ -30,6 +30,7 @@ import {
 } from "@/types/types";
 import { formatDefaultDate } from "@/lib/format-default-date";
 import { GENERATION_STEPS } from "@/config";
+import { CheckCircle } from "lucide-react";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -337,18 +338,22 @@ export default function Playground({
           {isLoading ? (
             <ul>
               {generationSteps.map((step, index) => (
-                <li
-                  key={index}
-                  className={`${
-                    step.status === "completed"
-                      ? "text-success"
-                      : step.status === "failed"
-                      ? "text-destructive"
-                      : "text-gray-400"
-                  }`}
-                >
-                  {step.name}...
-                </li>
+                <div key={index} className="flex flex-row items-center gap-1">
+                  <li
+                    className={`${
+                      step.status === "completed"
+                        ? "text-success"
+                        : step.status === "failed"
+                        ? "text-destructive"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    {step.name}...
+                  </li>
+                  {step.status === "completed" ? (
+                    <CheckCircle color="var(--success)" width={16} />
+                  ) : null}
+                </div>
               ))}
             </ul>
           ) : null}
