@@ -52,6 +52,9 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        success: {
+          DEFAULT: "var(--success)",
+        },
         discord: {
           light: "#9b98fa",
           vibrant: "#5864f4",
