@@ -49,3 +49,13 @@ export interface GenerationSteps {
   base: GenerationStep[];
   register: GenerationStep[];
 }
+
+export interface ExpectedData {
+  passportNumber: number;
+  surname: string;
+  firstName: string;
+  dateOfBirth: Date;
+  dateOfIssue: Date;
+  placeOfOrigin: string;
+  portrait?: File;
+}
