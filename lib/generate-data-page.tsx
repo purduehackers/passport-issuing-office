@@ -55,8 +55,7 @@ export async function fetchAssets(data: ExpectedData, url?: string) {
 
 export async function generateDataPage(
   data: ExpectedData,
-  url?: string,
-  rotate?: boolean
+  url?: string
 ): Promise<ImageResponse> {
   const {
     portraitUrlB64,
@@ -102,16 +101,11 @@ export async function generateDataPage(
 }
 
 export async function generateFullFrame(data: ExpectedData, url?: string) {
-  const {
-    portraitUrlB64,
-    dataPageBgUrl,
-    interFontData,
-    interBoldFontData,
-    OCRBProFontData,
-  } = await fetchAssets(data, url);
+  const { interFontData, interBoldFontData, OCRBProFontData } =
+    await fetchAssets(data, url);
 
   const dataPage = Buffer.from(
-    await (await generateDataPage(data, url, true)).arrayBuffer()
+    await (await generateDataPage(data, url)).arrayBuffer()
   );
   const dataPageUrlB64 = "data:image/png;base64," + dataPage.toString("base64");
 
