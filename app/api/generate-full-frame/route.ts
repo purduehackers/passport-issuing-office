@@ -1,4 +1,4 @@
-import { generateDataPage, generateFullFrame } from "@/lib/generate-data-page";
+import { generateFullFrame } from "@/lib/generate-data-page";
 import { parseFormData } from "@/lib/parse-form-data";
 
 export const runtime = "edge";

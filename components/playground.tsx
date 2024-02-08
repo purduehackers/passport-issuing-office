@@ -157,6 +157,7 @@ export default function Playground({
       updateGenerationStepState("assigning_passport_number", "completed");
     }
 
+    // todo: use promise.all
     const postRes: ImageResponse = await fetch(`/api/generate-data-page`, {
       method: "POST",
       body: apiFormData,
@@ -165,11 +166,33 @@ export default function Playground({
     const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
       type: "image/png",
     });
+
+    let fullFrameFile: File | null = null;
+
+    if (data.sendToDb) {
+      const fullFrameRes: ImageResponse = await fetch(
+        `/api/generate-full-frame`,
+        {
+          method: "POST",
+          body: apiFormData,
+        }
+      );
+      const fullFrameBlob = await fullFrameRes.blob();
+      fullFrameFile = new File([fullFrameBlob], "data_page.png", {
+        type: "image/png",
+      });
+    }
     updateGenerationStepState("generating", "completed");
 
     if (data.sendToDb) {
       apiFormData.append("generatedImage", generatedImageFile);
-      await uploadImageToR2(apiFormData, generatedPassportNumber);
+      apiFormData.append("fullFrameImage", fullFrameFile!);
+
+      await Promise.all([
+        uploadImageToR2("generated", apiFormData, generatedPassportNumber),
+        uploadImageToR2("full", apiFormData, generatedPassportNumber),
+      ]);
+
       updateGenerationStepState("uploading", "completed");
     }
 

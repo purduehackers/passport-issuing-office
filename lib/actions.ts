@@ -6,7 +6,10 @@ import prisma from "@/lib/prisma";
 import { parseFormData } from "./parse-form-data";
 import { CURRENT_PASSPORT_VERSION } from "@/config";
 
-export async function getPreSignedUrl(passportNumber: string | undefined) {
+export async function getPreSignedUrl(
+  which: "generated" | "full",
+  passportNumber: string | undefined
+) {
   const S3 = new S3Client({
     region: "auto",
     endpoint: `${process.env.R2_ENDPOINT}`,
@@ -16,11 +19,16 @@ export async function getPreSignedUrl(passportNumber: string | undefined) {
     },
   });
 
+  const Key =
+    which === "generated"
+      ? passportNumber || "0"
+      : `${passportNumber}-full` || "0-full";
+
   const preSignedUrl = await getSignedUrl(
     S3,
     new PutObjectCommand({
       Bucket: "passport-portraits",
-      Key: passportNumber || "0",
+      Key,
     }),
     {
       expiresIn: 3600,
@@ -30,12 +38,22 @@ export async function getPreSignedUrl(passportNumber: string | undefined) {
   return preSignedUrl;
 }
 
-export async function uploadImageToR2(data: FormData, passportNumber: string) {
-  const generatedImage = data.get("generatedImage") as File;
-  const preSignedUrl = await getPreSignedUrl(passportNumber);
+export async function uploadImageToR2(
+  which: "generated" | "full",
+  data: FormData,
+  passportNumber: string
+) {
+  let imageToUpload;
+  if (which === "generated") {
+    imageToUpload = data.get("generatedImage") as File;
+  } else {
+    imageToUpload = data.get("fullFrameImage") as File;
+  }
+
+  const preSignedUrl = await getPreSignedUrl(which, passportNumber);
   await fetch(preSignedUrl, {
     method: "PUT",
-    body: generatedImage,
+    body: imageToUpload,
   });
 }
 
