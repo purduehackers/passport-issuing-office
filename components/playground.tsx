@@ -157,7 +157,7 @@ export default function Playground({
       updateGenerationStepState("assigning_passport_number", "completed");
     }
 
-    const postRes: ImageResponse = await fetch(`/og`, {
+    const postRes: ImageResponse = await fetch(`/api/generate-data-page`, {
       method: "POST",
       body: apiFormData,
     });
