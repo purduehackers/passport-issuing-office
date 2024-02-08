@@ -1,18 +1,9 @@
 import { Passport } from "@/components/passport";
-import { DataSection } from "@/components/passport/data";
-import { FooterSection } from "@/components/passport/footer";
-import { ImageSection } from "@/components/passport/image";
-import {
-  CURRENT_PASSPORT_VERSION,
-  IMAGE_GENERATION_SCALE_FACTOR,
-} from "@/config";
+import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
 import { ExpectedData } from "@/types/types";
 import { ImageResponse } from "next/og";
 
-export async function generateDataPage(
-  data: ExpectedData,
-  url?: string
-): Promise<ImageResponse> {
+export async function fetchAssets(data: ExpectedData, url?: string) {
   let portrait: File;
   if (data.portrait) {
     portrait = data.portrait;
@@ -53,6 +44,28 @@ export async function generateDataPage(
   // Temporary solution I guess?
   const dataPageBgUrl = `${process.env.R2_PUBLIC_URL}/data-page-bg.png`;
 
+  return {
+    portraitUrlB64,
+    dataPageBgUrl,
+    interFontData,
+    interBoldFontData,
+    OCRBProFontData,
+  };
+}
+
+export async function generateDataPage(
+  data: ExpectedData,
+  url?: string,
+  rotate?: boolean
+): Promise<ImageResponse> {
+  const {
+    portraitUrlB64,
+    dataPageBgUrl,
+    interFontData,
+    interBoldFontData,
+    OCRBProFontData,
+  } = await fetchAssets(data, url);
+
   return new ImageResponse(
     (
       <Passport
@@ -64,6 +77,84 @@ export async function generateDataPage(
     {
       width: 472 * IMAGE_GENERATION_SCALE_FACTOR,
       height: 322 * IMAGE_GENERATION_SCALE_FACTOR,
+      fonts: [
+        {
+          name: "Inter",
+          data: interFontData,
+          style: "normal",
+          weight: 500,
+        },
+        {
+          name: "Inter Bold",
+          data: interBoldFontData,
+          style: "normal",
+          weight: 800,
+        },
+        {
+          name: "OCR B",
+          data: OCRBProFontData,
+          style: "normal",
+          weight: 500,
+        },
+      ],
+    }
+  );
+}
+
+export async function generateFullFrame(data: ExpectedData, url?: string) {
+  const {
+    portraitUrlB64,
+    dataPageBgUrl,
+    interFontData,
+    interBoldFontData,
+    OCRBProFontData,
+  } = await fetchAssets(data, url);
+
+  const dataPage = Buffer.from(
+    await (await generateDataPage(data, url, true)).arrayBuffer()
+  );
+  const dataPageUrlB64 = "data:image/png;base64," + dataPage.toString("base64");
+
+  const secondHalfUrl = `${process.env.R2_PUBLIC_URL}/page-1-second-half.png`;
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            width: 324.63 * IMAGE_GENERATION_SCALE_FACTOR,
+            height: 475.86 * IMAGE_GENERATION_SCALE_FACTOR,
+          }}
+        >
+          <img
+            src={dataPageUrlB64}
+            width={475.86 * IMAGE_GENERATION_SCALE_FACTOR}
+            height={324.63 * IMAGE_GENERATION_SCALE_FACTOR}
+            style={{
+              transform: "rotate(90deg) translateY(-100%)",
+              transformOrigin: "top left",
+            }}
+          />
+        </div>
+        <img
+          src={secondHalfUrl}
+          width={324.63 * IMAGE_GENERATION_SCALE_FACTOR}
+          height={475.86 * IMAGE_GENERATION_SCALE_FACTOR}
+          style={{ marginLeft: "-100%" }}
+        />
+      </div>
+    ),
+    {
+      width: 794.66 * IMAGE_GENERATION_SCALE_FACTOR,
+      height: 1028.49 * IMAGE_GENERATION_SCALE_FACTOR,
       fonts: [
         {
           name: "Inter",
