@@ -158,7 +158,7 @@ export default function Playground({
     }
 
     // todo: use promise.all
-    const postRes: ImageResponse = await fetch(`/api/generate-data-page`, {
+    const postRes: ImageResponse = await fetch(`/api/generate-full-frame`, {
       method: "POST",
       body: apiFormData,
     });

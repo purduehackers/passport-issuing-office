@@ -101,13 +101,18 @@ export async function generateDataPage(
 }
 
 export async function generateFullFrame(data: ExpectedData, url?: string) {
-  const { interFontData, interBoldFontData, OCRBProFontData } =
-    await fetchAssets(data, url);
+  const {
+    interFontData,
+    interBoldFontData,
+    OCRBProFontData,
+    dataPageBgUrl,
+    portraitUrlB64,
+  } = await fetchAssets(data, url);
 
-  const dataPage = Buffer.from(
-    await (await generateDataPage(data, url)).arrayBuffer()
-  );
-  const dataPageUrlB64 = "data:image/png;base64," + dataPage.toString("base64");
+  // const dataPage = Buffer.from(
+  //   await (await generateDataPage(data, url)).arrayBuffer()
+  // );
+  // const dataPageUrlB64 = "data:image/png;base64," + dataPage.toString("base64");
 
   const secondHalfUrl = `${process.env.R2_PUBLIC_URL}/page-1-second-half.png`;
 
@@ -129,14 +134,10 @@ export async function generateFullFrame(data: ExpectedData, url?: string) {
             height: 475.86 * IMAGE_GENERATION_SCALE_FACTOR,
           }}
         >
-          <img
-            src={dataPageUrlB64}
-            width={475.86 * IMAGE_GENERATION_SCALE_FACTOR}
-            height={324.63 * IMAGE_GENERATION_SCALE_FACTOR}
-            style={{
-              transform: "rotate(90deg) translateY(-100%)",
-              transformOrigin: "top left",
-            }}
+          <Passport
+            data={data}
+            dataPageBgUrl={dataPageBgUrl}
+            portraitUrlB64={portraitUrlB64}
           />
         </div>
         <img

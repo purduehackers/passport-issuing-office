@@ -23,14 +23,17 @@ export function Passport({
         fontFamily: '"Inter"',
         color: "black",
         backgroundImage: `url('${dataPageBgUrl}')`,
-        backgroundSize: "100% 100%",
-        width: "100%",
-        height: "100%",
+        backgroundSize: `100% 100%`,
+        width: 475.86 * IMAGE_GENERATION_SCALE_FACTOR,
+        height: 324.63 * IMAGE_GENERATION_SCALE_FACTOR,
         padding: `${16 * IMAGE_GENERATION_SCALE_FACTOR}px ${
           24 * IMAGE_GENERATION_SCALE_FACTOR
         }px`,
         display: "flex",
         flexDirection: "column",
+
+        transform: "rotate(90deg) translateY(-100%)",
+        transformOrigin: "top left",
       }}
     >
       <div
