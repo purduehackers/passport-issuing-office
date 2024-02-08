@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     portraitImage,
   } = parseFormData(formValues);
 
-  return await generateDataPage(
+  return await generateFullFrame(
     {
       passportNumber: trueID,
       surname: trueSurname,

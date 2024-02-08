@@ -125,6 +125,7 @@ export async function generateFullFrame(data: ExpectedData, url?: string) {
           flexDirection: "row",
           justifyContent: "flex-start",
           alignItems: "flex-start",
+          backgroundColor: "#ffffff",
         }}
       >
         <div
