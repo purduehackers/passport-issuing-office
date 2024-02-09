@@ -76,8 +76,7 @@ export async function createPassport(formData: FormData) {
       date_of_issue: trueDateOfIssue,
       place_of_origin: placeOfOrigin,
     }),
-  });
-  console.log({ newPassport });
+  }).then((r) => r.json());
   return {
     passportNumber: newPassport.id,
   };
