@@ -17,7 +17,7 @@ export default async function Home() {
   // since we have access to all the data.
   let latestPassportImageUrl: string | null = null;
   if (latestPassport) {
-    latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}`;
+    latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
   }
 
   return (

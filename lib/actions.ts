@@ -21,8 +21,8 @@ export async function getPreSignedUrl(
 
   const Key =
     which === "generated"
-      ? passportNumber || "0"
-      : `${passportNumber}-full` || "0-full";
+      ? (passportNumber || "0") + ".png"
+      : `${passportNumber}-full.png` || "0-full.png";
 
   const preSignedUrl = await getSignedUrl(
     S3,
