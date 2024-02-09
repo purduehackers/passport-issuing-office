@@ -34,7 +34,8 @@ export interface Passport {
 export type GenerationStatus = "pending" | "completed" | "failed";
 export type GenerationStepId =
   | "processing_portrait"
-  | "generating"
+  | "generating_data_page"
+  | "generating_frame"
   | "assigning_passport_number"
   | "uploading"
   | "summoning_elves";
