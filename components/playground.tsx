@@ -165,16 +165,15 @@ export default function Playground({
     const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
       type: "image/png",
     });
+    updateGenerationStepState("generating_data_page", "completed");
 
     if (data.sendToDb) {
       await fetch(`/api/generate-full-frame`, {
         method: "POST",
         body: apiFormData,
       });
-    }
-    updateGenerationStepState("generating", "completed");
+      updateGenerationStepState("generating_frame", "completed");
 
-    if (data.sendToDb) {
       apiFormData.append("generatedImage", generatedImageFile);
       await uploadImageToR2("generated", apiFormData, generatedPassportNumber);
 

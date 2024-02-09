@@ -14,8 +14,8 @@ export const GENERATION_STEPS: GenerationSteps = {
       status: "pending",
     },
     {
-      id: "generating",
-      name: "Generating image",
+      id: "generating_data_page",
+      name: "Generating data page",
       status: "pending",
     },
     {
@@ -36,8 +36,13 @@ export const GENERATION_STEPS: GenerationSteps = {
       status: "pending",
     },
     {
-      id: "generating",
-      name: "Generating image",
+      id: "generating_data_page",
+      name: "Generating data page",
+      status: "pending",
+    },
+    {
+      id: "generating_frame",
+      name: "Generating full passport page",
       status: "pending",
     },
     {
