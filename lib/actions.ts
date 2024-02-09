@@ -64,12 +64,12 @@ export async function createPassport(formData: FormData) {
     trueDateOfBirth,
     trueDateOfIssue,
     placeOfOrigin,
-    userId,
+    stringUserId,
   } = parseFormData(formData);
   const newPassport = await fetch(`http://localhost:3001/api/new`, {
     method: "POST",
     body: JSON.stringify({
-      discord_id: `${userId}`,
+      discord_id: stringUserId,
       surname: trueSurname,
       name: trueFirstName,
       date_of_birth: trueDateOfBirth,
