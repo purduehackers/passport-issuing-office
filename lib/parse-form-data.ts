@@ -36,5 +36,6 @@ export function parseFormData(formValues: FormData) {
     placeOfOrigin,
     portraitImage,
     userId: bigIntUserId,
+    stringUserId: userId,
   };
 }

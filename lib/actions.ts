@@ -64,60 +64,74 @@ export async function createPassport(formData: FormData) {
     trueDateOfBirth,
     trueDateOfIssue,
     placeOfOrigin,
-    userId,
+    stringUserId,
   } = parseFormData(formData);
-  const bigIntUserId = BigInt(`${userId}`);
-
-  let user = await prisma.user.findFirst({
-    where: {
-      discord_id: bigIntUserId,
-    },
-  });
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        discord_id: bigIntUserId,
-        role: "hacker",
-      },
-    });
-  }
-
-  const data = {
-    owner_id: user.id,
-    version: CURRENT_PASSPORT_VERSION,
-    surname: trueSurname,
-    name: trueFirstName,
-    date_of_birth: trueDateOfBirth,
-    date_of_issue: trueDateOfIssue,
-    place_of_origin: placeOfOrigin,
+  const newPassport = await fetch(`https://id.purduehackers.com/api/new`, {
+    method: "POST",
+    body: JSON.stringify({
+      discord_id: stringUserId,
+      surname: trueSurname,
+      name: trueFirstName,
+      date_of_birth: trueDateOfBirth,
+      date_of_issue: trueDateOfIssue,
+      place_of_origin: placeOfOrigin,
+    }),
+  }).then((r) => r.json());
+  return {
+    passportNumber: newPassport.id,
   };
+  // const bigIntUserId = BigInt(`${userId}`);
 
-  const existingRecord = await prisma.passport.findFirst({
-    where: {
-      owner_id: user.id,
-    },
-    orderBy: {
-      id: "desc",
-    },
-  });
-  if (existingRecord && !existingRecord.activated) {
-    await prisma.passport.update({
-      where: {
-        id: existingRecord.id,
-      },
-      data,
-    });
-    return {
-      success: true,
-      passportNumber: existingRecord.id,
-    };
-  } else {
-    const newRecord = await prisma.passport.create({
-      data,
-    });
-    return {
-      success: true,
-      passportNumber: newRecord.id,
-    };
-  }
+  // let user = await prisma.user.findFirst({
+  //   where: {
+  //     discord_id: bigIntUserId,
+  //   },
+  // });
+  // if (!user) {
+  //   user = await prisma.user.create({
+  //     data: {
+  //       discord_id: bigIntUserId,
+  //       role: "hacker",
+  //     },
+  //   });
+  // }
+
+  // const data = {
+  //   owner_id: user.id,
+  //   version: CURRENT_PASSPORT_VERSION,
+  //   surname: trueSurname,
+  //   name: trueFirstName,
+  //   date_of_birth: trueDateOfBirth,
+  //   date_of_issue: trueDateOfIssue,
+  //   place_of_origin: placeOfOrigin,
+  // };
+
+  // const existingRecord = await prisma.passport.findFirst({
+  //   where: {
+  //     owner_id: user.id,
+  //   },
+  //   orderBy: {
+  //     id: "desc",
+  //   },
+  // });
+  // if (existingRecord && !existingRecord.activated) {
+  //   await prisma.passport.update({
+  //     where: {
+  //       id: existingRecord.id,
+  //     },
+  //     data,
+  //   });
+  //   return {
+  //     success: true,
+  //     passportNumber: existingRecord.id,
+  //   };
+  // } else {
+  //   const newRecord = await prisma.passport.create({
+  //     data,
+  //   });
+  //   return {
+  //     success: true,
+  //     passportNumber: newRecord.id,
+  //   };
+  // }
 }
