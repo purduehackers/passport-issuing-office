@@ -2,9 +2,7 @@
 
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import prisma from "@/lib/prisma";
 import { parseFormData } from "./parse-form-data";
-import { CURRENT_PASSPORT_VERSION } from "@/config";
 
 export async function getPreSignedUrl(
   which: "generated" | "full",
