@@ -166,31 +166,17 @@ export default function Playground({
       type: "image/png",
     });
 
-    let fullFrameFile: File | null = null;
-
-    // if (data.sendToDb) {
-    //   const fullFrameRes: ImageResponse = await fetch(
-    //     `/api/generate-full-frame`,
-    //     {
-    //       method: "POST",
-    //       body: apiFormData,
-    //     }
-    //   );
-    //   const fullFrameBlob = await fullFrameRes.blob();
-    //   fullFrameFile = new File([fullFrameBlob], "data_page.png", {
-    //     type: "image/png",
-    //   });
-    // }
+    if (data.sendToDb) {
+      await fetch(`/api/generate-full-frame`, {
+        method: "POST",
+        body: apiFormData,
+      });
+    }
     updateGenerationStepState("generating", "completed");
 
     if (data.sendToDb) {
       apiFormData.append("generatedImage", generatedImageFile);
-      // apiFormData.append("fullFrameImage", fullFrameFile!);
-
-      await Promise.all([
-        uploadImageToR2("generated", apiFormData, generatedPassportNumber),
-        // uploadImageToR2("full", apiFormData, generatedPassportNumber),
-      ]);
+      await uploadImageToR2("generated", apiFormData, generatedPassportNumber);
 
       updateGenerationStepState("uploading", "completed");
     }
