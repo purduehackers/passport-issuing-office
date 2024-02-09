@@ -66,7 +66,7 @@ export async function createPassport(formData: FormData) {
     placeOfOrigin,
     stringUserId,
   } = parseFormData(formData);
-  const newPassport = await fetch(`http://localhost:3001/api/new`, {
+  const newPassport = await fetch(`https://id.purduehackers.com/api/new`, {
     method: "POST",
     body: JSON.stringify({
       discord_id: stringUserId,
