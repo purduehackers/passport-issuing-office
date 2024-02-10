@@ -1,3 +1,5 @@
-export function Callback({ params }: { params: { callback: string } }) {
-  <p>{params.callback}</p>;
+function Callback({ params }: { params: { id: string } }) {
+  <p>{params.id}</p>;
 }
+
+export default Callback;
