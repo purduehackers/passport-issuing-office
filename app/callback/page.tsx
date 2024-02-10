@@ -1,5 +1,5 @@
-function Callback({ params }: { params: { id: string } }) {
-  <p>{params.id}</p>;
+function Callback({ searchParams }: { searchParams: { id: string } }) {
+  return <p className="p-2">{searchParams.id}</p>;
 }
 
 export default Callback;
