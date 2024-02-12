@@ -55,11 +55,11 @@ export function ActivatedView({
         <h1 className="font-bold text-center text-2xl">Make a new passport?</h1>
         <p>
           Your current passport is activated. You can make a new passport at any
-          time. Though, we are resource-constrained, so please only do so if you
+          time. We are resource-constrained, though, so please only do so if you
           feel like you need a new one or there&rsquo;s a problem with your
           current one!
         </p>
-        <Link href="/?new=true" className="mx-auto">
+        <Link href="/?new=true" className="mx-auto mt-2">
           <Button type="button" className="font-bold">
             New Passport
           </Button>
