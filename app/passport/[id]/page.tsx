@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    metadataBase: new URL("https://passports.purduehackers.com"),
+    // metadataBase: new URL("https://passports.purduehackers.com"),
     title: `Make your passport with ${latestPassport.name}!`,
     description:
       "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
