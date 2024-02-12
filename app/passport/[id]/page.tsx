@@ -39,9 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const r2PassportUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
 
   return {
-    metadataBase: new URL(
-      "https://passport-data-pages-git-dynamic-og-image-purdue-hackers.vercel.app/"
-    ),
+    metadataBase: new URL("https://passports.purduehackers.com"),
     title: `Make your Purdue Hackers passport with ${latestPassport.name}`,
     description:
       "NFC-enabled passports that level you up. Generate yours here, then put it together at Hack Night.",
@@ -94,11 +92,11 @@ export default async function Passport({ params }: Props) {
                   What are passports?
                 </DialogTitle>
               </DialogHeader>
-              <DialogDescription className="flex flex-col gap-2 leading-relaxed">
+              <DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
                 <div>
                   <img
                     src="/cover.svg"
-                    width={60}
+                    width={64}
                     alt="Purdue Hackers passport cover"
                     className="float-left mr-4"
                   />
@@ -141,7 +139,7 @@ export default async function Passport({ params }: Props) {
                   are cool, the door is open for you to make one. Click the
                   button below to get started.
                 </p>
-                <PreviewPageLink className="mx-auto">
+                <PreviewPageLink className="mx-auto mt-2">
                   <Button type="button">Make your passport</Button>
                 </PreviewPageLink>
               </DialogDescription>
