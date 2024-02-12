@@ -31,7 +31,6 @@ import {
 import { formatDefaultDate } from "@/lib/format-default-date";
 import { GENERATION_STEPS } from "@/config";
 import { CheckCircle } from "lucide-react";
-import Link from "next/link";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -387,7 +386,6 @@ export default function Playground({
               </a>
               <div>
                 <Button
-                  // className="w-full bg-foreground hover:bg-foreground-muted border-2 border-amber-500 shadow-blocks-tiny shadow-foreground-muted font-bold"
                   className="amberButton"
                   type="button"
                   onClick={() => {
