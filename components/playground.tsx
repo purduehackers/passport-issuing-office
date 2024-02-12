@@ -400,7 +400,7 @@ export default function Playground({
                       });
                   }}
                 >
-                  {copied ? "Copied!" : "Copy to clipboard"}
+                  {copied ? "Copied link to clipboard!" : "Share"}
                 </Button>
               </div>
             </div>
