@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
@@ -31,6 +31,7 @@ import {
 import { formatDefaultDate } from "@/lib/format-default-date";
 import { GENERATION_STEPS } from "@/config";
 import { CheckCircle } from "lucide-react";
+import { ImageActions } from "./image-actions";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -94,7 +95,6 @@ export default function Playground({
   );
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
-  const generatedImageRef = useRef(null);
   const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
     GENERATION_STEPS.base
   );
@@ -117,15 +117,6 @@ export default function Playground({
         return { ...step, status: "pending" };
       })
     );
-  }
-
-  function generateDownloadName() {
-    const { firstName, surname } = form.getValues();
-
-    function processName(name: string) {
-      return name.replace(" ", "_").toLowerCase();
-    }
-    return `passport_${processName(firstName)}_${processName(surname)}`;
   }
 
   useEffect(() => {
@@ -346,7 +337,6 @@ export default function Playground({
       <aside>
         <div className="flex flex-col gap-4">
           <img
-            ref={generatedImageRef}
             src={generatedImageUrl}
             alt="Preview of passport page"
             className="shadow-lg rounded-lg w-full bg-slate-100"
@@ -373,40 +363,16 @@ export default function Playground({
               ))}
             </ul>
           ) : null}
-          {!isDefaultImage && !isLoading && (
-            // todo: these buttons look awful, make them better
-            <div className="flex flex-row items-center gap-2 w-full">
-              <a
-                href={generatedImageUrl}
-                download={generateDownloadName()}
-                className="w-full"
-              >
-                <Button className="w-full amberButton" type="button">
-                  Download
-                </Button>
-              </a>
-              {userId && (latestPassport || form.getValues().sendToDb) ? (
-                <div>
-                  <Button
-                    className="amberButton"
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard
-                        .writeText(
-                          `https://passports.purduehackers.com/passport/${userId}`
-                        )
-                        .then(() => setCopied(true))
-                        .catch((err) => {
-                          console.error("Failed to copy text: ", err);
-                        });
-                    }}
-                  >
-                    {copied ? "Copied link to clipboard!" : "Share"}
-                  </Button>
-                </div>
-              ) : null}
-            </div>
-          )}
+          {!isDefaultImage && !isLoading ? (
+            <ImageActions
+              generatedImageUrl={generatedImageUrl}
+              userId={userId}
+              latestPassport={latestPassport}
+              firstName={form.getValues().firstName}
+              surname={form.getValues().surname}
+              sendToDb={form.getValues().sendToDb}
+            />
+          ) : null}
         </div>
       </aside>
     </main>

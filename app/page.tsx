@@ -25,7 +25,7 @@ export default async function Home() {
       <UserInfo user={session?.user} />
       <div className="flex flex-col items-center gap-y-12 sm:gap-y-24 p-4 sm:p-24">
         {latestPassport?.activated ? (
-          <ActivatedView latestPassport={latestPassport} />
+          <ActivatedView userId={userId} latestPassport={latestPassport} />
         ) : (
           <NotActivatedView
             userId={userId}
