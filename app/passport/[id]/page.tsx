@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     metadataBase: new URL("https://passports.purduehackers.com"),
     title: `Make your Purdue Hackers passport with ${latestPassport.name}`,
     description:
-      "NFC-enabled passports that level you up. Generate yours here, then put it together at Hack Night.",
+      "NFC-enabled passports that level you up. Generate yours here, then assemble it at Hack Night.",
     openGraph: {
       images: [r2PassportUrl],
     },
