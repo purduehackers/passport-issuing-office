@@ -385,7 +385,7 @@ export default function Playground({
                   Download
                 </Button>
               </a>
-              {userId && form.getValues().sendToDb ? (
+              {userId && (latestPassport || form.getValues().sendToDb) ? (
                 <div>
                   <Button
                     className="amberButton"
