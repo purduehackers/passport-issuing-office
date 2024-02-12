@@ -87,13 +87,14 @@
   ul li:before {
     content: "> ";
     counter-increment: item;
-    @apply text-gray-400;
+    @apply text-muted-foreground;
   }
 }
 
 @layer components {
   form > .amberButton,
-  a > .amberButton {
+  a > .amberButton,
+  div > .amberButton {
     @apply shadow-blocks-tiny shadow-amber-300 font-bold;
   }
 }

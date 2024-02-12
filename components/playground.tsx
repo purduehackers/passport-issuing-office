@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
@@ -98,6 +98,7 @@ export default function Playground({
   const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
     GENERATION_STEPS.base
   );
+  const [copied, setCopied] = useState(false);
 
   function updateGenerationStepState(
     stepId: GenerationStepId,
@@ -126,6 +127,14 @@ export default function Playground({
     }
     return `passport_${processName(firstName)}_${processName(surname)}`;
   }
+
+  useEffect(() => {
+    if (copied) {
+      setTimeout(() => {
+        setCopied(false);
+      }, 1000);
+    }
+  }, [copied]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
@@ -352,7 +361,7 @@ export default function Playground({
                         ? "text-success"
                         : step.status === "failed"
                         ? "text-destructive"
-                        : "text-gray-400"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {step.name}...
@@ -365,11 +374,36 @@ export default function Playground({
             </ul>
           ) : null}
           {!isDefaultImage && !isLoading && (
-            <a href={generatedImageUrl} download={generateDownloadName()}>
-              <Button className="w-full amberButton" type="button">
-                Download
-              </Button>
-            </a>
+            // todo: these buttons look awful, make them better
+            <div className="flex flex-row items-center gap-2 w-full">
+              <a
+                href={generatedImageUrl}
+                download={generateDownloadName()}
+                className="w-full"
+              >
+                <Button className="w-full amberButton" type="button">
+                  Download
+                </Button>
+              </a>
+              <div>
+                <Button
+                  className="amberButton"
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard
+                      .writeText(
+                        `https://passports.purduehackers.com/passport/${userId}`
+                      )
+                      .then(() => setCopied(true))
+                      .catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                      });
+                  }}
+                >
+                  {copied ? "Copied link to clipboard!" : "Share"}
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </aside>

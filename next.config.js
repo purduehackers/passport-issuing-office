@@ -20,6 +20,16 @@ const nextConfig = {
       },
     ];
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pub-84077b41cf284cf3a74ef394a9226674.r2.dev",
+        port: "",
+        pathname: "**",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;
