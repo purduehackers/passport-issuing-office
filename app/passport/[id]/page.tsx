@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getLatestPassport } from "@/lib/get-latest-passport";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 
 interface Props {
@@ -9,6 +9,10 @@ interface Props {
   };
   searchParams: { [key: string]: string | string[] | undefined };
 }
+
+export const viewport: Viewport = {
+  themeColor: "#f59e0b",
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const latestPassport = await getLatestPassport(params.id);
@@ -19,13 +23,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
+  const r2PassportUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
+
   return {
-    // metadataBase: new URL("https://passports.purduehackers.com"),
     title: `Make your passport with ${latestPassport.name}!`,
     description:
       "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
     openGraph: {
-      images: [`${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`],
+      images: [r2PassportUrl],
     },
   };
 }
