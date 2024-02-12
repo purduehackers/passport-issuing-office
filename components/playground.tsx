@@ -385,24 +385,26 @@ export default function Playground({
                   Download
                 </Button>
               </a>
-              <div>
-                <Button
-                  className="amberButton"
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard
-                      .writeText(
-                        `https://passports.purduehackers.com/passport/${userId}`
-                      )
-                      .then(() => setCopied(true))
-                      .catch((err) => {
-                        console.error("Failed to copy text: ", err);
-                      });
-                  }}
-                >
-                  {copied ? "Copied link to clipboard!" : "Share"}
-                </Button>
-              </div>
+              {userId && form.getValues().sendToDb ? (
+                <div>
+                  <Button
+                    className="amberButton"
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard
+                        .writeText(
+                          `https://passports.purduehackers.com/passport/${userId}`
+                        )
+                        .then(() => setCopied(true))
+                        .catch((err) => {
+                          console.error("Failed to copy text: ", err);
+                        });
+                    }}
+                  >
+                    {copied ? "Copied link to clipboard!" : "Share"}
+                  </Button>
+                </div>
+              ) : null}
             </div>
           )}
         </div>
