@@ -4,7 +4,7 @@ import UserInfo from "@/components/user-info";
 import { MySession } from "@/types/types";
 import { notFound } from "next/navigation";
 
-export default async function MyPassport() {
+export default async function Activated() {
   // Although the session includes the JWT token type from `auth.ts`, when it gets here
   // next-auth still thinks it doesn't exist, even though it does when I log it.
   // As a temporary workaround, I've created my own Session type which contains
