@@ -374,6 +374,7 @@ export default function Playground({
             </ul>
           ) : null}
           {!isDefaultImage && !isLoading && (
+            // todo: these buttons look awful, make them better
             <div className="flex flex-row items-center gap-2 w-full">
               <a
                 href={generatedImageUrl}
