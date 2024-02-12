@@ -93,7 +93,8 @@
 
 @layer components {
   form > .amberButton,
-  a > .amberButton {
+  a > .amberButton,
+  div > .amberButton {
     @apply shadow-blocks-tiny shadow-amber-300 font-bold;
   }
 }

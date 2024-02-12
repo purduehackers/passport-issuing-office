@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
@@ -31,6 +31,7 @@ import {
 import { formatDefaultDate } from "@/lib/format-default-date";
 import { GENERATION_STEPS } from "@/config";
 import { CheckCircle } from "lucide-react";
+import Link from "next/link";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -98,6 +99,7 @@ export default function Playground({
   const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
     GENERATION_STEPS.base
   );
+  const [copied, setCopied] = useState(false);
 
   function updateGenerationStepState(
     stepId: GenerationStepId,
@@ -126,6 +128,14 @@ export default function Playground({
     }
     return `passport_${processName(firstName)}_${processName(surname)}`;
   }
+
+  useEffect(() => {
+    if (copied) {
+      setTimeout(() => {
+        setCopied(false);
+      }, 1000);
+    }
+  }, [copied]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
@@ -365,11 +375,36 @@ export default function Playground({
             </ul>
           ) : null}
           {!isDefaultImage && !isLoading && (
-            <a href={generatedImageUrl} download={generateDownloadName()}>
-              <Button className="w-full amberButton" type="button">
-                Download
-              </Button>
-            </a>
+            <div className="flex flex-row items-center gap-2 w-full">
+              <a
+                href={generatedImageUrl}
+                download={generateDownloadName()}
+                className="w-full"
+              >
+                <Button className="w-full amberButton" type="button">
+                  Download
+                </Button>
+              </a>
+              <div>
+                <Button
+                  // className="w-full bg-foreground hover:bg-foreground-muted border-2 border-amber-500 shadow-blocks-tiny shadow-foreground-muted font-bold"
+                  className="amberButton"
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard
+                      .writeText(
+                        `https://passports.purduehackers.com/passport/${userId}`
+                      )
+                      .then(() => setCopied(true))
+                      .catch((err) => {
+                        console.error("Failed to copy text: ", err);
+                      });
+                  }}
+                >
+                  {copied ? "Copied!" : "Copy to clipboard"}
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </aside>
