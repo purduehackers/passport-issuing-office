@@ -27,7 +27,7 @@ export default async function Home({
   }
 
   if (latestPassport?.activated && generateNew !== "true") {
-    redirect("/my-passport");
+    redirect("/activated");
   }
 
   return (
