@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import { ActivatedView } from "@/components/activated-view";
 import { NewPassportView } from "@/components/not-activated-view";
 import UserInfo from "@/components/user-info";
 import { MySession } from "@/types/types";
@@ -24,16 +23,12 @@ export default async function Home() {
     <main className="bg-slate-900 flex flex-col min-h-screen">
       <UserInfo user={session?.user} />
       <div className="flex flex-col items-center gap-y-12 sm:gap-y-24 p-4 sm:p-24">
-        {latestPassport?.activated ? (
-          <ActivatedView userId={userId} latestPassport={latestPassport} />
-        ) : (
-          <NewPassportView
-            userId={userId}
-            session={session}
-            latestPassport={latestPassport}
-            latestPassportImageUrl={latestPassportImageUrl}
-          />
-        )}
+        <NewPassportView
+          userId={userId}
+          session={session}
+          latestPassport={latestPassport}
+          latestPassportImageUrl={latestPassportImageUrl}
+        />
       </div>
     </main>
   );

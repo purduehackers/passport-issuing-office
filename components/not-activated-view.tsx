@@ -2,7 +2,7 @@ import { MySession, Passport } from "@/types/types";
 import { SignInButton } from "./auth-buttons";
 import Playground from "./playground";
 
-export function NotActivatedView({
+export function NewPassportView({
   userId,
   session,
   latestPassport,
