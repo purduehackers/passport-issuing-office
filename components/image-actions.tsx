@@ -2,7 +2,7 @@
 
 import { Passport } from "@/types/types";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ImageActions({
   generatedImageUrl,
@@ -27,6 +27,14 @@ export function ImageActions({
   }
 
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (copied) {
+      setTimeout(() => {
+        setCopied(false);
+      }, 1000);
+    }
+  }, [copied]);
 
   return (
     // todo: these buttons look awful, make them better
