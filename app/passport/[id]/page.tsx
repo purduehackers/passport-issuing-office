@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description:
       "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
     openGraph: {
-      images: [r2PassportUrl],
+      images: ["/passport/default.png"],
     },
   };
 }
