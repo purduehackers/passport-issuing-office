@@ -25,35 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const r2PassportUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
 
-  // return {
-  //   metadataBase: new URL(
-  //     "https://passport-data-pages-git-dynamic-og-image-purdue-hackers.vercel.app/"
-  //   ),
-  //   title: `Make your passport with ${latestPassport.name}!`,
-  //   description:
-  //     "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
-  //   openGraph: {
-  //     images: ["https://pub-84077b41cf284cf3a74ef394a9226674.r2.dev/12.png"],
-  //   },
-  // };
-
   return {
+    metadataBase: new URL(
+      "https://passport-data-pages-git-dynamic-og-image-purdue-hackers.vercel.app/"
+    ),
+    title: `Make your passport with ${latestPassport.name}!`,
+    description:
+      "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
     openGraph: {
-      title: `Make your passport with ${latestPassport.name}!`,
-      siteName: "Passports | Purdue Hackers",
-      type: "website",
-      description:
-        "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
-      url: `https://passports.purduehackers.com/passport/${latestPassport.id}`,
-      images: ["https://pub-84077b41cf284cf3a74ef394a9226674.r2.dev/12.png"],
-    },
-    twitter: {
-      title: `Make your passport with ${latestPassport.name}!`,
-      site: "Passports | Purdue Hackers",
-      description:
-        "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
-      images: ["https://pub-84077b41cf284cf3a74ef394a9226674.r2.dev/12.png"],
-      card: "summary_large_image",
+      images: [r2PassportUrl],
     },
   };
 }
