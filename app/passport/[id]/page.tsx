@@ -60,7 +60,8 @@ export default async function Passport({ params }: Props) {
   let session = (await auth()) as MySession | null;
 
   return (
-    <div className="min-h-screen flex flex-col mt-24 sm:mt-0 sm:justify-center items-center">
+    // <div className="min-h-screen flex flex-col mt-24 sm:mt-0 sm:justify-center items-center bg-[url('/passport/bg-inverted-dark.png')]">
+    <div className="min-h-screen flex flex-col mt-24 sm:mt-0 sm:justify-center items-center bg-slate-900">
       <div className="w-11/12 sm:w-auto flex flex-col gap-4">
         <Image
           alt={`Passport for discord id ${latestPassport.id}`}
@@ -76,30 +77,74 @@ export default async function Passport({ params }: Props) {
           }}
         />
         <div className="grid grid-cols-3">
-          <p>two</p>
+          <div />
           <PreviewPageLink>
             <Button type="button" className="w-full mx-auto">
-              {session ? "View yours" : "Make yours"}
+              {session ? "View yours" : "Make your own"}
             </Button>
           </PreviewPageLink>
           <Dialog>
-            <DialogTrigger className="w-fit ml-auto">
-              <a
-                href="#"
-                className="text-gray-400 flex justify-center items-center gap-1"
-              >
-                <Info size={16} />
-                <p>What&#39;s this?</p>
-              </a>
+            <DialogTrigger className="w-fit ml-auto cursor-pointer text-muted-foreground flex justify-center items-center gap-1">
+              <Info size={16} />
+              <p>What&#39;s this?</p>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="w-11/12 sm:w-auto max-h-96 overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </DialogDescription>
+                <DialogTitle className="text-2xl">
+                  What are passports?
+                </DialogTitle>
               </DialogHeader>
+              <DialogDescription className="flex flex-col gap-2 leading-relaxed">
+                <div>
+                  <img
+                    src="/cover.svg"
+                    width={60}
+                    alt="Purdue Hackers passport cover"
+                    className="float-left mr-4"
+                  />
+                  <p>
+                    Purdue Hackers spent three months meticulously crafting
+                    high-quality passports for all its citizens. Passports are
+                    handmade by their owners at passport-making ceremonies
+                    during Hack Night. Every page is a reference to some
+                    defining part of Purdue Hackers. Passports can also get
+                    stamped at every Hack Night.
+                  </p>
+                </div>
+                <p>
+                  Every passport has an NFC sticker embedded in its cover,
+                  allowing you to scan your passport as you would scan your
+                  Purdue ID, or with your phone. This enables you to use your
+                  passport to gain access to many Purdue Hackers services,
+                  including exclusive software and access to Hack Night without
+                  ringing the doorbell.
+                </p>
+                <p>
+                  Purdue Hackers believes strongly that your time in college
+                  should be magical and unforgettable. In addition to unlocking
+                  exclusive perks, your passport will serve as a physical,
+                  everlasting reminder of your time in Purdue Hackers. The
+                  portrait image you set, the stamps you earn at Hack Night, and
+                  the images referencing the best of Purdue Hackers will be with
+                  you long after you graduate. All software will also be
+                  available to you forever.
+                </p>
+                <p>
+                  You do not and will never need a passport in order to fully
+                  experience Purdue Hackers. Especially now, passports still
+                  don&#39;t have much use because we&#39;re still building all
+                  the software that will eventually make them useful. Today,
+                  getting a passport means being an early adopter.
+                </p>
+                <p>
+                  That said, if you resonate with this and think the passports
+                  are cool, the door is open for you to make one. Click the
+                  button below to get started.
+                </p>
+                <PreviewPageLink className="mx-auto">
+                  <Button type="button">Make your passport</Button>
+                </PreviewPageLink>
+              </DialogDescription>
             </DialogContent>
           </Dialog>
         </div>

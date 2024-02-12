@@ -352,7 +352,7 @@ export default function Playground({
                         ? "text-success"
                         : step.status === "failed"
                         ? "text-destructive"
-                        : "text-gray-400"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {step.name}...
