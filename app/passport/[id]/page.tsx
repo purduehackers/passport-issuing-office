@@ -102,11 +102,11 @@ export default async function Passport({ params }: Props) {
                   />
                   <p>
                     Purdue Hackers spent three months meticulously crafting
-                    high-quality passports for all its citizens. Passports are
-                    handmade by their owners at passport-making ceremonies
-                    during Hack Night. Every page is a reference to some
-                    defining part of Purdue Hackers. Passports can also get
-                    stamped at every Hack Night.
+                    high-quality passports for its citizens. Every page is a
+                    reference to some defining part of Purdue Hackers, and they
+                    can get stamped at every Hack Night. Passports are handmade
+                    by their owners at passport-making ceremonies during Hack
+                    Night.
                   </p>
                 </div>
                 <p>
@@ -128,16 +128,17 @@ export default async function Passport({ params }: Props) {
                   available to you forever.
                 </p>
                 <p>
-                  You do not and will never need a passport in order to fully
-                  experience Purdue Hackers. Especially now, passports still
+                  While you do level up with a passport, you do not and will
+                  never need a passport in order to be a &ldquo;real&rdquo;
+                  member of Purdue Hackers. Especially now, passports still
                   don&#39;t have much use because we&#39;re still building all
                   the software that will eventually make them useful. Today,
                   getting a passport means being an early adopter.
                 </p>
                 <p>
-                  That said, if you resonate with this and think the passports
-                  are cool, the door is open for you to make one. Click the
-                  button below to get started.
+                  If you resonate with this and think the passports are cool,
+                  the door is open for you to make one. Click the button below
+                  to get started.
                 </p>
                 <PreviewPageLink className="mx-auto mt-2">
                   <Button type="button">Make your passport</Button>
