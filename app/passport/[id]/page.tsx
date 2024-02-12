@@ -77,7 +77,7 @@ export default async function Passport({ params }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-3">
           <div className="hidden sm:block" />
           <PreviewPageLink>
-            <Button type="button" className="w-full mx-auto">
+            <Button type="button" className="w-full mx-auto font-bold">
               {session ? "View yours" : "Make your own"}
             </Button>
           </PreviewPageLink>

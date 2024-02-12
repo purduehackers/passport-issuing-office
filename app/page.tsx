@@ -3,8 +3,15 @@ import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
 import { MySession } from "@/types/types";
+import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const generateNew = searchParams["new"];
+
   // Although the session includes the JWT token type from `auth.ts`, when it gets here
   // next-auth still thinks it doesn't exist, even though it does when I log it.
   // As a temporary workaround, I've created my own Session type which contains
@@ -18,6 +25,10 @@ export default async function Home() {
   let latestPassportImageUrl: string | null = null;
   if (latestPassport) {
     latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
+  }
+
+  if (latestPassport?.activated && generateNew !== "true") {
+    redirect("/activated");
   }
 
   return (
