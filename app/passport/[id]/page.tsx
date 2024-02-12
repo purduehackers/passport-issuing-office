@@ -86,7 +86,7 @@ export default async function Passport({ params }: Props) {
               <Info size={16} />
               <p>What&#39;s this?</p>
             </DialogTrigger>
-            <DialogContent className="w-11/12 sm:w-auto max-h-96 overflow-y-auto">
+            <DialogContent className="w-11/12 sm:w-auto max-h-screen h-128 overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-2xl">
                   What are passports?
