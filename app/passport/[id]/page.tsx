@@ -26,6 +26,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const r2PassportUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
 
   return {
+    metadataBase: new URL(
+      "https://passport-data-pages-git-dynamic-og-image-purdue-hackers.vercel.app/"
+    ),
     title: `Make your passport with ${latestPassport.name}!`,
     description:
       "NFC-enabled passports that level you up. Generate it here, then put it together at Hack Night.",
