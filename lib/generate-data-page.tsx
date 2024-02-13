@@ -1,9 +1,9 @@
 import { Passport } from "@/components/passport";
 import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
-import { ExpectedData } from "@/types/types";
+import { PassportGenData } from "@/types/types";
 import { ImageResponse } from "next/og";
 
-export async function fetchAssets(data: ExpectedData, url?: string) {
+export async function fetchAssets(data: PassportGenData, url?: string) {
   let portrait: File;
   if (data.portrait) {
     portrait = data.portrait;
@@ -54,7 +54,7 @@ export async function fetchAssets(data: ExpectedData, url?: string) {
 }
 
 export async function generateDataPage(
-  data: ExpectedData,
+  data: PassportGenData,
   url?: string
 ): Promise<ImageResponse> {
   const {
@@ -100,7 +100,7 @@ export async function generateDataPage(
   );
 }
 
-export async function generateFullFrame(data: ExpectedData, url?: string) {
+export async function generateFullFrame(data: PassportGenData, url?: string) {
   const { interFontData, interBoldFontData, OCRBProFontData } =
     await fetchAssets(data, url);
 
@@ -131,6 +131,7 @@ export async function generateFullFrame(data: ExpectedData, url?: string) {
         >
           <img
             src={dataPageUrlB64}
+            alt="data page"
             width={475.86 * IMAGE_GENERATION_SCALE_FACTOR}
             height={324.63 * IMAGE_GENERATION_SCALE_FACTOR}
             style={{
@@ -141,6 +142,7 @@ export async function generateFullFrame(data: ExpectedData, url?: string) {
         </div>
         <img
           src={secondHalfUrl}
+          alt="second half"
           width={324.63 * IMAGE_GENERATION_SCALE_FACTOR}
           height={475.86 * IMAGE_GENERATION_SCALE_FACTOR}
           style={{ marginLeft: "-100%" }}

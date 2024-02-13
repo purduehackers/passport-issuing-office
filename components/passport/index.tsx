@@ -2,7 +2,7 @@ import {
   CURRENT_PASSPORT_VERSION,
   IMAGE_GENERATION_SCALE_FACTOR,
 } from "@/config";
-import { ExpectedData } from "@/types/types";
+import { PassportGenData } from "@/types/types";
 import { ImageSection } from "./image";
 import { DataSection } from "./data";
 import { FooterSection } from "./footer";
@@ -12,7 +12,7 @@ export function Passport({
   dataPageBgUrl,
   portraitUrlB64,
 }: {
-  data: ExpectedData;
+  data: PassportGenData;
   dataPageBgUrl: string;
   portraitUrlB64: string;
 }) {

@@ -51,7 +51,7 @@ export interface GenerationSteps {
   register: GenerationStep[];
 }
 
-export interface ExpectedData {
+export interface PassportGenData {
   passportNumber: number;
   surname: string;
   firstName: string;
