@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     trueDateOfIssue,
     placeOfOrigin,
     portraitImage,
+    sendToDb,
   } = parseFormData(formValues);
 
   const fullFrameRes = await generateFullFrame(
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
       dateOfIssue: trueDateOfIssue,
       placeOfOrigin,
       portrait: portraitImage,
+      sendToDb: sendToDb === "true",
     },
     request.url
   );
