@@ -18,6 +18,9 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        main: "var(--font-space-grotesk)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

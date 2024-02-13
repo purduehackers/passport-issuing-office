@@ -76,7 +76,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background dark text-foreground;
+    @apply bg-background dark text-foreground font-main;
   }
 
   ul {
