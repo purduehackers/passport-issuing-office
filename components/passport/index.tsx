@@ -47,7 +47,7 @@ export function Passport({
       >
         <ImageSection imageUrl={portraitUrlB64} />
         <DataSection
-          version={CURRENT_PASSPORT_VERSION}
+          version={data.sendToDb ? CURRENT_PASSPORT_VERSION : 0}
           passportNumber={data.passportNumber}
           id={data.passportNumber}
           surname={data.surname}

@@ -14,6 +14,7 @@ export async function POST(request: Request) {
     trueDateOfIssue,
     placeOfOrigin,
     portraitImage,
+    sendToDb,
   } = parseFormData(formValues);
 
   return await generateDataPage(
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
       dateOfIssue: trueDateOfIssue,
       placeOfOrigin,
       portrait: portraitImage,
+      sendToDb: sendToDb === "true",
     },
     request.url
   );

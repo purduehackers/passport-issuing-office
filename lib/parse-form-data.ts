@@ -23,6 +23,8 @@ export function parseFormData(formValues: FormData) {
   const placeOfOrigin = formValues.get("placeOfOrigin")
     ? (formValues.get("placeOfOrigin") as string)
     : "THE WOODS";
+
+  const sendToDb = formValues.get("sendToDb") as string | undefined;
   const portraitImage = formValues.get("portrait") as File;
   const userId = formValues.get("userId") as string | undefined;
   const bigIntUserId = BigInt(`${userId || "0"}`);
@@ -34,6 +36,7 @@ export function parseFormData(formValues: FormData) {
     trueDateOfBirth,
     trueDateOfIssue,
     placeOfOrigin,
+    sendToDb,
     portraitImage,
     userId: bigIntUserId,
     stringUserId: userId,

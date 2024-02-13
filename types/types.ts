@@ -58,5 +58,6 @@ export interface PassportGenData {
   dateOfBirth: Date;
   dateOfIssue: Date;
   placeOfOrigin: string;
+  sendToDb: boolean;
   portrait?: File;
 }
