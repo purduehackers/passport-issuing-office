@@ -20,14 +20,12 @@ import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
 import { useState } from "react";
 import { ImageResponse } from "next/og";
-import Image from "next/image";
 import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
 import {
   GenerationStatus,
   GenerationStep,
   GenerationStepId,
-  OptimizedLatestPassportImage,
   Passport,
 } from "@/types/types";
 import { formatDefaultDate } from "@/lib/format-default-date";
@@ -69,11 +67,11 @@ const FormSchema = z.object({
 export default function Playground({
   userId,
   latestPassport,
-  optimizedLatestPassportImage,
+  latestPassportImageUrl,
 }: {
   userId: string | undefined;
   latestPassport: Passport | null | undefined;
-  optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
+  latestPassportImageUrl: string | null;
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -90,8 +88,7 @@ export default function Playground({
   });
 
   const [generatedImageUrl, setGeneratedImageUrl] = useState(
-    optimizedLatestPassportImage?.latestPassportImageUrl ||
-      "/passport/default.png"
+    latestPassportImageUrl || "/passport/default.png"
   );
   const [isDefaultImage, setIsDefaultImage] = useState(
     generatedImageUrl === "/passport/default.png" ? true : false
@@ -101,6 +98,7 @@ export default function Playground({
   const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
     GENERATION_STEPS.base
   );
+  const [copied, setCopied] = useState(false);
 
   function updateGenerationStepState(
     stepId: GenerationStepId,
@@ -330,27 +328,11 @@ export default function Playground({
       </Form>
       <aside>
         <div className="flex flex-col gap-4">
-          {generatedImageUrl ===
-          optimizedLatestPassportImage?.latestPassportImageUrl ? (
-            <Image
-              src={optimizedLatestPassportImage.latestPassportImageUrl}
-              alt="Passport preview"
-              width={optimizedLatestPassportImage.metadata.width}
-              height={optimizedLatestPassportImage.metadata.height}
-              placeholder="blur"
-              blurDataURL={optimizedLatestPassportImage.base64}
-              style={{
-                borderRadius: "8px",
-              }}
-            />
-          ) : (
-            <img
-              src={generatedImageUrl}
-              alt="Preview of passport page"
-              className="rounded-lg w-full"
-            />
-          )}
-
+          <img
+            src={generatedImageUrl}
+            alt="Preview of passport page"
+            className="shadow-lg rounded-lg w-full bg-slate-100"
+          />
           {isLoading ? (
             <ul>
               {generationSteps.map((step, index) => (

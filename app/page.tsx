@@ -2,8 +2,7 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
-import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
-import { MySession, OptimizedLatestPassportImage } from "@/types/types";
+import { MySession } from "@/types/types";
 import { redirect } from "next/navigation";
 
 export default async function Home({
@@ -21,11 +20,11 @@ export default async function Home({
   const userId = session?.token.sub;
   const latestPassport = session?.passport;
 
-  let optimizedLatestPassportImage: OptimizedLatestPassportImage | null = null;
+  // This is temporary. In the future, we can render the preview as a DOM element directly,
+  // since we have access to all the data.
+  let latestPassportImageUrl: string | null = null;
   if (latestPassport) {
-    optimizedLatestPassportImage = await getOptimizedLatestPassportImage(
-      latestPassport.id
-    );
+    latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
   }
 
   if (latestPassport?.activated && generateNew !== "true") {
@@ -76,7 +75,7 @@ export default async function Home({
         <Playground
           userId={userId}
           latestPassport={latestPassport}
-          optimizedLatestPassportImage={optimizedLatestPassportImage}
+          latestPassportImageUrl={latestPassportImageUrl}
         />
       </div>
     </main>

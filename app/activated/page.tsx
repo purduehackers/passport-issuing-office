@@ -6,7 +6,6 @@ import Image from "next/image";
 import { ImageActions } from "@/components/image-actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 
 export default async function Activated() {
   // Although the session includes the JWT token type from `auth.ts`, when it gets here
@@ -21,8 +20,7 @@ export default async function Activated() {
     notFound();
   }
 
-  const { latestPassportImageUrl, base64, metadata } =
-    await getOptimizedLatestPassportImage(latestPassport.id);
+  const latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
 
   return (
     <main className="bg-slate-900 flex flex-col min-h-screen">
@@ -47,11 +45,12 @@ export default async function Activated() {
             <Image
               alt={`Passport for discord id ${latestPassport.id}`}
               src={latestPassportImageUrl}
-              width={metadata.width / 2}
-              height={metadata.width / 2}
-              placeholder="blur"
-              blurDataURL={base64}
+              width={0}
+              height={0}
+              sizes="100vw"
               style={{
+                width: "auto",
+                height: "auto",
                 borderRadius: "8px",
               }}
             />
