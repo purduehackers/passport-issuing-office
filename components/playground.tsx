@@ -34,6 +34,7 @@ import { formatDefaultDate } from "@/lib/format-default-date";
 import { GENERATION_STEPS } from "@/config";
 import { CheckCircle } from "lucide-react";
 import { ImageActions } from "./image-actions";
+import defaultImage from "@/public/passport/default.png";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -89,7 +90,7 @@ export default function Playground({
     },
   });
 
-  const [generatedImageUrl, setGeneratedImageUrl] = useState(
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
     optimizedLatestPassportImage?.latestPassportImageUrl ||
       "/passport/default.png"
   );
@@ -339,6 +340,17 @@ export default function Playground({
               height={optimizedLatestPassportImage.metadata.height}
               placeholder="blur"
               blurDataURL={optimizedLatestPassportImage.base64}
+              style={{
+                borderRadius: "8px",
+              }}
+            />
+          ) : generatedImageUrl === "/passport/default.png" ? (
+            <Image
+              src={defaultImage}
+              alt="Preview of default passport page"
+              width={708}
+              height={483}
+              placeholder="blur"
               style={{
                 borderRadius: "8px",
               }}
