@@ -347,7 +347,7 @@ export default function Playground({
             <img
               src={generatedImageUrl}
               alt="Preview of passport page"
-              className="shadow-lg rounded-lg w-full bg-slate-100"
+              className="rounded-lg w-full"
             />
           )}
 
