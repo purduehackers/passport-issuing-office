@@ -6,6 +6,7 @@ import Image from "next/image";
 import { ImageActions } from "@/components/image-actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getPlaiceholder } from "plaiceholder";
 
 export default async function Activated() {
   // Although the session includes the JWT token type from `auth.ts`, when it gets here
@@ -21,6 +22,10 @@ export default async function Activated() {
   }
 
   const latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
+  const buffer = await fetch(latestPassportImageUrl).then(async (res) =>
+    Buffer.from(await res.arrayBuffer())
+  );
+  const { metadata, base64 } = await getPlaiceholder(buffer);
 
   return (
     <main className="bg-slate-900 flex flex-col min-h-screen">
@@ -45,12 +50,11 @@ export default async function Activated() {
             <Image
               alt={`Passport for discord id ${latestPassport.id}`}
               src={latestPassportImageUrl}
-              width={0}
-              height={0}
-              sizes="100vw"
+              width={metadata.width / 2}
+              height={metadata.width / 2}
+              placeholder="blur"
+              blurDataURL={base64}
               style={{
-                width: "auto",
-                height: "auto",
                 borderRadius: "8px",
               }}
             />
