@@ -6,7 +6,7 @@ import Image from "next/image";
 import { ImageActions } from "@/components/image-actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { getPlaiceholder } from "plaiceholder";
+import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 
 export default async function Activated() {
   // Although the session includes the JWT token type from `auth.ts`, when it gets here
@@ -21,11 +21,8 @@ export default async function Activated() {
     notFound();
   }
 
-  const latestPassportImageUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
-  const buffer = await fetch(latestPassportImageUrl).then(async (res) =>
-    Buffer.from(await res.arrayBuffer())
-  );
-  const { metadata, base64 } = await getPlaiceholder(buffer);
+  const { latestPassportImageUrl, base64, metadata } =
+    await getOptimizedLatestPassportImage(latestPassport.id);
 
   return (
     <main className="bg-slate-900 flex flex-col min-h-screen">

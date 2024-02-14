@@ -2,7 +2,6 @@ import Image from "next/image";
 import { getLatestPassport } from "@/lib/get-latest-passport";
 import { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { getPlaiceholder } from "plaiceholder";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +15,7 @@ import { Info } from "lucide-react";
 import { auth } from "@/auth";
 import { MySession } from "@/types/types";
 import { PreviewPageLink } from "@/components/preview-page-link";
+import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 
 interface Props {
   params: {
@@ -58,11 +58,8 @@ export default async function Passport({ params }: Props) {
 
   let session = (await auth()) as MySession | null;
 
-  const passportUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
-  const buffer = await fetch(passportUrl).then(async (res) =>
-    Buffer.from(await res.arrayBuffer())
-  );
-  const { metadata, base64 } = await getPlaiceholder(buffer);
+  const { latestPassportImageUrl, base64, metadata } =
+    await getOptimizedLatestPassportImage(latestPassport.id);
 
   return (
     // <div className="min-h-screen flex flex-col mt-24 sm:mt-0 sm:justify-center items-center bg-[url('/passport/bg-inverted-dark.png')]">
@@ -70,7 +67,7 @@ export default async function Passport({ params }: Props) {
       <div className="w-11/12 md:w-auto flex flex-col gap-4">
         <Image
           alt={`Passport for discord id ${latestPassport.id}`}
-          src={`${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`}
+          src={latestPassportImageUrl}
           placeholder="blur"
           blurDataURL={base64}
           width={metadata.width / 2}
