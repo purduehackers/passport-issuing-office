@@ -2,6 +2,7 @@ import Image from "next/image";
 import { getLatestPassport } from "@/lib/get-latest-passport";
 import { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
+import { getPlaiceholder } from "plaiceholder";
 import {
   Dialog,
   DialogContent,
@@ -57,20 +58,24 @@ export default async function Passport({ params }: Props) {
 
   let session = (await auth()) as MySession | null;
 
+  const passportUrl = `${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`;
+  const buffer = await fetch(passportUrl).then(async (res) =>
+    Buffer.from(await res.arrayBuffer())
+  );
+  const { metadata, base64 } = await getPlaiceholder(buffer);
+
   return (
     // <div className="min-h-screen flex flex-col mt-24 sm:mt-0 sm:justify-center items-center bg-[url('/passport/bg-inverted-dark.png')]">
     <div className="min-h-screen flex flex-col pt-24 sm:pt-0 sm:justify-center items-center bg-slate-900">
-      <div className="w-11/12 sm:w-auto flex flex-col gap-4">
+      <div className="w-11/12 md:w-auto flex flex-col gap-4">
         <Image
           alt={`Passport for discord id ${latestPassport.id}`}
           src={`${process.env.R2_PUBLIC_URL}/${latestPassport.id}.png`}
-          width={0}
-          height={0}
-          sizes="(max-width: 768px) 100vw,
-          70vw"
+          placeholder="blur"
+          blurDataURL={base64}
+          width={metadata.width / 2}
+          height={metadata.height / 2}
           style={{
-            width: "auto",
-            height: "auto",
             borderRadius: "8px",
           }}
         />
