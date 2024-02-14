@@ -65,4 +65,4 @@ export interface PassportGenData {
 
 export type OptimizedLatestPassportImage = Awaited<
   ReturnType<typeof getOptimizedLatestPassportImage>
-> | null;
+>;

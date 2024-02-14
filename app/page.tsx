@@ -21,7 +21,7 @@ export default async function Home({
   const userId = session?.token.sub;
   const latestPassport = session?.passport;
 
-  let optimizedLatestPassportImage: OptimizedLatestPassportImage = null;
+  let optimizedLatestPassportImage: OptimizedLatestPassportImage | null = null;
   if (latestPassport) {
     optimizedLatestPassportImage = await getOptimizedLatestPassportImage(
       latestPassport.id

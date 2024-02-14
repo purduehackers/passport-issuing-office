@@ -73,7 +73,7 @@ export default function Playground({
 }: {
   userId: string | undefined;
   latestPassport: Passport | null | undefined;
-  optimizedLatestPassportImage: OptimizedLatestPassportImage;
+  optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
