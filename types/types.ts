@@ -1,3 +1,4 @@
+import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import { User } from "next-auth";
 
 export interface MySession {
@@ -61,3 +62,7 @@ export interface PassportGenData {
   sendToDb: boolean;
   portrait?: File;
 }
+
+export type OptimizedLatestPassportImage = Awaited<
+  ReturnType<typeof getOptimizedLatestPassportImage>
+>;
