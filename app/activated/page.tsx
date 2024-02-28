@@ -25,16 +25,16 @@ export default async function Activated() {
     await getOptimizedLatestPassportImage(latestPassport.id);
 
   return (
-    <main className="bg-slate-900 flex flex-col min-h-screen">
+    <main className="flex flex-col min-h-screen">
       <UserInfo user={session?.user} />
-      <div className="flex flex-col items-center gap-y-12 sm:gap-y-24 p-4 sm:p-24">
+      <div className="flex flex-col items-center gap-y-12 md:gap-y-24 p-4 md:p-24">
         <div className="flex flex-col gap-2 w-full md:w-9/12 mx-auto">
-          <div className="bg-slate-200 text-black rounded-sm border-[3px] border-amber-400 flex flex-col justify-center gap-2 p-2 sm:p-4 my-4 break-inside-avoid shadow-amber-500 shadow-blocks-sm font-main">
-            <h1 className="font-bold text-3xl sm:text-6xl mx-auto mb-4 flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
+          <div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center gap-2 p-4 my-4 break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+            <h1 className="font-bold text-3xl md:text-6xl mx-auto mb-4 flex flex-col md:flex-row justify-center items-center gap-2 md:gap-4">
               <img
                 alt="passport cover"
-                src="/cover-black.svg"
-                className="self-center flex-shrink-0 h-16 sm:h-[1em] w-auto pointer-events-none"
+                src="/cover-white.svg"
+                className="self-center flex-shrink-0 h-16 md:h-[1em] w-auto pointer-events-none"
               />
               Your Passport
             </h1>
@@ -43,7 +43,7 @@ export default async function Activated() {
               generated. You can download it, share it, or make a new one.
             </p>
           </div>
-          <div className="w-full md:w-8/12 mx-auto flex flex-col gap-2">
+          <div className="w-full md:w-8/12 mx-auto flex flex-col items-center gap-2">
             <Image
               alt={`Passport for discord id ${latestPassport.id}`}
               src={latestPassportImageUrl}
@@ -64,7 +64,7 @@ export default async function Activated() {
             />
           </div>
         </div>
-        <div className="bg-slate-200 text-black rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-7/12 gap-2 p-2 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-500 shadow-blocks-sm font-main">
+        <div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-7/12 gap-2 p-4 mb-4 mt-24 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
           <h1 className="font-bold text-center text-2xl">
             Make a new passport?
           </h1>
@@ -75,7 +75,7 @@ export default async function Activated() {
             your current one!
           </p>
           <Link href="/?new=true" className="mx-auto mt-2">
-            <Button type="button" className="font-bold">
+            <Button type="button" className="amberButton">
               New Passport
             </Button>
           </Link>

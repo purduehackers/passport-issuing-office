@@ -63,7 +63,7 @@ export default async function Passport({ params }: Props) {
 
   return (
     // <div className="min-h-screen flex flex-col mt-24 sm:mt-0 sm:justify-center items-center bg-[url('/passport/bg-inverted-dark.png')]">
-    <div className="min-h-screen flex flex-col pt-24 sm:pt-0 sm:justify-center items-center bg-slate-900">
+    <div className="min-h-screen flex flex-col pt-24 sm:pt-0 sm:justify-center items-center">
       <div className="w-11/12 md:w-auto flex flex-col gap-4">
         <Image
           alt={`Passport for discord id ${latestPassport.id}`}
@@ -79,7 +79,10 @@ export default async function Passport({ params }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-3">
           <div className="hidden sm:block" />
           <PreviewPageLink>
-            <Button type="button" className="w-full mx-auto font-bold">
+            <Button
+              type="button"
+              className="w-full mx-auto font-bold amberButton"
+            >
               {session ? "View yours" : "Make your own"}
             </Button>
           </PreviewPageLink>
@@ -143,7 +146,9 @@ export default async function Passport({ params }: Props) {
                   to get started.
                 </p>
                 <PreviewPageLink className="mx-auto mt-2">
-                  <Button type="button">Make your passport</Button>
+                  <Button type="button" className="amberButton">
+                    Make your passport
+                  </Button>
                 </PreviewPageLink>
               </DialogDescription>
             </DialogContent>
