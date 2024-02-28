@@ -33,19 +33,19 @@ export default async function Home({
   }
 
   return (
-    <main className="bg-slate-900 flex flex-col min-h-screen">
+    <main className="bg-black flex flex-col min-h-screen">
       <UserInfo user={session?.user} />
-      <div className="flex flex-col items-center gap-y-12 sm:gap-y-24 p-4 sm:p-24">
-        <div>
-          <div className="bg-slate-200 text-black rounded-sm border-[3px] border-amber-400 flex flex-col justify-center gap-2 p-2 sm:p-4 my-4 w-full md:w-9/12 mx-auto break-inside-avoid shadow-amber-500 shadow-blocks-sm font-main">
-            <h1 className="font-bold text-3xl sm:text-6xl mx-auto mb-4 flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
-              <img
-                alt="passport cover"
-                src="/cover-black.svg"
-                className="self-center flex-shrink-0 h-16 sm:h-[1em] w-auto pointer-events-none"
-              />
-              Passport Data Pages
-            </h1>
+      <div className="flex flex-col items-center gap-y-12 sm:gap-y-20 pb-4 px-4 pt-0 sm:px-24 sm:pt-4 sm:pb-24">
+        <div className="rounded-sm flex flex-col justify-center p-2 sm:p-4 my-4 w-full md:w-9/12 mx-auto break-inside-avoid font-main">
+          <h1 className="font-bold text-3xl text-amber-400 sm:text-5xl lg:text-[5rem] text-center mx-auto mb-4 flex flex-col justify-center items-center gap-2 sm:gap-4">
+            <img
+              alt="passport cover"
+              src="/cover.svg"
+              className="self-center flex-shrink-0 h-20 sm:h-[2em] w-auto pointer-events-none"
+            />
+            Passport Data Pages
+          </h1>
+          <div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
             <p className="text-base">
               Use this website to create your passport data page. 🛂
             </p>
@@ -63,13 +63,13 @@ export default async function Home({
             ) : null}
           </div>
           {!session?.user?.email ? (
-            <div className="bg-slate-200 text-black rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-7/12 gap-2 p-2 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-500 shadow-blocks-sm font-main">
+            <div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-10/12 gap-4 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
               <p>
                 You are currently in Playground Mode: you can play with a data
                 page & it will not be shared with us. To save your page and
                 register for a passport ceremony, you&#39;ll need to sign in.
               </p>
-              <SignInButton />
+              <SignInButton dark />
             </div>
           ) : null}
         </div>

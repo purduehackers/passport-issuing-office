@@ -28,10 +28,8 @@ export function SignInButton({ dark }: { dark?: boolean }) {
         "use server";
         await signIn("discord");
       }}
-      className={`mx-auto shadow-blocks-tiny ${
-        dark
-          ? "shadow-discord-light"
-          : "shadow-discord-deselected border-2 border-black bg-discord-light hover:bg-discord-vibrant"
+      className={`mx-auto shadow-blocks-tiny shadow-discord-deselected border-2 border-black ${
+        dark ? "" : "bg-discord-light hover:bg-discord-vibrant"
       }`}
     >
       <Button
