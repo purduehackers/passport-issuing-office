@@ -28,6 +28,12 @@ const nextConfig = {
         port: "",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "data.passports.purduehackers.com",
+        port: "",
+        pathname: "**",
+      },
     ],
   },
 };
