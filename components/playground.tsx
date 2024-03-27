@@ -41,12 +41,18 @@ const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 const maxDate = new Date();
 
 const FormSchema = z.object({
-  surname: z.string().min(1, {
-    message: "Name must be at least 1 character.",
-  }),
-  firstName: z.string().min(1, {
-    message: "Name must be at least 1 character.",
-  }),
+  surname: z
+    .string()
+    .min(1, {
+      message: "Name must be at least 1 character.",
+    })
+    .trim(),
+  firstName: z
+    .string()
+    .min(1, {
+      message: "Name must be at least 1 character.",
+    })
+    .trim(),
   placeOfOrigin: z.string().max(13),
   dateOfBirth: z
     .string()
