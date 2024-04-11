@@ -98,7 +98,7 @@ export default function Playground({
     },
   });
 
-  const registerCheckboxDisabled = latestOverallPassportId >= 64;
+  const registerCheckboxDisabled = latestOverallPassportId >= 63;
 
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
     optimizedLatestPassportImage?.latestPassportImageUrl ||
