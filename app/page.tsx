@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
+import { getLatestOverallPassportId } from "@/lib/get-latest-passport";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import { MySession, OptimizedLatestPassportImage } from "@/types/types";
 import { redirect } from "next/navigation";
@@ -12,6 +13,11 @@ export default async function Home({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const generateNew = searchParams["new"];
+
+  // This is a temporary method of limiting passports for a ceremony. I'm planning
+  // to redo how passport ceremony registration works, but for now we just need to
+  // limit this week's signups.
+  const latestOverallPassportId = await getLatestOverallPassportId();
 
   // Although the session includes the JWT token type from `auth.ts`, when it gets here
   // next-auth still thinks it doesn't exist, even though it does when I log it.
@@ -76,6 +82,7 @@ export default async function Home({
         <Playground
           userId={userId}
           latestPassport={latestPassport}
+          latestOverallPassportId={latestOverallPassportId}
           optimizedLatestPassportImage={optimizedLatestPassportImage}
         />
       </div>

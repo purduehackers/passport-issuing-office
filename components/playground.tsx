@@ -76,10 +76,12 @@ const FormSchema = z.object({
 export default function Playground({
   userId,
   latestPassport,
+  latestOverallPassportId,
   optimizedLatestPassportImage,
 }: {
   userId: string | undefined;
   latestPassport: Passport | null | undefined;
+  latestOverallPassportId: number;
   optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -95,6 +97,8 @@ export default function Playground({
       passportNumber: "0",
     },
   });
+
+  const registerCheckboxDisabled = latestOverallPassportId >= 64;
 
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
     optimizedLatestPassportImage?.latestPassportImageUrl ||
@@ -306,13 +310,14 @@ export default function Playground({
                 <FormItem>
                   <FormLabel>Register this passport?</FormLabel>
                   <FormDescription>
-                    Checking this box will register you for the next passport
-                    ceremony. You can make as many changes as you want before
-                    the ceremony.
+                    {registerCheckboxDisabled
+                      ? "Sorry, we're at capacity for this upcoming passport ceremony :("
+                      : "Checking this box will register you for the next passport ceremony. You can make as many changes as you want before the ceremony."}
                   </FormDescription>
                   <FormControl>
                     <Checkbox
                       className="h-6 w-6"
+                      disabled={registerCheckboxDisabled}
                       onCheckedChange={(e) => {
                         // it hasn't updated the value at this point yet, so it's the opposite actually
                         if (field.value === true) {
