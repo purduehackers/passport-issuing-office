@@ -76,12 +76,10 @@ const FormSchema = z.object({
 export default function Playground({
   userId,
   latestPassport,
-  latestOverallPassportId,
   optimizedLatestPassportImage,
 }: {
   userId: string | undefined;
   latestPassport: Passport | null | undefined;
-  latestOverallPassportId: number;
   optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -98,7 +96,11 @@ export default function Playground({
     },
   });
 
-  const registerCheckboxDisabled = latestOverallPassportId >= 63;
+  // This is a temporary method of limiting passports for a ceremony. I'm planning
+  // to redo how passport ceremony registration works, but for now we just need to
+  // limit this week's signups.
+  // https://github.com/purduehackers/passport-issuing-office/pull/36
+  const registerCheckboxDisabled = true;
 
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
     optimizedLatestPassportImage?.latestPassportImageUrl ||

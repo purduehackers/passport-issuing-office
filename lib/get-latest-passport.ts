@@ -25,16 +25,3 @@ export async function getLatestPassport(discordId: string) {
     return undefined;
   }
 }
-
-export async function getLatestOverallPassportId(): Promise<number> {
-  const latestPassport = await prisma.passport.findFirst({
-    orderBy: {
-      id: "desc",
-    },
-  });
-  if (latestPassport) {
-    return latestPassport.id;
-  } else {
-    return 9999;
-  }
-}
