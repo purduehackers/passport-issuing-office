@@ -18,7 +18,7 @@ export default async function Home({
   // As a temporary workaround, I've created my own Session type which contains
   // what I'm actually getting from next-auth.
   let session = (await auth()) as MySession | null;
-  const userId = session?.token.sub;
+  const userId = session?.token?.sub;
   const latestPassport = session?.passport;
 
   let optimizedLatestPassportImage: OptimizedLatestPassportImage | null = null;
