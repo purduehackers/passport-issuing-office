@@ -100,7 +100,7 @@ export default function Playground({
   // to redo how passport ceremony registration works, but for now we just need to
   // limit this week's signups.
   // https://github.com/purduehackers/passport-issuing-office/pull/36
-  const registerCheckboxDisabled = true;
+  const registerCheckboxDisabled = false;
 
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
     optimizedLatestPassportImage?.latestPassportImageUrl ||
