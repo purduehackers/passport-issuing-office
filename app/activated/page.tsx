@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import UserInfo from "@/components/user-info";
 import { MySession } from "@/types/types";
-import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import { ImageActions } from "@/components/image-actions";
 import Link from "next/link";
@@ -18,7 +18,7 @@ export default async function Activated() {
   const latestPassport = session?.passport;
 
   if (!latestPassport) {
-    notFound();
+    redirect("/");
   }
 
   const { latestPassportImageUrl, base64, metadata } =
