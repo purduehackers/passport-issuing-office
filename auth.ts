@@ -27,54 +27,54 @@ export const authConfig = {
       const token = jwtToken as Token
       let passport: Passport | null = null;
       const bigIntUserId = BigInt(`${token.sub}`);
+      let guildMember;
 
-        let user = await prisma.user.findFirst({
+      const guilds = await fetch("https://discordapp.com/api/users/@me/guilds", {
+        headers: {
+          Authorization: "Bearer " + token.accessToken,
+          "Content-Type": "application/json"
+        }
+      })
+        .then(function (guilds) {
+          return guilds.json()
+        }).then(async function (data) {
+          guildMember = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
+        })
+
+      let user = await prisma.user.findFirst({
+        where: {
+          discord_id: bigIntUserId,
+        },
+      });
+      if (user) {
+        const latestPassport = await prisma.passport.findFirst({
           where: {
-            discord_id: bigIntUserId,
+            owner_id: user.id
           },
-        });
-        if (user) {
-          const latestPassport = await prisma.passport.findFirst({
-            where: {
-              owner_id: user.id
-            },
-            orderBy: {
-              id: 'desc'
-            }
-          })
-          if (latestPassport) {
-            const updatedPassport = {
-              ...latestPassport,
-              date_of_birth: latestPassport.date_of_birth.toISOString(),
-              date_of_issue: latestPassport.date_of_issue.toISOString(),
-            }
-            passport = updatedPassport
+          orderBy: {
+            id: 'desc'
           }
-        } else {
-          const guilds = await fetch("https://discordapp.com/api/users/@me/guilds", {
-            headers: {
-              Authorization: "Bearer "+token.accessToken,
-              "Content-Type": "application/json"
-            }
-          })
-          .then(function(guilds) { 
-            return guilds.json()
-          }).then(async function(data) {
-            let guild_member = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
-            console.log(guild_member);
-
-            if (guild_member) {
-              user = await prisma.user.create({
-                data: {
-                  discord_id: bigIntUserId,
-                  role: "hacker",
-                },
-              });
-            }
+        })
+        if (latestPassport) {
+          const updatedPassport = {
+            ...latestPassport,
+            date_of_birth: latestPassport.date_of_birth.toISOString(),
+            date_of_issue: latestPassport.date_of_issue.toISOString(),
+          }
+          passport = updatedPassport
+        }
+      } else {
+        if (guildMember) {
+          user = await prisma.user.create({
+            data: {
+              discord_id: bigIntUserId,
+              role: "hacker",
+            },
           });
         }
+      }
 
-      return { ...session, token, passport };
+      return { ...session, token, passport, guildMember };
     },
     async jwt({ token, account }) {
       if (account) {
