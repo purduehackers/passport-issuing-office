@@ -82,7 +82,7 @@ export default function Playground({
   userId: string | undefined;
   latestPassport: Passport | null | undefined;
   optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
-  guildMember: object | undefined;
+  guildMember: object | null | undefined;
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -306,7 +306,7 @@ export default function Playground({
               </FormItem>
             )}
           />
-          {userId && guildMember ? (
+          {userId && (guildMember !== undefined) ? (
             <FormField
               control={form.control}
               name="sendToDb"

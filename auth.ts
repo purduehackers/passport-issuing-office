@@ -29,17 +29,21 @@ export const authConfig = {
       const bigIntUserId = BigInt(`${token.sub}`);
       let guildMember;
 
-      const guilds = await fetch("https://discordapp.com/api/users/@me/guilds", {
-        headers: {
-          Authorization: "Bearer " + token.accessToken,
-          "Content-Type": "application/json"
-        }
-      })
-        .then(function (guilds) {
-          return guilds.json()
-        }).then(async function (data) {
-          guildMember = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
+      if (process.env.DISCORD_GUILD) {
+        const guilds = await fetch("https://discordapp.com/api/users/@me/guilds", {
+          headers: {
+            Authorization: "Bearer " + token.accessToken,
+            "Content-Type": "application/json"
+          }
         })
+          .then(function (guilds) {
+            return guilds.json()
+          }).then(async function (data) {
+            guildMember = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
+          })
+      } else {
+        guildMember = null;
+      }
 
       let user = await prisma.user.findFirst({
         where: {
