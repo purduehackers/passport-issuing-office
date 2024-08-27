@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { SignInButton, JoinGuildButton } from "@/components/auth-buttons";
+import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
@@ -20,7 +20,6 @@ export default async function Home({
   let session = (await auth()) as MySession | null;
   const userId = session?.token?.sub;
   const latestPassport = session?.passport;
-  const guildMember = session?.guildMember; 
 
   let optimizedLatestPassportImage: OptimizedLatestPassportImage | null = null;
   if (latestPassport) {
@@ -73,21 +72,11 @@ export default async function Home({
               <SignInButton dark />
             </div>
           ) : null}
-          {session?.user?.email && (guildMember === undefined) ? (
-            <div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-10/12 gap-4 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
-              <p>
-                To register for an upcoming ceremony, please join our Discord,
-                then refresh this page.
-              </p>
-              <JoinGuildButton dark />
-            </div>
-          ) : null}
         </div>
         <Playground
           userId={userId}
           latestPassport={latestPassport}
           optimizedLatestPassportImage={optimizedLatestPassportImage}
-          guildMember={guildMember}
         />
       </div>
     </main>

@@ -6,7 +6,6 @@ export interface MySession {
   expires: string;
   token: Token;
   passport: Passport | null;
-  guildMember: object | null | undefined;
 }
 
 export interface Token {
