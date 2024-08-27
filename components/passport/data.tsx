@@ -86,15 +86,15 @@ export function DataSection({
         >
           <Description
             title="DATE OF BIRTH"
-            content={`${String(dateOfBirth.getDate()).padStart(2, "0")} ${
-              monthCodes[dateOfBirth.getMonth()]
-            } ${String(dateOfBirth.getFullYear()).padStart(4, "0")}`}
+            content={`${String(dateOfBirth.getUTCDate()).padStart(2, "0")} ${
+              monthCodes[dateOfBirth.getUTCMonth()]
+            } ${String(dateOfBirth.getUTCFullYear()).padStart(4, "0")}`}
           />
           <Description
             title="DATE OF ISSUE"
-            content={`${String(dateOfIssue.getDate()).padStart(2, "0")} ${
-              monthCodes[dateOfIssue.getMonth()]
-            } ${String(dateOfIssue.getFullYear()).padStart(4, "0")}`}
+            content={`${String(dateOfIssue.getUTCDate()).padStart(2, "0")} ${
+              monthCodes[dateOfIssue.getUTCMonth()]
+            } ${String(dateOfIssue.getUTCFullYear()).padStart(4, "0")}`}
           />
         </div>
         <div
@@ -109,7 +109,7 @@ export function DataSection({
           <Description
             title="DATE OF EXPIRATION"
             content={`01 JAN ${String(
-              dateOfIssue.getFullYear() + 1000
+              dateOfIssue.getUTCFullYear() + 1000
             ).padStart(4, "0")}`}
           />
         </div>{" "}

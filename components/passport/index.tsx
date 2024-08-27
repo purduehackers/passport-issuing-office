@@ -67,25 +67,25 @@ export function Passport({
           "0"
         )}${String(data.passportNumber).padStart(6, "0")}${
           (CURRENT_PASSPORT_VERSION + data.passportNumber) % 10
-        }HAK${String(data.dateOfBirth.getFullYear()).padStart(4, "0")}${String(
-          data.dateOfBirth.getMonth() + 1
-        ).padStart(2, "0")}${String(data.dateOfBirth.getDate()).padStart(
+        }HAK${String(data.dateOfBirth.getUTCFullYear()).padStart(4, "0")}${String(
+          data.dateOfBirth.getUTCMonth() + 1
+        ).padStart(2, "0")}${String(data.dateOfBirth.getUTCDate()).padStart(
           2,
           "0"
         )}${
-          (data.dateOfBirth.getFullYear() +
-            data.dateOfBirth.getMonth() +
-            data.dateOfBirth.getDate()) %
+          (data.dateOfBirth.getUTCFullYear() +
+            data.dateOfBirth.getUTCMonth() +
+            data.dateOfBirth.getUTCDate()) %
           10
         }<${String(data.dateOfIssue.getFullYear()).padStart(4, "0")}0101${
-          (data.dateOfIssue.getFullYear() + 2) % 10
+          (data.dateOfIssue.getUTCFullYear() + 2) % 10
         }<<<<<<<<<<0${
           (CURRENT_PASSPORT_VERSION +
             data.passportNumber +
-            (data.dateOfBirth.getFullYear() +
-              data.dateOfBirth.getMonth() +
-              data.dateOfBirth.getDate()) +
-            (data.dateOfIssue.getFullYear() + 2)) %
+            (data.dateOfBirth.getUTCFullYear() +
+              data.dateOfBirth.getUTCMonth() +
+              data.dateOfBirth.getUTCDate()) +
+            (data.dateOfIssue.getUTCFullYear() + 2)) %
           10
         }`}
       />
