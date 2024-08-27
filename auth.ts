@@ -36,9 +36,9 @@ export const authConfig = {
             "Content-Type": "application/json"
           }
         })
-          .then(function (guilds) {
+          .then( (guilds) => {
             return guilds.json()
-          }).then(async function (data) {
+          }).then(async (data) => {
             guildMember = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
           })
       } else {
