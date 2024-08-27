@@ -10,7 +10,7 @@ export const authConfig = {
       clientSecret: process.env.DISCORD_CLIENT_SECRET ?? "",
       token: "https://discord.com/api/oauth2/token",
       userinfo: "https://discord.com/api/users/@me",
-      authorization: "https://discord.com/api/oauth2/authorize?scope=identify+email+guilds",
+      authorization: "https://discord.com/api/oauth2/authorize?scope=identify+guilds",
     }),
   ],
   session: {
