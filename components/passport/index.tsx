@@ -77,7 +77,7 @@ export function Passport({
             data.dateOfBirth.getUTCMonth() +
             data.dateOfBirth.getUTCDate()) %
           10
-        }<${String(data.dateOfIssue.getFullYear()).padStart(4, "0")}0101${
+        }<${String(data.dateOfIssue.getUTCFullYear()).padStart(4, "0")}0101${
           (data.dateOfIssue.getUTCFullYear() + 2) % 10
         }<<<<<<<<<<0${
           (CURRENT_PASSPORT_VERSION +

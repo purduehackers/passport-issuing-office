@@ -3,8 +3,6 @@ import DiscordProvider from "next-auth/providers/discord";
 import prisma from "@/lib/prisma";
 import { Passport, Token } from "./types/types";
 
-const scopes = ["identify", "guilds"];
-
 export const authConfig = {
   providers: [
     DiscordProvider({
@@ -12,7 +10,7 @@ export const authConfig = {
       clientSecret: process.env.DISCORD_CLIENT_SECRET ?? "",
       token: "https://discord.com/api/oauth2/token",
       userinfo: "https://discord.com/api/users/@me",
-      authorization: { params: { scope: scopes.join(" ") } },
+      authorization: "https://discord.com/api/oauth2/authorize?scope=identify+guilds+email",
     }),
   ],
   session: {
@@ -29,6 +27,23 @@ export const authConfig = {
       const token = jwtToken as Token
       let passport: Passport | null = null;
       const bigIntUserId = BigInt(`${token.sub}`);
+      let guildMember;
+
+      if (process.env.DISCORD_GUILD) {
+        const guilds = await fetch("https://discordapp.com/api/users/@me/guilds", {
+          headers: {
+            Authorization: "Bearer " + token.accessToken,
+            "Content-Type": "application/json"
+          }
+        })
+          .then( (guilds) => {
+            return guilds.json()
+          }).then(async (data) => {
+            guildMember = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
+          })
+      } else {
+        guildMember = null;
+      }
 
       let user = await prisma.user.findFirst({
         where: {
@@ -53,21 +68,21 @@ export const authConfig = {
           passport = updatedPassport
         }
       } else {
-        user = await prisma.user.create({
-          data: {
-            discord_id: bigIntUserId,
-            role: "hacker",
-          },
-        });
+        if (guildMember) {
+          user = await prisma.user.create({
+            data: {
+              discord_id: bigIntUserId,
+              role: "hacker",
+            },
+          });
+        }
       }
 
-      return { ...session, token, passport };
+      return { ...session, token, passport, guildMember };
     },
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
-
-        // TODO: fetch https://discord.com/api/users/@me/guilds and ensure user is in the Purdue Hackers server
       }
       return token;
     },
