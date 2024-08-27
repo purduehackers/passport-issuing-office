@@ -306,7 +306,7 @@ export default function Playground({
               </FormItem>
             )}
           />
-          {userId && (guildMember !== undefined) ? (
+          {userId && guildMember !== undefined ? (
             <FormField
               control={form.control}
               name="sendToDb"
@@ -316,7 +316,7 @@ export default function Playground({
                   <FormDescription>
                     {registerCheckboxDisabled
                       ? "Sorry, we're at capacity for this upcoming passport ceremony :("
-                      : "Checking this box will register you for the next passport ceremony. You can make as many changes as you want before the ceremony."}
+                      : "We are not ready to run passport ceremonies yet, so PLEASE don't check this unless Matthew told you to. Otherwise the gods will smite you!!!!"}
                   </FormDescription>
                   <FormControl>
                     <Checkbox
