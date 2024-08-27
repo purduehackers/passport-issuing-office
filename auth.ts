@@ -3,8 +3,6 @@ import DiscordProvider from "next-auth/providers/discord";
 import prisma from "@/lib/prisma";
 import { Passport, Token } from "./types/types";
 
-const scopes = ["identify", "guilds"];
-
 export const authConfig = {
   providers: [
     DiscordProvider({
@@ -12,7 +10,7 @@ export const authConfig = {
       clientSecret: process.env.DISCORD_CLIENT_SECRET ?? "",
       token: "https://discord.com/api/oauth2/token",
       userinfo: "https://discord.com/api/users/@me",
-      authorization: { params: { scope: scopes.join(" ") } },
+      authorization: "https://discord.com/api/oauth2/authorize?scope=identify+email+guilds",
     }),
   ],
   session: {
@@ -30,44 +28,57 @@ export const authConfig = {
       let passport: Passport | null = null;
       const bigIntUserId = BigInt(`${token.sub}`);
 
-      let user = await prisma.user.findFirst({
-        where: {
-          discord_id: bigIntUserId,
-        },
-      });
-      if (user) {
-        const latestPassport = await prisma.passport.findFirst({
+        let user = await prisma.user.findFirst({
           where: {
-            owner_id: user.id
-          },
-          orderBy: {
-            id: 'desc'
-          }
-        })
-        if (latestPassport) {
-          const updatedPassport = {
-            ...latestPassport,
-            date_of_birth: latestPassport.date_of_birth.toISOString(),
-            date_of_issue: latestPassport.date_of_issue.toISOString(),
-          }
-          passport = updatedPassport
-        }
-      } else {
-        user = await prisma.user.create({
-          data: {
             discord_id: bigIntUserId,
-            role: "hacker",
           },
         });
-      }
+        if (user) {
+          const latestPassport = await prisma.passport.findFirst({
+            where: {
+              owner_id: user.id
+            },
+            orderBy: {
+              id: 'desc'
+            }
+          })
+          if (latestPassport) {
+            const updatedPassport = {
+              ...latestPassport,
+              date_of_birth: latestPassport.date_of_birth.toISOString(),
+              date_of_issue: latestPassport.date_of_issue.toISOString(),
+            }
+            passport = updatedPassport
+          }
+        } else {
+          const guilds = await fetch("https://discordapp.com/api/users/@me/guilds", {
+            headers: {
+              Authorization: "Bearer "+token.accessToken,
+              "Content-Type": "application/json"
+            }
+          })
+          .then(function(guilds) { 
+            return guilds.json()
+          }).then(async function(data) {
+            let guild_member = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
+            console.log(guild_member);
+
+            if (guild_member) {
+              user = await prisma.user.create({
+                data: {
+                  discord_id: bigIntUserId,
+                  role: "hacker",
+                },
+              });
+            }
+          });
+        }
 
       return { ...session, token, passport };
     },
     async jwt({ token, account }) {
       if (account) {
         token.accessToken = account.access_token;
-
-        // TODO: fetch https://discord.com/api/users/@me/guilds and ensure user is in the Purdue Hackers server
       }
       return token;
     },
