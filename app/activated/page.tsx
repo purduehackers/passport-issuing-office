@@ -45,7 +45,7 @@ export default async function Activated() {
             </p>
           </div>
           <div className="w-full md:w-8/12 mx-auto flex flex-col items-center gap-2">
-          <Image
+            <Image
               alt={`Passport for discord id ${latestPassport.id}`}
               src={latestPassportImageUrl}
               width={metadata.width / 2}
