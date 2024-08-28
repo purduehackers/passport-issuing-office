@@ -31,8 +31,6 @@ function LaunchConfetti() {
       instance.current({
         ...commonOptions
       });
-    } else {
-      console.warn('Confetti function is not initialized');
     }
   };
 
