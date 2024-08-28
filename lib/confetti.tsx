@@ -22,16 +22,22 @@ const commonOptions = {
 };
 
 function LaunchConfetti() {
-  const instance = useRef();
+  const instance = useRef<((options: any) => void) | undefined>(undefined);
 
-  const onInit = ({ confetti }) => {
+  const onInit = ({ confetti }: { confetti: (options: any) => void }) => {
     instance.current = confetti;
   };
 
   const fire = () => {
-    instance.current({
-          ...commonOptions
-    });
+    // Ensure instance.current is defined and callable
+    if (instance.current) {
+      instance.current({
+        // Assuming commonOptions is defined elsewhere in your code
+        ...commonOptions
+      });
+    } else {
+      console.warn('Confetti function is not initialized');
+    }
   };
 
   useEffect(() => {
