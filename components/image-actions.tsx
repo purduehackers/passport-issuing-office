@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import LaunchConfetti from "@/lib/confetti";
 
-
 export function ImageActions({
   generatedImageUrl,
   userId,
