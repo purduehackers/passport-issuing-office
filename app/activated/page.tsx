@@ -7,7 +7,6 @@ import { ImageActions } from "@/components/image-actions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
-import LaunchConfetti from "@/lib/confetti";
 
 export default async function Activated() {
   // Although the session includes the JWT token type from `auth.ts`, when it gets here
@@ -82,7 +81,6 @@ export default async function Activated() {
           </Link>
         </div>
       </div>
-      <LaunchConfetti />
     </main>
   );
 }
