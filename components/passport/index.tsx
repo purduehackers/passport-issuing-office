@@ -60,7 +60,7 @@ export function Passport({
 			<FooterSection
 				topLine={`PHHAK${formatName(data.surname)}<<${formatName(
 					data.firstName
-				)}`.padEnd(44, "<")}
+				)}`.padEnd(44, "<").substring(0,44)}
 				bottomLine={`${String(CURRENT_PASSPORT_VERSION).padStart(
 					3,
 					"0"
