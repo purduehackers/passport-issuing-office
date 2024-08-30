@@ -10,7 +10,7 @@ export async function fetchAssets(data: PassportGenData, url?: string) {
   } else {
     const defaultPortraitUrl = new URL(
       "/passport/no-image.png",
-      url ?? "https://passport-data-pages.vercel.app"
+      url ?? "https://passport-data-pages.vercel.app",
     ).href;
     const defaultPortraitRes = await fetch(defaultPortraitUrl);
     const defaultPortraitBlob = await defaultPortraitRes.blob();
@@ -24,15 +24,15 @@ export async function fetchAssets(data: PassportGenData, url?: string) {
     `data:${portrait.type};base64,` + portraitImageBuffer.toString("base64");
 
   const interFontData = await fetch(
-    new URL("../assets/Inter-Regular.ttf", import.meta.url)
+    new URL("../assets/Inter-Regular.ttf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   const interBoldFontData = await fetch(
-    new URL("../assets/Inter-Bold.ttf", import.meta.url)
+    new URL("../assets/Inter-Bold.ttf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   const OCRBProFontData = await fetch(
-    new URL("../assets/OCRB-Regular.ttf", import.meta.url)
+    new URL("../assets/OCRB-Regular.ttf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   // const dataPageBgUrl = new URL(
@@ -55,7 +55,7 @@ export async function fetchAssets(data: PassportGenData, url?: string) {
 
 export async function generateDataPage(
   data: PassportGenData,
-  url?: string
+  url?: string,
 ): Promise<ImageResponse> {
   const {
     portraitUrlB64,
@@ -96,7 +96,7 @@ export async function generateDataPage(
           weight: 500,
         },
       ],
-    }
+    },
   );
 }
 
@@ -105,7 +105,7 @@ export async function generateFullFrame(data: PassportGenData, url?: string) {
     await fetchAssets(data, url);
 
   const dataPage = Buffer.from(
-    await (await generateDataPage(data, url)).arrayBuffer()
+    await (await generateDataPage(data, url)).arrayBuffer(),
   );
   const dataPageUrlB64 = "data:image/png;base64," + dataPage.toString("base64");
 
@@ -172,6 +172,6 @@ export async function generateFullFrame(data: PassportGenData, url?: string) {
           weight: 500,
         },
       ],
-    }
+    },
   );
 }

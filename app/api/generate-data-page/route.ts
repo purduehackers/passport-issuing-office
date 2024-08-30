@@ -28,6 +28,6 @@ export async function POST(request: Request) {
       portrait: portraitImage,
       sendToDb: sendToDb === "true",
     },
-    request.url
+    request.url,
   );
 }

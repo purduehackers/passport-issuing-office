@@ -6,7 +6,7 @@ import { parseFormData } from "./parse-form-data";
 
 export async function getPreSignedUrl(
   which: "generated" | "full",
-  passportNumber: string | undefined
+  passportNumber: string | undefined,
 ) {
   const S3 = new S3Client({
     region: "auto",
@@ -30,7 +30,7 @@ export async function getPreSignedUrl(
     }),
     {
       expiresIn: 3600,
-    }
+    },
   );
 
   return preSignedUrl;
@@ -39,7 +39,7 @@ export async function getPreSignedUrl(
 export async function uploadImageToR2(
   which: "generated" | "full",
   data: FormData,
-  passportNumber: string
+  passportNumber: string,
 ) {
   let imageToUpload;
   if (which === "generated") {

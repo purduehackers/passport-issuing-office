@@ -60,18 +60,18 @@ export function Passport({
       <FooterSection
         topLine={`PH<HAK${data.surname.replace(
           " ",
-          ""
+          "",
         )}<<${data.firstName.replace(" ", "")}`.padEnd(44, "<")}
         bottomLine={`${String(CURRENT_PASSPORT_VERSION).padStart(
           3,
-          "0"
+          "0",
         )}${String(data.passportNumber).padStart(6, "0")}${
           (CURRENT_PASSPORT_VERSION + data.passportNumber) % 10
         }HAK${String(data.dateOfBirth.getUTCFullYear()).padStart(4, "0")}${String(
-          data.dateOfBirth.getUTCMonth() + 1
+          data.dateOfBirth.getUTCMonth() + 1,
         ).padStart(2, "0")}${String(data.dateOfBirth.getUTCDate()).padStart(
           2,
-          "0"
+          "0",
         )}${
           (data.dateOfBirth.getUTCFullYear() +
             data.dateOfBirth.getUTCMonth() +

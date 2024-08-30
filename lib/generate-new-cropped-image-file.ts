@@ -6,7 +6,7 @@ export async function generateNewCroppedImageFile(
   image: HTMLImageElement,
   crop: PixelCrop,
   scale = 1,
-  rotate = 0
+  rotate = 0,
 ) {
   const canvas = new OffscreenCanvas(crop.width, crop.height);
   const ctx = canvas.getContext("2d");
@@ -51,7 +51,7 @@ export async function generateNewCroppedImageFile(
     0,
     0,
     image.naturalWidth,
-    image.naturalHeight
+    image.naturalHeight,
   );
 
   ctx.restore();

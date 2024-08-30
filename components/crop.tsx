@@ -19,7 +19,7 @@ import { Button } from "./ui/button";
 export function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
 ) {
   return centerCrop(
     makeAspectCrop(
@@ -29,10 +29,10 @@ export function centerAspectCrop(
       },
       aspect,
       mediaWidth,
-      mediaHeight
+      mediaHeight,
     ),
     mediaWidth,
-    mediaHeight
+    mediaHeight,
   );
 }
 
@@ -58,7 +58,7 @@ export function Crop({
       setCrop(undefined); // Makes crop preview update between images.
       const reader = new FileReader();
       reader.addEventListener("load", () =>
-        setImgSrc(reader.result?.toString() || "")
+        setImgSrc(reader.result?.toString() || ""),
       );
       reader.readAsDataURL(e.target.files[0]);
       setDialogOpen(true);
@@ -108,7 +108,7 @@ export function Crop({
                 ) {
                   const newFile = await generateNewCroppedImageFile(
                     imgRef.current,
-                    completedCrop
+                    completedCrop,
                   );
                   setCroppedImageFile(newFile);
                   setDialogOpen(false);

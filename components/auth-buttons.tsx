@@ -1,6 +1,6 @@
 import { signIn, signOut } from "@/auth";
 import { Button } from "./ui/button";
-import Link from 'next/link';
+import Link from "next/link";
 
 export function SignOutButton() {
   return (

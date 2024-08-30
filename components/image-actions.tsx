@@ -58,7 +58,7 @@ export function ImageActions({
             onClick={() => {
               navigator.clipboard
                 .writeText(
-                  `https://passports.purduehackers.com/passport/${userId}`
+                  `https://passports.purduehackers.com/passport/${userId}`,
                 )
                 .then(() => setCopied(true))
                 .catch((err) => {

@@ -109,7 +109,7 @@ export function DataSection({
           <Description
             title="DATE OF EXPIRATION"
             content={`01 JAN ${String(
-              dateOfIssue.getUTCFullYear() + 1000
+              dateOfIssue.getUTCFullYear() + 1000,
             ).padStart(4, "0")}`}
           />
         </div>{" "}

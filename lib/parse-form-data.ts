@@ -13,12 +13,12 @@ export function parseFormData(formValues: FormData) {
   const trueDateOfBirth = new Date(
     formValues.get("dateOfBirth")
       ? (formValues.get("dateOfBirth") as string)
-      : "06 Apr 1200"
+      : "06 Apr 1200",
   );
   const trueDateOfIssue = new Date(
     formValues.get("dateOfIssue")
       ? (formValues.get("dateOfIssue") as string)
-      : Date.now()
+      : Date.now(),
   );
   const placeOfOrigin = formValues.get("placeOfOrigin")
     ? (formValues.get("placeOfOrigin") as string)

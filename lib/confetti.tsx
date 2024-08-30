@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useRef, useEffect } from "react";
 import ReactCanvasConfetti from "react-canvas-confetti";
@@ -14,7 +14,7 @@ const commonOptions = {
   shapes: ["square", "circle"],
   angle: 90,
   origin: {
-    x: .5,
+    x: 0.5,
     y: 1.25,
   },
 };
@@ -29,7 +29,7 @@ function LaunchConfetti() {
   const fire = () => {
     if (instance.current) {
       instance.current({
-        ...commonOptions
+        ...commonOptions,
       });
     }
   };

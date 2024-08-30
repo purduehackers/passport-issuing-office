@@ -10,7 +10,8 @@ export const authConfig = {
       clientSecret: process.env.DISCORD_CLIENT_SECRET ?? "",
       token: "https://discord.com/api/oauth2/token",
       userinfo: "https://discord.com/api/users/@me",
-      authorization: "https://discord.com/api/oauth2/authorize?scope=identify+guilds+email",
+      authorization:
+        "https://discord.com/api/oauth2/authorize?scope=identify+guilds+email",
     }),
   ],
   session: {
@@ -24,23 +25,29 @@ export const authConfig = {
     // are released.
     //@ts-expect-error
     async session({ session, token: jwtToken }) {
-      const token = jwtToken as Token
+      const token = jwtToken as Token;
       let passport: Passport | null = null;
       const bigIntUserId = BigInt(`${token.sub}`);
       let guildMember;
 
       if (process.env.DISCORD_GUILD) {
-        const guilds = await fetch("https://discordapp.com/api/users/@me/guilds", {
-          headers: {
-            Authorization: "Bearer " + token.accessToken,
-            "Content-Type": "application/json"
-          }
-        })
-          .then( (guilds) => {
-            return guilds.json()
-          }).then(async (data) => {
-            guildMember = data.find((o: { id: string; }) => o.id === process.env.DISCORD_GUILD ?? "");
+        const guilds = await fetch(
+          "https://discordapp.com/api/users/@me/guilds",
+          {
+            headers: {
+              Authorization: "Bearer " + token.accessToken,
+              "Content-Type": "application/json",
+            },
+          },
+        )
+          .then((guilds) => {
+            return guilds.json();
           })
+          .then(async (data) => {
+            guildMember = data.find(
+              (o: { id: string }) => o.id === process.env.DISCORD_GUILD ?? "",
+            );
+          });
       } else {
         guildMember = null;
       }
@@ -53,19 +60,19 @@ export const authConfig = {
       if (user) {
         const latestPassport = await prisma.passport.findFirst({
           where: {
-            owner_id: user.id
+            owner_id: user.id,
           },
           orderBy: {
-            id: 'desc'
-          }
-        })
+            id: "desc",
+          },
+        });
         if (latestPassport) {
           const updatedPassport = {
             ...latestPassport,
             date_of_birth: latestPassport.date_of_birth.toISOString(),
             date_of_issue: latestPassport.date_of_issue.toISOString(),
-          }
-          passport = updatedPassport
+          };
+          passport = updatedPassport;
         }
       } else {
         if (guildMember) {
@@ -87,6 +94,11 @@ export const authConfig = {
       return token;
     },
   },
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;
 
-export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth(authConfig);
+export const {
+  handlers: { GET, POST },
+  signIn,
+  signOut,
+  auth,
+} = NextAuth(authConfig);
