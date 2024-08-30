@@ -58,7 +58,7 @@ export function Passport({
         />
       </div>
       <FooterSection
-        topLine={`PH<HAK${data.surname.replace(
+        topLine={`PHHAK${data.surname.replace(
           " ",
           ""
         )}<<${data.firstName.replace(" ", "")}`.padEnd(44, "<")}
@@ -77,7 +77,7 @@ export function Passport({
             data.dateOfBirth.getUTCMonth() +
             data.dateOfBirth.getUTCDate()) %
           10
-        }<${String(data.dateOfIssue.getUTCFullYear()).padStart(4, "0")}0101${
+        }<${String(data.dateOfIssue.getUTCFullYear()+1000).padStart(4, "0")}0101${
           (data.dateOfIssue.getUTCFullYear() + 2) % 10
         }<<<<<<<<<<0${
           (CURRENT_PASSPORT_VERSION +
