@@ -114,6 +114,7 @@ export default function Playground({
     generatedImageUrl === "/passport/default.png" ? true : false
   );
   const [isLoading, setIsLoading] = useState(false); // TODO: do this better
+  const [launchConfetti, setLaunchConfetti] = useState(false); // TODO: do this better
   const [croppedImageFile, setCroppedImageFile] = useState<File>();
   const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
     GENERATION_STEPS.base
@@ -140,6 +141,7 @@ export default function Playground({
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
+    setLaunchConfetti(false);
 
     let generatedPassportNumber = data.passportNumber || "0";
 
@@ -202,6 +204,7 @@ export default function Playground({
     setIsLoading(false);
     setIsDefaultImage(false);
     resetGenerationSteps();
+    setLaunchConfetti(true);
   }
 
   return (
@@ -398,9 +401,6 @@ export default function Playground({
                   {step.status === "completed" ? (
                     <CheckCircle color="var(--success)" width={16} />
                   ) : null}
-                  {step.status === "completed" ? (
-                    <LaunchConfetti /> 
-                  ) : null}
                 </div>
               ))}
             </ul>
@@ -414,6 +414,9 @@ export default function Playground({
               surname={form.getValues().surname}
               sendToDb={form.getValues().sendToDb}
             />
+          ) : null}
+          {launchConfetti ? (
+            <LaunchConfetti /> 
           ) : null}
         </div>
       </aside>
