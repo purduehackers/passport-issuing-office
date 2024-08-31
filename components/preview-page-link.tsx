@@ -4,15 +4,15 @@ import { cn } from "@/lib/cn";
 import Link from "next/link";
 
 export function PreviewPageLink({
-  children,
-  className,
+	children,
+	className,
 }: {
-  children: React.ReactNode;
-  className?: string;
+	children: React.ReactNode;
+	className?: string;
 }) {
-  return (
-    <Link className={cn(className)} href="/">
-      {children}
-    </Link>
-  );
+	return (
+		<Link className={cn(className)} href="/">
+			{children}
+		</Link>
+	);
 }
