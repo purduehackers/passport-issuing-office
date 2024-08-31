@@ -398,6 +398,9 @@ export default function Playground({
                   {step.status === "completed" ? (
                     <CheckCircle color="var(--success)" width={16} />
                   ) : null}
+                  {step.status === "completed" ? (
+                    <LaunchConfetti /> 
+                  ) : null}
                 </div>
               ))}
             </ul>
@@ -412,7 +415,6 @@ export default function Playground({
               sendToDb={form.getValues().sendToDb}
             />
           ) : null}
-          {!isDefaultImage && !isLoading ? <LaunchConfetti /> : null}
         </div>
       </aside>
     </main>
