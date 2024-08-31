@@ -2,6 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import LaunchConfetti from "@/lib/confetti";
+
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -410,6 +412,7 @@ export default function Playground({
               sendToDb={form.getValues().sendToDb}
             />
           ) : null}
+          {!isDefaultImage && !isLoading ? <LaunchConfetti /> : null}
         </div>
       </aside>
     </main>
