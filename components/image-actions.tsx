@@ -3,7 +3,6 @@
 import { Passport } from "@/types/types";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
-import LaunchConfetti from "@/lib/confetti";
 
 export function ImageActions({
   generatedImageUrl,
@@ -48,7 +47,6 @@ export function ImageActions({
         <Button className="w-full amberButton" type="button">
           Download
         </Button>
-        <LaunchConfetti />
       </a>
       {userId && (latestPassport || sendToDb) ? (
         <div>

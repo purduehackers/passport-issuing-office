@@ -58,37 +58,116 @@ export function Passport({
         />
       </div>
       <FooterSection
-        topLine={`PH<HAK${data.surname.replace(
-          " ",
-          "",
-        )}<<${data.firstName.replace(" ", "")}`.padEnd(44, "<")}
+        topLine={`PHHAK${formatName(data.surname)}<<${formatName(
+          data.firstName
+        )}`.padEnd(44, "<").substring(0,44)}
         bottomLine={`${String(CURRENT_PASSPORT_VERSION).padStart(
           3,
-          "0",
-        )}${String(data.passportNumber).padStart(6, "0")}${
-          (CURRENT_PASSPORT_VERSION + data.passportNumber) % 10
-        }HAK${String(data.dateOfBirth.getUTCFullYear()).padStart(4, "0")}${String(
-          data.dateOfBirth.getUTCMonth() + 1,
-        ).padStart(2, "0")}${String(data.dateOfBirth.getUTCDate()).padStart(
+          "0"
+        )}${String(data.passportNumber).padStart(6, "0")}${calculateChecksum(
+          String(CURRENT_PASSPORT_VERSION).padStart(3, "0") +
+            String(data.passportNumber).padStart(6, "0")
+        )}HAK${String(data.dateOfBirth.getUTCFullYear()).padStart(
+          4,
+          "0"
+        )}${String(data.dateOfBirth.getUTCMonth() + 1).padStart(
           2,
-          "0",
-        )}${
-          (data.dateOfBirth.getUTCFullYear() +
-            data.dateOfBirth.getUTCMonth() +
-            data.dateOfBirth.getUTCDate()) %
-          10
-        }<${String(data.dateOfIssue.getUTCFullYear()).padStart(4, "0")}0101${
-          (data.dateOfIssue.getUTCFullYear() + 2) % 10
-        }<<<<<<<<<<0${
-          (CURRENT_PASSPORT_VERSION +
-            data.passportNumber +
-            (data.dateOfBirth.getUTCFullYear() +
-              data.dateOfBirth.getUTCMonth() +
-              data.dateOfBirth.getUTCDate()) +
-            (data.dateOfIssue.getUTCFullYear() + 2)) %
-          10
-        }`}
+          "0"
+        )}${String(data.dateOfBirth.getUTCDate()).padStart(
+          2,
+          "0"
+        )}${calculateChecksum(
+          String(data.dateOfBirth.getUTCFullYear()).padStart(4, "0") +
+            String(data.dateOfBirth.getUTCMonth() + 1).padStart(2, "0") +
+            String(data.dateOfBirth.getUTCDate()).padStart(2, "0")
+        )}<${String(data.dateOfIssue.getUTCFullYear() + 1000).padStart(
+          4,
+          "0"
+        )}0101${calculateChecksum(
+          String(data.dateOfIssue.getUTCFullYear() + 1000).padStart(4, "0") +
+            "0101"
+        )}<<<<<<<<<<<${calculateChecksum(
+          calculateChecksum(
+            String(CURRENT_PASSPORT_VERSION).padStart(3, "0") +
+              String(data.passportNumber).padStart(6, "0")
+          ) +
+            calculateChecksum(
+              String(CURRENT_PASSPORT_VERSION).padStart(3, "0") +
+                String(data.passportNumber).padStart(6, "0")
+            ) +
+            String(data.dateOfBirth.getUTCFullYear()).padStart(4, "0") +
+            String(data.dateOfBirth.getUTCMonth() + 1).padStart(2, "0") +
+            String(data.dateOfBirth.getUTCDate()).padStart(2, "0") +
+            calculateChecksum(
+              String(data.dateOfBirth.getUTCFullYear()).padStart(4, "0") +
+                String(data.dateOfBirth.getUTCMonth() + 1).padStart(2, "0") +
+                String(data.dateOfBirth.getUTCDate()).padStart(2, "0")
+            ) +
+            String(data.dateOfIssue.getUTCFullYear() + 1000).padStart(4, "0") +
+            "0101" +
+            calculateChecksum(
+              String(data.dateOfIssue.getUTCFullYear() + 1000).padStart(
+                4,
+                "0"
+              ) + "0101"
+            ) +
+            "<<<<<<<<<<<"
+        )}`}
       />
     </div>
   );
+}
+
+function formatName(nameString: string) {
+  return (
+    nameString
+      // Permit certain diacritics
+      .replace(/[\u00E5]/g, "AA")
+      .replace(/[\u00E4]/g, "AE")
+      .replace(/[\u00F0]/g, "DH")
+      .replace(/[\u0132-\u0133]/g, "IJ")
+      .replace(/[\u00F6]/g, "OE")
+      .replace(/[\u00FC]/g, "UE")
+      .replace(/[\u00F1]/g, "N")
+      .replace(/[\u00E6]/g, "AE")
+      .replace(/[\u0153]/g, "OE")
+      .replace(/[\u00DF]/g, "SS")
+      .replace(/[\u00FE]/g, "TH")
+      // Cleanly remove all other diacritics
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      // Spaces, Hyphens to Bracket
+      .replace(/- /g, "<")
+      // Remove other non-alphanumerics
+      .replace(/[^a-zA-Z0-9]/g, "")
+  );
+}
+
+function calculateChecksum(checkString: string) {
+  let checksum = 0;
+  let weight = 0;
+
+  for (let i = 0; i < checkString.length; i++) {
+    switch (i % 3) {
+      case 0:
+        weight = 7;
+        break;
+      case 1:
+        weight = 3;
+        break;
+      case 2:
+        weight = 1;
+        break;
+    }
+
+    if (checkString[i].match(/[A-Z]/i)) {
+      checksum += weight * (checkString.charCodeAt(i) - 55); // Sets A (ASCII 65) to be worth 10
+    } else if (checkString[i].match(/\d+/)) {
+      checksum += weight * parseInt(checkString[i]);
+    } else if (checkString[i].match(/</g)) {
+      checksum += weight * 0;
+    }
+  }
+
+  return (checksum % 10).toString();
 }
