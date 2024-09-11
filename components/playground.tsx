@@ -68,7 +68,7 @@ const FormSchema = z.object({
 			},
 			{
 				message: "Date of birth cannot be later than today.",
-			},
+			}
 		),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
@@ -78,11 +78,13 @@ const FormSchema = z.object({
 export default function Playground({
 	userId,
 	latestPassport,
+	latestOverallPassportId,
 	optimizedLatestPassportImage,
 	guildMember,
 }: {
 	userId: string | undefined;
 	latestPassport: Passport | null | undefined;
+	latestOverallPassportId: number;
 	optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
 	guildMember: object | null | undefined;
 }) {
@@ -104,30 +106,30 @@ export default function Playground({
 	// to redo how passport ceremony registration works, but for now we just need to
 	// limit this week's signups.
 	// https://github.com/purduehackers/passport-issuing-office/pull/36
-	const registerCheckboxDisabled = false;
+	const registerCheckboxDisabled = latestOverallPassportId === 80;
 
 	const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
 		optimizedLatestPassportImage?.latestPassportImageUrl ||
-			"/passport/default.png",
+			"/passport/default.png"
 	);
 	const [isDefaultImage, setIsDefaultImage] = useState(
-		generatedImageUrl === "/passport/default.png" ? true : false,
+		generatedImageUrl === "/passport/default.png" ? true : false
 	);
 	const [isLoading, setIsLoading] = useState(false); // TODO: do this better
 	const [launchConfetti, setLaunchConfetti] = useState(false); // TODO: do this better
 	const [croppedImageFile, setCroppedImageFile] = useState<File>();
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
-		GENERATION_STEPS.base,
+		GENERATION_STEPS.base
 	);
 
 	function updateGenerationStepState(
 		stepId: GenerationStepId,
-		status: GenerationStatus,
+		status: GenerationStatus
 	) {
 		setGenerationSteps((currentSteps) =>
 			currentSteps.map((step) =>
-				step.id === stepId ? { ...step, status } : step,
-			),
+				step.id === stepId ? { ...step, status } : step
+			)
 		);
 	}
 
@@ -135,7 +137,7 @@ export default function Playground({
 		setGenerationSteps((currentSteps) =>
 			currentSteps.map((step) => {
 				return { ...step, status: "pending" };
-			}),
+			})
 		);
 	}
 
@@ -194,7 +196,7 @@ export default function Playground({
 		}
 
 		const generatedImageBuffer = Buffer.from(
-			await generatedImageBlob.arrayBuffer(),
+			await generatedImageBlob.arrayBuffer()
 		);
 		const generatedImageUrl =
 			"data:image/png;base64," + generatedImageBuffer.toString("base64");
@@ -321,7 +323,7 @@ export default function Playground({
 									<FormDescription>
 										{registerCheckboxDisabled
 											? "Sorry, we're at capacity for this upcoming passport ceremony :("
-											: "We are not ready to run passport ceremonies yet, so PLEASE don't check this unless Matthew told you to. Otherwise the gods will smite you!!!!"}
+											: "Check this box to sign up for the next passport ceremony. By checking this box you pinky promise you will ACTUALLY be there this Friday. If you can't make it please DM Matthew so we don't prep for you!"}
 									</FormDescription>
 									<FormControl>
 										<Checkbox
@@ -392,8 +394,8 @@ export default function Playground({
 											step.status === "completed"
 												? "text-success"
 												: step.status === "failed"
-													? "text-destructive"
-													: "text-muted-foreground"
+												? "text-destructive"
+												: "text-muted-foreground"
 										}`}
 									>
 										{step.name}...
