@@ -244,7 +244,10 @@ export default function Playground({
 							<FormItem>
 								<FormLabel>First name</FormLabel>
 								<FormControl>
-									<Input placeholder="Wack" {...field} />
+									<Input
+										placeholder="Wack"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -257,7 +260,10 @@ export default function Playground({
 							<FormItem>
 								<FormLabel>Last name</FormLabel>
 								<FormControl>
-									<Input placeholder="Hacker" {...field} />
+									<Input
+										placeholder="Hacker"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -295,7 +301,11 @@ export default function Playground({
 										</FormItem>
 										{!ORIGINS.includes(form.getValues().placeOfOrigin) && (
 											<div className="pl-6">
-												<Input {...field} className="h-8" autoFocus />
+												<Input
+													{...field}
+													className="h-8"
+													autoFocus
+												/>
 											</div>
 										)}
 									</RadioGroup>
@@ -311,7 +321,10 @@ export default function Playground({
 							<FormItem>
 								<FormLabel>Date of birth</FormLabel>
 								<FormControl>
-									<Input type="date" {...field} />
+									<Input
+										type="date"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -367,7 +380,11 @@ export default function Playground({
 							)}
 						/>
 					) : null}
-					<Button className="amberButton" type="submit" disabled={isLoading}>
+					<Button
+						className="amberButton"
+						type="submit"
+						disabled={isLoading}
+					>
 						{isLoading ? "Generating..." : "Generate"}
 					</Button>
 				</form>
@@ -409,7 +426,10 @@ export default function Playground({
 					{isLoading ? (
 						<ul>
 							{generationSteps.map((step, index) => (
-								<div key={index} className="flex flex-row items-center gap-1">
+								<div
+									key={index}
+									className="flex flex-row items-center gap-1"
+								>
 									<li
 										className={`${
 											step.status === "completed"
@@ -422,7 +442,10 @@ export default function Playground({
 										{step.name}...
 									</li>
 									{step.status === "completed" ? (
-										<CheckCircle color="var(--success)" width={16} />
+										<CheckCircle
+											color="var(--success)"
+											width={16}
+										/>
 									) : null}
 								</div>
 							))}

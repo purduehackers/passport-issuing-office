@@ -74,8 +74,14 @@ export default async function Activated() {
 						if you feel like you need a new one or there&rsquo;s a problem with
 						your current one!
 					</p>
-					<Link href="/?new=true" className="mx-auto mt-2">
-						<Button type="button" className="amberButton">
+					<Link
+						href="/?new=true"
+						className="mx-auto mt-2"
+					>
+						<Button
+							type="button"
+							className="amberButton"
+						>
 							New Passport
 						</Button>
 					</Link>

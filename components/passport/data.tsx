@@ -62,11 +62,23 @@ export function DataSection({
 					content={"HAK"}
 					width={64 * IMAGE_GENERATION_SCALE_FACTOR}
 				/>
-				<Description title="NO." content={(version + id * 0.0001).toFixed(4)} />
+				<Description
+					title="NO."
+					content={(version + id * 0.0001).toFixed(4)}
+				/>
 			</div>
-			<Description title="SURNAME" content={surname} />
-			<Description title="NAME" content={firstName} />
-			<Description title="NATIONALITY" content={"REPUBLIC OF HACKERLAND"} />
+			<Description
+				title="SURNAME"
+				content={surname}
+			/>
+			<Description
+				title="NAME"
+				content={firstName}
+			/>
+			<Description
+				title="NATIONALITY"
+				content={"REPUBLIC OF HACKERLAND"}
+			/>
 			<div
 				style={{
 					fontSize: 13.333 * IMAGE_GENERATION_SCALE_FACTOR,
@@ -105,7 +117,10 @@ export function DataSection({
 						gap: 8 * IMAGE_GENERATION_SCALE_FACTOR,
 					}}
 				>
-					<Description title="PLACE OF ORIGIN" content={placeOfOrigin} />
+					<Description
+						title="PLACE OF ORIGIN"
+						content={placeOfOrigin}
+					/>
 					<Description
 						title="DATE OF EXPIRATION"
 						content={`01 JAN ${String(
@@ -114,7 +129,10 @@ export function DataSection({
 					/>
 				</div>{" "}
 			</div>
-			<Description title="AUTHORITY" content={"id.purduehackers.com"} />
+			<Description
+				title="AUTHORITY"
+				content={"id.purduehackers.com"}
+			/>
 		</div>
 	);
 }
