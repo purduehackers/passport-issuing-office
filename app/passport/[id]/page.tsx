@@ -146,7 +146,10 @@ export default async function Passport({ params }: Props) {
 									to get started.
 								</p>
 								<PreviewPageLink className="mx-auto mt-2">
-									<Button type="button" className="amberButton">
+									<Button
+										type="button"
+										className="amberButton"
+									>
 										Make your passport
 									</Button>
 								</PreviewPageLink>

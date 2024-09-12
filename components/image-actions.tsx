@@ -44,7 +44,10 @@ export function ImageActions({
 				download={generateDownloadName()}
 				className="w-full"
 			>
-				<Button className="w-full amberButton" type="button">
+				<Button
+					className="w-full amberButton"
+					type="button"
+				>
 					Download
 				</Button>
 			</a>

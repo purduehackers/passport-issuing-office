@@ -35,7 +35,7 @@ export const authConfig = {
 					"https://discordapp.com/api/users/@me/guilds",
 					{
 						headers: {
-							Authorization: "Bearer " + token.accessToken,
+							"Authorization": "Bearer " + token.accessToken,
 							"Content-Type": "application/json",
 						},
 					},

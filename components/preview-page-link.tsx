@@ -11,7 +11,10 @@ export function PreviewPageLink({
 	className?: string;
 }) {
 	return (
-		<Link className={cn(className)} href="/">
+		<Link
+			className={cn(className)}
+			href="/"
+		>
 			{children}
 		</Link>
 	);

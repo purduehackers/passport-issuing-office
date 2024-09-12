@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 			portrait: portraitImage,
 			sendToDb: sendToDb === "true",
 		},
-		request.url
+		request.url,
 	);
 	const fullFrameBlob = await fullFrameRes.blob();
 	const fullFrameFile = new File([fullFrameBlob], "data_page.png", {
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 			},
 			{
 				status: 500,
-			}
+			},
 		);
 	}
 

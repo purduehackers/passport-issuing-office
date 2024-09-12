@@ -1,0 +1,3 @@
+# Ignore package manager lock files
+*-lock.yaml
+*-lock.json

@@ -68,7 +68,7 @@ const FormSchema = z.object({
 			},
 			{
 				message: "Date of birth cannot be later than today.",
-			}
+			},
 		),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
@@ -110,26 +110,26 @@ export default function Playground({
 
 	const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
 		optimizedLatestPassportImage?.latestPassportImageUrl ||
-			"/passport/default.png"
+			"/passport/default.png",
 	);
 	const [isDefaultImage, setIsDefaultImage] = useState(
-		generatedImageUrl === "/passport/default.png" ? true : false
+		generatedImageUrl === "/passport/default.png" ? true : false,
 	);
 	const [isLoading, setIsLoading] = useState(false); // TODO: do this better
 	const [launchConfetti, setLaunchConfetti] = useState(false); // TODO: do this better
 	const [croppedImageFile, setCroppedImageFile] = useState<File>();
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
-		GENERATION_STEPS.base
+		GENERATION_STEPS.base,
 	);
 
 	function updateGenerationStepState(
 		stepId: GenerationStepId,
-		status: GenerationStatus
+		status: GenerationStatus,
 	) {
 		setGenerationSteps((currentSteps) =>
 			currentSteps.map((step) =>
-				step.id === stepId ? { ...step, status } : step
-			)
+				step.id === stepId ? { ...step, status } : step,
+			),
 		);
 	}
 
@@ -137,7 +137,7 @@ export default function Playground({
 		setGenerationSteps((currentSteps) =>
 			currentSteps.map((step) => {
 				return { ...step, status: "pending" };
-			})
+			}),
 		);
 	}
 
@@ -189,7 +189,7 @@ export default function Playground({
 			});
 			if (generateFullFrameReq.status !== 200) {
 				alert(
-					"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew"
+					"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew",
 				);
 				setIsLoading(false);
 				resetGenerationSteps();
@@ -202,11 +202,11 @@ export default function Playground({
 				await uploadImageToR2(
 					"generated",
 					apiFormData,
-					generatedPassportNumber
+					generatedPassportNumber,
 				);
 			} catch (error) {
 				alert(
-					"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew"
+					"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
 				);
 				setIsLoading(false);
 				resetGenerationSteps();
@@ -217,7 +217,7 @@ export default function Playground({
 		}
 
 		const generatedImageBuffer = Buffer.from(
-			await generatedImageBlob.arrayBuffer()
+			await generatedImageBlob.arrayBuffer(),
 		);
 		const generatedImageUrl =
 			"data:image/png;base64," + generatedImageBuffer.toString("base64");
@@ -244,7 +244,10 @@ export default function Playground({
 							<FormItem>
 								<FormLabel>First name</FormLabel>
 								<FormControl>
-									<Input placeholder="Wack" {...field} />
+									<Input
+										placeholder="Wack"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -257,7 +260,10 @@ export default function Playground({
 							<FormItem>
 								<FormLabel>Last name</FormLabel>
 								<FormControl>
-									<Input placeholder="Hacker" {...field} />
+									<Input
+										placeholder="Hacker"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -295,7 +301,11 @@ export default function Playground({
 										</FormItem>
 										{!ORIGINS.includes(form.getValues().placeOfOrigin) && (
 											<div className="pl-6">
-												<Input {...field} className="h-8" autoFocus />
+												<Input
+													{...field}
+													className="h-8"
+													autoFocus
+												/>
 											</div>
 										)}
 									</RadioGroup>
@@ -311,7 +321,10 @@ export default function Playground({
 							<FormItem>
 								<FormLabel>Date of birth</FormLabel>
 								<FormControl>
-									<Input type="date" {...field} />
+									<Input
+										type="date"
+										{...field}
+									/>
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -367,7 +380,11 @@ export default function Playground({
 							)}
 						/>
 					) : null}
-					<Button className="amberButton" type="submit" disabled={isLoading}>
+					<Button
+						className="amberButton"
+						type="submit"
+						disabled={isLoading}
+					>
 						{isLoading ? "Generating..." : "Generate"}
 					</Button>
 				</form>
@@ -409,20 +426,26 @@ export default function Playground({
 					{isLoading ? (
 						<ul>
 							{generationSteps.map((step, index) => (
-								<div key={index} className="flex flex-row items-center gap-1">
+								<div
+									key={index}
+									className="flex flex-row items-center gap-1"
+								>
 									<li
 										className={`${
 											step.status === "completed"
 												? "text-success"
 												: step.status === "failed"
-												? "text-destructive"
-												: "text-muted-foreground"
+													? "text-destructive"
+													: "text-muted-foreground"
 										}`}
 									>
 										{step.name}...
 									</li>
 									{step.status === "completed" ? (
-										<CheckCircle color="var(--success)" width={16} />
+										<CheckCircle
+											color="var(--success)"
+											width={16}
+										/>
 									) : null}
 								</div>
 							))}
