@@ -6,7 +6,7 @@ import { parseFormData } from "./parse-form-data";
 
 export async function getPreSignedUrl(
 	which: "generated" | "full",
-	passportNumber: string | undefined,
+	passportNumber: string | undefined
 ) {
 	const S3 = new S3Client({
 		region: "auto",
@@ -30,7 +30,7 @@ export async function getPreSignedUrl(
 		}),
 		{
 			expiresIn: 3600,
-		},
+		}
 	);
 
 	return preSignedUrl;
@@ -39,7 +39,7 @@ export async function getPreSignedUrl(
 export async function uploadImageToR2(
 	which: "generated" | "full",
 	data: FormData,
-	passportNumber: string,
+	passportNumber: string
 ) {
 	let imageToUpload;
 	if (which === "generated") {
@@ -49,10 +49,20 @@ export async function uploadImageToR2(
 	}
 
 	const preSignedUrl = await getPreSignedUrl(which, passportNumber);
-	await fetch(preSignedUrl, {
+	const r2Upload = await fetch(preSignedUrl, {
 		method: "PUT",
 		body: imageToUpload,
 	});
+	if (r2Upload.status !== 200) {
+		// Retry
+		const r2UploadRetry = await fetch(preSignedUrl, {
+			method: "PUT",
+			body: imageToUpload,
+		});
+		if (r2UploadRetry.status !== 200) {
+			throw new Error(`Error uploading: ${preSignedUrl}`);
+		}
+	}
 }
 
 export async function createPassport(formData: FormData) {

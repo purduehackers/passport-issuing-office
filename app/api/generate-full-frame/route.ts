@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 			portrait: portraitImage,
 			sendToDb: sendToDb === "true",
 		},
-		request.url,
+		request.url
 	);
 	const fullFrameBlob = await fullFrameRes.blob();
 	const fullFrameFile = new File([fullFrameBlob], "data_page.png", {
@@ -39,7 +39,19 @@ export async function POST(request: Request) {
 	const data = new FormData();
 	data.append("fullFrameImage", fullFrameFile);
 
-	await uploadImageToR2("full", data, String(trueID));
+	try {
+		await uploadImageToR2("full", data, String(trueID));
+	} catch (error) {
+		return Response.json(
+			{
+				ok: false,
+				error: `Error uploading full image to R2: ${error}`,
+			},
+			{
+				status: 500,
+			}
+		);
+	}
 
 	return Response.json({ ok: true });
 }

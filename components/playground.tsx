@@ -183,14 +183,35 @@ export default function Playground({
 		updateGenerationStepState("generating_data_page", "completed");
 
 		if (data.sendToDb) {
-			await fetch(`/api/generate-full-frame`, {
+			const generateFullFrameReq = await fetch(`/api/generate-full-frame`, {
 				method: "POST",
 				body: apiFormData,
 			});
+			if (generateFullFrameReq.status !== 200) {
+				alert(
+					"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew"
+				);
+				setIsLoading(false);
+				resetGenerationSteps();
+				return;
+			}
 			updateGenerationStepState("generating_frame", "completed");
 
 			apiFormData.append("generatedImage", generatedImageFile);
-			await uploadImageToR2("generated", apiFormData, generatedPassportNumber);
+			try {
+				await uploadImageToR2(
+					"generated",
+					apiFormData,
+					generatedPassportNumber
+				);
+			} catch (error) {
+				alert(
+					"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew"
+				);
+				setIsLoading(false);
+				resetGenerationSteps();
+				return;
+			}
 
 			updateGenerationStepState("uploading", "completed");
 		}
