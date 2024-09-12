@@ -31,7 +31,7 @@ export default async function Home({
 	let optimizedLatestPassportImage: OptimizedLatestPassportImage | null = null;
 	if (latestPassport) {
 		optimizedLatestPassportImage = await getOptimizedLatestPassportImage(
-			latestPassport.id
+			latestPassport.id,
 		);
 	}
 
