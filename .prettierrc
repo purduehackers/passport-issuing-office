@@ -3,5 +3,6 @@
 	"useTabs": true,
 	"printWidth": 80,
 	"semi": true,
-	"quoteProps": "consistent"
+	"quoteProps": "consistent",
+	"jsxSingleQuote": false
 }
