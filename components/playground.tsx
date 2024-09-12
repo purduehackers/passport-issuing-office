@@ -319,11 +319,11 @@ export default function Playground({
 							name="sendToDb"
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Register this passport?</FormLabel>
+									<FormLabel>Register this passport</FormLabel>
 									<FormDescription>
 										{registerCheckboxDisabled
 											? "Sorry, we're at capacity for this upcoming passport ceremony :("
-											: "Check this box to sign up for the next passport ceremony. By checking this box you pinky promise you will ACTUALLY be there this Friday. If you can't make it please DM Matthew so we don't prep for you!"}
+											: "Sign up for the passport ceremony this Friday at 10pm at Hack Night. By checking this box you pinky promise you will ACTUALLY be there this Friday. If you can't make it please DM Matthew so we don't prep for you!"}
 									</FormDescription>
 									<FormControl>
 										<Checkbox
