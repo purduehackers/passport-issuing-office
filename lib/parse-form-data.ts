@@ -20,6 +20,11 @@ export function parseFormData(formValues: FormData) {
 			? (formValues.get("dateOfIssue") as string)
 			: Date.now(),
 	);
+	const trueCeremonyTime = new Date(
+		formValues.get("ceremonyTime")
+			? (formValues.get("ceremonyTime") as string)
+			: Date.now(),
+	);
 	const placeOfOrigin = formValues.get("placeOfOrigin")
 		? (formValues.get("placeOfOrigin") as string)
 		: "THE WOODS";
@@ -36,6 +41,7 @@ export function parseFormData(formValues: FormData) {
 		trueDateOfBirth,
 		trueDateOfIssue,
 		placeOfOrigin,
+		trueCeremonyTime,
 		sendToDb,
 		portraitImage,
 		userId: bigIntUserId,

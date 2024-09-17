@@ -71,6 +71,7 @@ export async function createPassport(formData: FormData) {
 		trueFirstName,
 		trueDateOfBirth,
 		trueDateOfIssue,
+		trueCeremonyTime,
 		placeOfOrigin,
 		stringUserId,
 	} = parseFormData(formData);
@@ -83,6 +84,7 @@ export async function createPassport(formData: FormData) {
 			date_of_birth: trueDateOfBirth,
 			date_of_issue: trueDateOfIssue,
 			place_of_origin: placeOfOrigin,
+			ceremony_time: trueCeremonyTime,
 		}),
 	}).then((r) => r.json());
 	return {

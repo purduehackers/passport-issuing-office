@@ -34,9 +34,17 @@ import {
 } from "@/types/types";
 import { formatDefaultDate } from "@/lib/format-default-date";
 import { GENERATION_STEPS } from "@/config";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Info } from "lucide-react";
 import { ImageActions } from "./image-actions";
 import defaultImage from "@/public/passport/default.png";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -69,6 +77,23 @@ const FormSchema = z.object({
 			{
 				message: "Date of birth cannot be later than today.",
 			},
+		),
+	ceremonyTime: z
+		.string()
+		.refine((val) => !isNaN(Date.parse(val)), {
+			message: "Invalid ceremony time. Please enter a valid time.",
+		})
+		.refine(
+			(val) => {
+				const inputDate = new Date(val);
+				return inputDate > maxDate;
+			},
+			{
+				message: "Ceremony cannot be earlier than today.",
+			},
+		)
+		.default(
+			"null"
 		),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
@@ -107,12 +132,12 @@ export default function Playground({
 	// limit this week's signups.
 	// https://github.com/purduehackers/passport-issuing-office/pull/36
 	const registerCheckboxDisabled =
-		latestOverallPassportId === 80 &&
+		latestOverallPassportId === 800 &&
 		(!latestPassport || latestPassport.activated);
 
 	const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
 		optimizedLatestPassportImage?.latestPassportImageUrl ||
-			"/passport/default.png",
+		"/passport/default.png",
 	);
 	const [isDefaultImage, setIsDefaultImage] = useState(
 		generatedImageUrl === "/passport/default.png" ? true : false,
@@ -144,6 +169,11 @@ export default function Playground({
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
+
+		alert(
+			JSON.stringify(data),
+		);
+
 		setIsLoading(true);
 		setLaunchConfetti(false);
 
@@ -166,13 +196,13 @@ export default function Playground({
 			apiFormData.append("userId", userId);
 		}
 
-		if (data.sendToDb) {
-			const { passportNumber } = await createPassport(apiFormData);
-			generatedPassportNumber = String(passportNumber);
-			apiFormData.set("passportNumber", String(passportNumber));
-
-			updateGenerationStepState("assigning_passport_number", "completed");
-		}
+		//if (data.sendToDb) {
+		//	const { passportNumber } = await createPassport(apiFormData);
+		//	generatedPassportNumber = String(passportNumber);
+		//	apiFormData.set("passportNumber", String(passportNumber));
+		//
+		//	updateGenerationStepState("assigning_passport_number", "completed");
+		//}
 
 		const postRes: ImageResponse = await fetch(`/api/generate-data-page`, {
 			method: "POST",
@@ -337,47 +367,124 @@ export default function Playground({
 						)}
 					/>
 					{userId && guildMember !== undefined ? (
-						<FormField
-							control={form.control}
-							name="sendToDb"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Register this passport</FormLabel>
-									<FormDescription>
-										{registerCheckboxDisabled
-											? "Sorry, we're at capacity for this upcoming passport ceremony :("
-											: "Sign up for the passport ceremony this Friday at 10pm at Hack Night. By checking this box you pinky promise you will ACTUALLY be there this Friday. If you can't make it please DM Matthew so we don't prep for you!"}
-									</FormDescription>
-									<FormControl>
-										<Checkbox
-											className="h-6 w-6"
-											disabled={registerCheckboxDisabled}
-											onCheckedChange={(e) => {
-												// it hasn't updated the value at this point yet, so it's the opposite actually
-												if (field.value === true) {
-													setGenerationSteps(GENERATION_STEPS.base);
-												} else {
-													setGenerationSteps(GENERATION_STEPS.register);
-												}
-												return field.onChange(e);
-											}}
-											checked={field.value}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
+						<span>
+							<FormField
+								control={form.control}
+								name="sendToDb"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Register this passport</FormLabel>
+										<FormDescription>
+											{registerCheckboxDisabled
+												? "Sorry, we're at capacity for this upcoming passport ceremony :("
+												: "Sign up for the passport ceremony this Friday at 10pm at Hack Night. By checking this box you pinky promise you will ACTUALLY be there this Friday. If you can't make it please DM Matthew so we don't prep for you!"}
+										</FormDescription>
+										<FormControl>
+											<Checkbox
+												className="h-6 w-6"
+												disabled={registerCheckboxDisabled}
+												onCheckedChange={(e) => {
+													// it hasn't updated the value at this point yet, so it's the opposite actually
+													if (field.value === true) {
+														setGenerationSteps(GENERATION_STEPS.base);
+													} else {
+														setGenerationSteps(GENERATION_STEPS.register);
+													}
+													return field.onChange(e);
+												}}
+												checked={field.value}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							{form.getValues("sendToDb") ? (
+								<span>
+									<br />
+									<FormField
+										control={form.control}
+										name="ceremonyTime"
+										render={({ field }) => (
+											<FormItem>
+												<FormLabel>Ceremony Date</FormLabel>
+												<FormDescription>
+
+												</FormDescription>
+												<FormControl>
+													<Input type="datetime-local" {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
+									<br />
+									<Dialog>
+										<DialogTrigger className="shadow-blocks-tiny shadow-amber-300 font-bold" disabled={isLoading}>
+											<p>Generate</p>
+										</DialogTrigger>
+										<DialogContent className="w-11/12 sm:w-auto max-h-screen h-128 overflow-y-auto">
+											<DialogHeader>
+												<DialogTitle className="text-2xl">
+													Ceremony Registration
+												</DialogTitle>
+											</DialogHeader>
+											<DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
+												<p>
+													PLACEHOLDER TEXT HERE
+												</p>
+												<p>
+													PLEASE MAKE SURE YOU CAN MAKE IT TO THE CEREMONY
+												</p>
+												<p>
+													IF SOMETHING COMES UP TELL MATTHEW
+												</p>
+												<Button
+													type="submit"
+													className="amberButton" disabled={isLoading}
+												>
+													{isLoading ? "Generating..." : "Register My Passport"}
+												</Button>
+											</DialogDescription>
+										</DialogContent>
+									</Dialog>
+								</span>
+							) : (
+								<span>
+									<br />
+									<Button className="amberButton" type="submit" disabled={isLoading}>
+										{isLoading ? "Generating..." : "Generate"}
+									</Button>
+								</span>
 							)}
-						/>
-					) : null}
-					<Button className="amberButton" type="submit" disabled={isLoading}>
-						{isLoading ? "Generating..." : "Generate"}
-					</Button>
+						</span>
+					) : (
+						<span>
+							<FormField
+								control={form.control}
+								name="ceremonyTime"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Date of birth</FormLabel>
+										<FormControl>
+											<Input type="date" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<br />
+							<Button className="amberButton" type="submit" disabled={isLoading}>
+								{isLoading ? "Generating..." : "Generate"}
+							</Button>
+						</span>
+					)}
 				</form>
 			</Form>
 			<aside>
 				<div className="flex flex-col gap-4">
 					{generatedImageUrl ===
-					optimizedLatestPassportImage?.latestPassportImageUrl ? (
+						optimizedLatestPassportImage?.latestPassportImageUrl ? (
 						<Image
 							src={optimizedLatestPassportImage.latestPassportImageUrl}
 							alt="Passport preview"
@@ -413,13 +520,12 @@ export default function Playground({
 							{generationSteps.map((step, index) => (
 								<div key={index} className="flex flex-row items-center gap-1">
 									<li
-										className={`${
-											step.status === "completed"
-												? "text-success"
-												: step.status === "failed"
+										className={`${step.status === "completed"
+											? "text-success"
+											: step.status === "failed"
 												? "text-destructive"
 												: "text-muted-foreground"
-										}`}
+											}`}
 									>
 										{step.name}...
 									</li>
