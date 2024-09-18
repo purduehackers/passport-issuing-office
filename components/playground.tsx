@@ -102,7 +102,7 @@ const FormSchema = z.object({
 		//	},
 		//)
 		.default(
-			"null"
+			"null_string"
 		),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
@@ -158,7 +158,7 @@ export default function Playground({
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
 		GENERATION_STEPS.base,
 	);
-	const [ceremonyDate, setCeremonyDate] = useState("noPassportCeremony")
+	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony")
 
 	function updateGenerationStepState(
 		stepId: GenerationStepId,
@@ -211,7 +211,7 @@ export default function Playground({
 			const { passportNumber } = await createPassport(apiFormData);
 			generatedPassportNumber = String(passportNumber);
 			apiFormData.set("passportNumber", String(passportNumber));
-		
+
 			updateGenerationStepState("assigning_passport_number", "completed");
 		}
 
@@ -428,12 +428,12 @@ export default function Playground({
 														<DropdownMenuTrigger asChild>
 															<Button variant="outline">
 																{
-																	ceremonyDate == "noPassportCeremony" ? (
+																	ceremonyTime == "noPassportCeremony" ? (
 																		<p>Select a Date</p>
 																	) : (
 																		<p>
 																			{
-
+																				field.value
 																			}
 																		</p>
 																	)
@@ -443,9 +443,9 @@ export default function Playground({
 														<DropdownMenuContent className="w-56">
 															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
 															<DropdownMenuSeparator />
-															<DropdownMenuRadioGroup value={ceremonyDate} onValueChange={setCeremonyDate}>
+															<DropdownMenuRadioGroup value={field.value} onValueChange={field.onChange}>
 																<DropdownMenuRadioItem value="noPassportCeremony">Select a Date</DropdownMenuRadioItem>
-																<DropdownMenuRadioItem value="ceremony-9-20-24">09/20 - 8PM (4/10)</DropdownMenuRadioItem>
+																<DropdownMenuRadioItem value={new Date("1970-01-01").toString()}>09/20 - 8PM (4/10)</DropdownMenuRadioItem>
 																<DropdownMenuRadioItem value="ceremony-9-27-24">09/27 - 10PM (8/10)</DropdownMenuRadioItem>
 															</DropdownMenuRadioGroup>
 														</DropdownMenuContent>
@@ -515,9 +515,8 @@ export default function Playground({
 								name="ceremonyTime"
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Date of birth</FormLabel>
 										<FormControl>
-											<Input type="date" {...field} />
+											<Input type="hidden" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>

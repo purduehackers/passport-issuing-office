@@ -96,5 +96,5 @@ export async function getNewIdApi() {
 	if (process.env.PRODUCTION) {
 		return `https://id.purduehackers.com/api/new`
 	}
-	return `https://id-git-staging-purdue-hackers.vercel.app/api/new`
+	return `https://id-git-staging-purdue-hackers.vercel.app/api/new?_vercel_share=rFZAAxZNltub0iZUIsOOXRJvBqsnOB8v`
 }
