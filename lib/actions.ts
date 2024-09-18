@@ -75,7 +75,7 @@ export async function createPassport(formData: FormData) {
 		placeOfOrigin,
 		stringUserId,
 	} = parseFormData(formData);
-	const newPassport = await fetch(`https://id.purduehackers.com/api/new`, {
+	const newPassport = await fetch(await getNewIdApi(), {
 		method: "POST",
 		body: JSON.stringify({
 			discord_id: stringUserId,
@@ -90,4 +90,11 @@ export async function createPassport(formData: FormData) {
 	return {
 		passportNumber: newPassport.id,
 	};
+}
+
+export async function getNewIdApi() {
+	if (process.env.PRODUCTION) {
+		return `https://id.purduehackers.com/api/new`
+	}
+	return `https://id-git-staging-purdue-hackers.vercel.app/api/new`
 }
