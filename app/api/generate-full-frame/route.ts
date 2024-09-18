@@ -39,18 +39,20 @@ export async function POST(request: Request) {
 	const data = new FormData();
 	data.append("fullFrameImage", fullFrameFile);
 
-	try {
-		await uploadImageToR2("full", data, String(trueID));
-	} catch (error) {
-		return Response.json(
-			{
-				ok: false,
-				error: `Error uploading full image to R2: ${error}`,
-			},
-			{
-				status: 500,
-			},
-		);
+	if (process.env.PRODUCTION) {
+		try {
+			await uploadImageToR2("full", data, String(trueID));
+		} catch (error) {
+			return Response.json(
+				{
+					ok: false,
+					error: `Error uploading full image to R2: ${error}`,
+				},
+				{
+					status: 500,
+				},
+			);
+		}
 	}
 
 	return Response.json({ ok: true });

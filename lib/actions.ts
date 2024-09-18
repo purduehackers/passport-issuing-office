@@ -41,28 +41,26 @@ export async function uploadImageToR2(
 	data: FormData,
 	passportNumber: string,
 ) {
-	if (process.env.PRODUCTION) {
-		let imageToUpload;
-		if (which === "generated") {
-			imageToUpload = data.get("generatedImage") as File;
-		} else {
-			imageToUpload = data.get("fullFrameImage") as File;
-		}
+	let imageToUpload;
+	if (which === "generated") {
+		imageToUpload = data.get("generatedImage") as File;
+	} else {
+		imageToUpload = data.get("fullFrameImage") as File;
+	}
 
-		const preSignedUrl = await getPreSignedUrl(which, passportNumber);
-		const r2Upload = await fetch(preSignedUrl, {
+	const preSignedUrl = await getPreSignedUrl(which, passportNumber);
+	const r2Upload = await fetch(preSignedUrl, {
+		method: "PUT",
+		body: imageToUpload,
+	});
+	if (r2Upload.status !== 200) {
+		// Retry
+		const r2UploadRetry = await fetch(preSignedUrl, {
 			method: "PUT",
 			body: imageToUpload,
 		});
-		if (r2Upload.status !== 200) {
-			// Retry
-			const r2UploadRetry = await fetch(preSignedUrl, {
-				method: "PUT",
-				body: imageToUpload,
-			});
-			if (r2UploadRetry.status !== 200) {
-				throw new Error(`Error uploading: ${preSignedUrl}`);
-			}
+		if (r2UploadRetry.status !== 200) {
+			throw new Error(`Error uploading: ${preSignedUrl}`);
 		}
 	}
 }
