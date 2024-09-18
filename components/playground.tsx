@@ -461,7 +461,11 @@ export default function Playground({
 									<br />
 									<Dialog>
 										<DialogTrigger className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0" disabled={isLoading}>
-											<p>Generate</p>
+											{isLoading ? (
+												"Generating..."
+											) : (
+												"Generate"
+											)}
 										</DialogTrigger>
 										<DialogContent className="w-11/12 sm:w-auto max-h-screen h-128 overflow-y-auto">
 											<DialogHeader>
@@ -485,7 +489,7 @@ export default function Playground({
 														form="passportform"
 														className="amberButton" disabled={isLoading}
 													>
-														{isLoading ? "Generating..." : "Register My Passport"}
+														{"Register My Passport"}
 													</Button>
 												</DialogClose>
 											</DialogDescription>
