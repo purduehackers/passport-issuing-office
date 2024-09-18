@@ -16,6 +16,15 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuLabel,
+	DropdownMenuRadioGroup,
+	DropdownMenuRadioItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
@@ -80,18 +89,18 @@ const FormSchema = z.object({
 		),
 	ceremonyTime: z
 		.string()
-		.refine((val) => !isNaN(Date.parse(val)), {
-			message: "Invalid ceremony time. Please enter a valid time.",
-		})
-		.refine(
-			(val) => {
-				const inputDate = new Date(val);
-				return inputDate > maxDate;
-			},
-			{
-				message: "Ceremony cannot be earlier than today.",
-			},
-		)
+		//.refine((val) => !isNaN(Date.parse(val)), {
+		//	message: "Invalid ceremony time. Please enter a valid time.",
+		//})
+		//.refine(
+		//	(val) => {
+		//		const inputDate = new Date(val);
+		//		return inputDate > maxDate;
+		//	},
+		//	{
+		//		message: "Ceremony cannot be earlier than today.",
+		//	},
+		//)
 		.default(
 			"null"
 		),
@@ -122,6 +131,7 @@ export default function Playground({
 				? formatDefaultDate(latestPassport.date_of_birth)
 				: undefined,
 			placeOfOrigin: latestPassport?.place_of_origin || ORIGINS[0],
+			ceremonyTime: undefined,
 			image: undefined,
 			passportNumber: "0",
 		},
@@ -148,6 +158,7 @@ export default function Playground({
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
 		GENERATION_STEPS.base,
 	);
+	const [ceremonyDate, setCeremonyDate] = useState("noPassportCeremony")
 
 	function updateGenerationStepState(
 		stepId: GenerationStepId,
@@ -196,13 +207,13 @@ export default function Playground({
 			apiFormData.append("userId", userId);
 		}
 
-		//if (data.sendToDb) {
-		//	const { passportNumber } = await createPassport(apiFormData);
-		//	generatedPassportNumber = String(passportNumber);
-		//	apiFormData.set("passportNumber", String(passportNumber));
-		//
-		//	updateGenerationStepState("assigning_passport_number", "completed");
-		//}
+		if (data.sendToDb) {
+			const { passportNumber } = await createPassport(apiFormData);
+			generatedPassportNumber = String(passportNumber);
+			apiFormData.set("passportNumber", String(passportNumber));
+		
+			updateGenerationStepState("assigning_passport_number", "completed");
+		}
 
 		const postRes: ImageResponse = await fetch(`/api/generate-data-page`, {
 			method: "POST",
@@ -266,6 +277,7 @@ export default function Playground({
 		<main className="grid lg:grid-cols-[2fr_3fr] gap-20 lg:gap-12 w-full max-w-4xl">
 			<Form {...form}>
 				<form
+					id="passportform"
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="w-full flex flex-col gap-y-6"
 				>
@@ -412,7 +424,32 @@ export default function Playground({
 
 												</FormDescription>
 												<FormControl>
-													<Input type="datetime-local" {...field} />
+													<DropdownMenu>
+														<DropdownMenuTrigger asChild>
+															<Button variant="outline">
+																{
+																	ceremonyDate == "noPassportCeremony" ? (
+																		<p>Select a Date</p>
+																	) : (
+																		<p>
+																			{
+
+																			}
+																		</p>
+																	)
+																}
+															</Button>
+														</DropdownMenuTrigger>
+														<DropdownMenuContent className="w-56">
+															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
+															<DropdownMenuSeparator />
+															<DropdownMenuRadioGroup value={ceremonyDate} onValueChange={setCeremonyDate}>
+																<DropdownMenuRadioItem value="noPassportCeremony">Select a Date</DropdownMenuRadioItem>
+																<DropdownMenuRadioItem value="ceremony-9-20-24">09/20 - 8PM (4/10)</DropdownMenuRadioItem>
+																<DropdownMenuRadioItem value="ceremony-9-27-24">09/27 - 10PM (8/10)</DropdownMenuRadioItem>
+															</DropdownMenuRadioGroup>
+														</DropdownMenuContent>
+													</DropdownMenu>
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -420,13 +457,13 @@ export default function Playground({
 									/>
 									<br />
 									<Dialog>
-										<DialogTrigger className="shadow-blocks-tiny shadow-amber-300 font-bold" disabled={isLoading}>
+										<DialogTrigger className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0" disabled={isLoading}>
 											<p>Generate</p>
 										</DialogTrigger>
 										<DialogContent className="w-11/12 sm:w-auto max-h-screen h-128 overflow-y-auto">
 											<DialogHeader>
 												<DialogTitle className="text-2xl">
-													Ceremony Registration
+													Passport Ceremony Registration
 												</DialogTitle>
 											</DialogHeader>
 											<DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
@@ -441,6 +478,7 @@ export default function Playground({
 												</p>
 												<Button
 													type="submit"
+													form="passportform"
 													className="amberButton" disabled={isLoading}
 												>
 													{isLoading ? "Generating..." : "Register My Passport"}
@@ -451,6 +489,18 @@ export default function Playground({
 								</span>
 							) : (
 								<span>
+									<FormField
+										control={form.control}
+										name="ceremonyTime"
+										render={({ field }) => (
+											<FormItem>
+												<FormControl>
+													<Input type="hidden" {...field} />
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										)}
+									/>
 									<br />
 									<Button className="amberButton" type="submit" disabled={isLoading}>
 										{isLoading ? "Generating..." : "Generate"}
