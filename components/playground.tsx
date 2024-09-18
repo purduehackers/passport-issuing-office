@@ -48,6 +48,7 @@ import { ImageActions } from "./image-actions";
 import defaultImage from "@/public/passport/default.png";
 import {
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
@@ -478,13 +479,15 @@ export default function Playground({
 												<p>
 													IF SOMETHING COMES UP TELL MATTHEW
 												</p>
-												<Button
-													type="submit"
-													form="passportform"
-													className="amberButton" disabled={isLoading}
-												>
-													{isLoading ? "Generating..." : "Register My Passport"}
-												</Button>
+												<DialogClose asChild>
+													<Button
+														type="submit"
+														form="passportform"
+														className="amberButton" disabled={isLoading}
+													>
+														{isLoading ? "Generating..." : "Register My Passport"}
+													</Button>
+												</DialogClose>
 											</DialogDescription>
 										</DialogContent>
 									</Dialog>
