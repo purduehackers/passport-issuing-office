@@ -77,6 +77,7 @@ export async function createPassport(formData: FormData) {
 	} = parseFormData(formData);
 	const newPassport = await fetch(await getNewIdApi(), {
 		method: "POST",
+		headers: await apiHeaders(),
 		body: JSON.stringify({
 			discord_id: stringUserId,
 			surname: trueSurname,
@@ -97,4 +98,13 @@ export async function getNewIdApi() {
 		return `https://id.purduehackers.com/api/new`
 	}
 	return `https://id-git-staging-purdue-hackers.vercel.app/api/new?_vercel_share=rFZAAxZNltub0iZUIsOOXRJvBqsnOB8v`
+}
+
+export async function apiHeaders() {
+	if (process.env.PRODUCTION) {
+		return ({} as HeadersInit)
+	}
+	return ({
+		"x-vercel-protection-bypass": (process.env.ID_STAGING_AUTHENTICATION as string)
+	} as HeadersInit)
 }
