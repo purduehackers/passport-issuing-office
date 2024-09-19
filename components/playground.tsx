@@ -195,11 +195,7 @@ export default function Playground({
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-
-		alert(
-			JSON.stringify(data),
-		);
-
+		
 		setIsLoading(true);
 		setLaunchConfetti(false);
 
