@@ -56,7 +56,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { getCeremonies, getCeremonyTimeDate, getCeremonyTimeString } from "@/lib/ceremony-data";
+import CeremonyDropdown, { getCeremonyTimeDate, getCeremonyTimestamp, getCeremonyTimeString } from "@/lib/ceremony-data";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -102,9 +102,12 @@ const FormSchema = z.object({
 				message: "", // Not having this causes "Ceremony cannot be earlier than today.", which would be confusing
 			},
 		)
-		.refine((val) => !isNaN(Date.parse(getCeremonyTimeDate(val).toString())), {
+		/*.refine((val) => {
+			console.log(val)
+			!isNaN(Date.parse(val))
+		}, {
 			message: "Invalid ceremony time. Please enter a valid time.",
-		})
+		})*/
 		.refine(
 			(val) => {
 				const inputDate = getCeremonyTimeDate(val);
@@ -289,8 +292,6 @@ export default function Playground({
 
 	return (
 		<main className="grid lg:grid-cols-[2fr_3fr] gap-20 lg:gap-12 w-full max-w-4xl">
-			{	getCeremonies()
-				}
 			<Form {...form}>
 				<form
 					id="passportform"
@@ -433,7 +434,7 @@ export default function Playground({
 									<FormField
 										control={form.control}
 										name="ceremonyTime"
-										render={({ field }) => (
+										render={ ({ field }) => (
 											<FormItem>
 												<FormLabel>Ceremony Date</FormLabel>
 												<FormDescription>
@@ -459,18 +460,9 @@ export default function Playground({
 														<DropdownMenuContent className="w-full min-w-0">
 															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
 															<DropdownMenuSeparator />
-															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimeString(e)); setCeremonyTime(e) } }>
+															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimestamp(e)); setCeremonyTime(e) }}>
 																<DropdownMenuRadioItem value="noPassportCeremony" className="flex justify-between items-center">Select a Date</DropdownMenuRadioItem>
-																<DropdownMenuRadioItem value="ceremony-2024-09-20T20:00:00.000Z" className="flex justify-between items-center">
-																	09/20 - 8PM
-																	<Badge 
-																		variant="outline"
-																		className=""
-																		>
-																			10/10 Slots
-																	</Badge>
-																</DropdownMenuRadioItem>
-																<DropdownMenuRadioItem value="ceremony-2024-09-27T22:00:00.000Z" className="flex justify-between items-center">09/27 - 10PM (8/10)</DropdownMenuRadioItem>
+																<CeremonyDropdown />
 															</DropdownMenuRadioGroup>
 														</DropdownMenuContent>
 													</DropdownMenu>

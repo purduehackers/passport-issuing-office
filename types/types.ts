@@ -34,6 +34,12 @@ export interface Passport {
 	activated: boolean;
 }
 
+export interface Ceremony {
+    ceremony_time: Date;
+    total_slots: number;
+    open_registration: boolean;
+}
+
 export type GenerationStatus = "pending" | "completed" | "failed";
 export type GenerationStepId =
 	| "processing_portrait"
