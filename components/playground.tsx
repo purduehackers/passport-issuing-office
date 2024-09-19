@@ -25,7 +25,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
@@ -33,7 +32,6 @@ import { Crop } from "./crop";
 import { useState } from "react";
 import { ImageResponse } from "next/og";
 import Image from "next/image";
-import { Checkbox } from "./ui/checkbox";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
 import {
 	GenerationStatus,
@@ -119,7 +117,7 @@ const FormSchema = z.object({
 		),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
-	sendToDb: z.boolean().optional().default(false),
+	sendToDb: z.string().optional().default("false"),
 });
 
 export default function Playground({
@@ -195,7 +193,7 @@ export default function Playground({
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		
+
 		setIsLoading(true);
 		setLaunchConfetti(false);
 
@@ -294,6 +292,142 @@ export default function Playground({
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="w-full flex flex-col gap-y-6"
 				>
+					<p>1. Register</p>
+
+					{userId && guildMember !== undefined ? (
+						<span>
+							<FormField
+								control={form.control}
+								name="sendToDb"
+								render={({ field }) => (
+									<FormItem className="space-y-3">
+										<FormLabel>Register this passport</FormLabel>
+										<FormDescription>
+											Register for an upcoming passport ceremony?
+											SOME OTHER TEXT HERE (NTS: Ask Matthew Later -Michael)
+										</FormDescription>
+										<FormControl>
+											<RadioGroup
+												onValueChange={field.onChange}
+												defaultValue={field.value}
+												className="flex flex-col space-y-1"
+											>
+												<FormItem className="flex space-x-1 space-y-0">
+													<span className="flex space-x-1 space-y-0">
+														<FormControl>
+															<RadioGroupItem value="true" />
+														</FormControl>
+														<FormLabel className="font-normal">
+															Yes
+														</FormLabel>
+													</span>
+												</FormItem>
+												<FormItem className="flex space-x-1 space-y-0">
+													<span className="flex space-x-1 space-y-0">
+														<FormControl>
+															<RadioGroupItem value="false" />
+														</FormControl>
+														<FormLabel className="font-normal">
+															No
+														</FormLabel>
+													</span>
+												</FormItem>
+											</RadioGroup>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							{(form.getValues("sendToDb") === "true") ? (
+								<span>
+									<br />
+									<FormField
+										control={form.control}
+										name="ceremonyTime"
+										render={({ field }) => (
+											<span>
+											<FormItem>
+												<FormLabel>Ceremony Date</FormLabel>
+												<FormDescription>
+
+												</FormDescription>
+												<FormControl>
+													<DropdownMenu>
+														<DropdownMenuTrigger asChild>
+															<Button variant="outline" className="w-full">
+																{
+																	ceremonyTime == "noPassportCeremony" ? (
+																		<p>Select a Date</p>
+																	) : (
+																		<p>
+																			{
+																				getCeremonyTimeString(ceremonyTime).toString()
+																			}
+																		</p>
+																	)
+																}
+															</Button>
+														</DropdownMenuTrigger>
+														<DropdownMenuContent className="w-full min-w-0">
+															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
+															<DropdownMenuSeparator />
+															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimestamp(e)); setCeremonyTime(e) }}>
+																<DropdownMenuRadioItem value="noPassportCeremony" className="flex justify-between items-center">Select a Date</DropdownMenuRadioItem>
+																<CeremonyDropdown />
+															</DropdownMenuRadioGroup>
+														</DropdownMenuContent>
+													</DropdownMenu>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+											<br />
+											</span>
+										)}
+									/>
+								</span>
+							) : (
+								<FormField
+									control={form.control}
+									name="ceremonyTime"
+									render={({ field }) => (
+										<FormItem>
+											<FormControl>
+												<Input type="hidden" {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							)}
+						</span>
+					) : (
+						<span>
+							{!userId ? (
+								<span className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+									<p>
+										To register for an upcoming ceremony, please join our Discord,
+										then refresh this page.
+									</p>
+								</span>
+							) : (
+								<></>
+							)}
+							<FormField
+								control={form.control}
+								name="ceremonyTime"
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<Input type="hidden" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</span>
+					)}
+
+					<p>2. Generate</p>
 					<FormField
 						control={form.control}
 						name="firstName"
@@ -391,160 +525,47 @@ export default function Playground({
 							</FormItem>
 						)}
 					/>
-					{userId && guildMember !== undefined ? (
-						<span>
-							<FormField
-								control={form.control}
-								name="sendToDb"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Register this passport</FormLabel>
-										<FormDescription>
-											{registerCheckboxDisabled
-												? "Sorry, we're at capacity for this upcoming passport ceremony :("
-												: "Sign up for the passport ceremony this Friday at 10pm at Hack Night. By checking this box you pinky promise you will ACTUALLY be there this Friday. If you can't make it please DM Matthew so we don't prep for you!"}
-										</FormDescription>
-										<FormControl>
-											<Checkbox
-												className="h-6 w-6"
-												disabled={registerCheckboxDisabled}
-												onCheckedChange={(e) => {
-													// it hasn't updated the value at this point yet, so it's the opposite actually
-													if (field.value === true) {
-														setGenerationSteps(GENERATION_STEPS.base);
-													} else {
-														setGenerationSteps(GENERATION_STEPS.register);
-													}
-													return field.onChange(e);
-												}}
-												checked={field.value}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
+					{form.getValues("sendToDb") === "true" ? (
+						<Dialog>
+							<DialogTrigger className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0" disabled={isLoading}>
+								{isLoading ? (
+									"Generating..."
+								) : (
+									"Generate"
 								)}
-							/>
-							{form.getValues("sendToDb") ? (
-								<span className="relative w-full">
-									<br />
-									<FormField
-										control={form.control}
-										name="ceremonyTime"
-										render={ ({ field }) => (
-											<FormItem>
-												<FormLabel>Ceremony Date</FormLabel>
-												<FormDescription>
-
-												</FormDescription>
-												<FormControl>
-													<DropdownMenu>
-														<DropdownMenuTrigger asChild>
-															<Button variant="outline" className="w-full">
-																{
-																	ceremonyTime == "noPassportCeremony" ? (
-																		<p>Select a Date</p>
-																	) : (
-																		<p>
-																			{
-																				getCeremonyTimeString(ceremonyTime).toString()
-																			}
-																		</p>
-																	)
-																}
-															</Button>
-														</DropdownMenuTrigger>
-														<DropdownMenuContent className="w-full min-w-0">
-															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
-															<DropdownMenuSeparator />
-															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimestamp(e)); setCeremonyTime(e) }}>
-																<DropdownMenuRadioItem value="noPassportCeremony" className="flex justify-between items-center">Select a Date</DropdownMenuRadioItem>
-																<CeremonyDropdown />
-															</DropdownMenuRadioGroup>
-														</DropdownMenuContent>
-													</DropdownMenu>
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-									<br />
-									<Dialog>
-										<DialogTrigger className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0" disabled={isLoading}>
-											{isLoading ? (
-												"Generating..."
-											) : (
-												"Generate"
-											)}
-										</DialogTrigger>
-										<DialogContent className="w-11/12 sm:w-auto max-h-screen h-128 overflow-y-auto">
-											<DialogHeader>
-												<DialogTitle className="text-2xl">
-													Passport Ceremony Registration
-												</DialogTitle>
-											</DialogHeader>
-											<DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
-												<p>
-													PLACEHOLDER TEXT HERE
-												</p>
-												<p>
-													PLEASE MAKE SURE YOU CAN MAKE IT TO THE CEREMONY
-												</p>
-												<p>
-													IF SOMETHING COMES UP TELL MATTHEW
-												</p>
-												<DialogClose asChild>
-													<Button
-														type="submit"
-														form="passportform"
-														className="amberButton" disabled={isLoading}
-													>
-														{"Register My Passport"}
-													</Button>
-												</DialogClose>
-											</DialogDescription>
-										</DialogContent>
-									</Dialog>
-								</span>
-							) : (
-								<span>
-									<FormField
-										control={form.control}
-										name="ceremonyTime"
-										render={({ field }) => (
-											<FormItem>
-												<FormControl>
-													<Input type="hidden" {...field} />
-												</FormControl>
-												<FormMessage />
-											</FormItem>
-										)}
-									/>
-									<br />
-									<Button className="amberButton" type="submit" disabled={isLoading}>
-										{isLoading ? "Generating..." : "Generate"}
-									</Button>
-								</span>
-							)}
-						</span>
+							</DialogTrigger>
+							<DialogContent className="w-11/12 sm:w-auto max-h-screen h-128 overflow-y-auto">
+								<DialogHeader>
+									<DialogTitle className="text-2xl">
+										Passport Ceremony Registration
+									</DialogTitle>
+								</DialogHeader>
+								<DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
+									<p>
+										PLACEHOLDER TEXT HERE
+									</p>
+									<p>
+										PLEASE MAKE SURE YOU CAN MAKE IT TO THE CEREMONY
+									</p>
+									<p>
+										IF SOMETHING COMES UP TELL MATTHEW
+									</p>
+									<DialogClose asChild>
+										<Button
+											type="submit"
+											form="passportform"
+											className="amberButton" disabled={isLoading}
+										>
+											{"Register My Passport"}
+										</Button>
+									</DialogClose>
+								</DialogDescription>
+							</DialogContent>
+						</Dialog>
 					) : (
-						<span>
-							<FormField
-								control={form.control}
-								name="ceremonyTime"
-								render={({ field }) => (
-									<FormItem>
-										<FormControl>
-											<Input type="hidden" {...field} />
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<br />
-							<Button className="amberButton" type="submit" disabled={isLoading}>
-								{isLoading ? "Generating..." : "Generate"}
-							</Button>
-						</span>
+						<Button className="amberButton" type="submit" disabled={isLoading}>
+							{isLoading ? "Generating..." : "Generate"}
+						</Button>
 					)}
 				</form>
 			</Form>
@@ -610,12 +631,27 @@ export default function Playground({
 							latestPassport={latestPassport}
 							firstName={form.getValues().firstName}
 							surname={form.getValues().surname}
-							sendToDb={form.getValues().sendToDb}
+							sendToDb={(form.getValues().sendToDb === "true")}
 						/>
+					) : null}
+					{!isDefaultImage && !isLoading && !(form.getValues().sendToDb === "true") ? (
+						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+							<p>
+								Nice Passport! Want to make it real? Register for an upcoming passport ceremony at step 1.
+							</p>
+						</div>
+					) : null}
+					{!isDefaultImage && !isLoading && (form.getValues().sendToDb === "true") ? (
+						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+							<p>
+								SOMETHING GOES HERE (MAKE IT NOT AMBER TOO) Ceremony Date: {getCeremonyTimeString(form.getValues().ceremonyTime)}
+								This will show for all "existing" passports, so it will be here when returning as well
+							</p>
+						</div>
 					) : null}
 					{launchConfetti ? <LaunchConfetti /> : null}
 				</div>
 			</aside>
-		</main>
+		</main >
 	);
 }
