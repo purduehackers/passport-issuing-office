@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Agent, setGlobalDispatcher } from "undici";
+
+setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }));
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
