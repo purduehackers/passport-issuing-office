@@ -25,6 +25,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
@@ -55,7 +56,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { getCeremonyTimeDate, getCeremonyTimeString } from "@/lib/ceremony-data";
+import { getCeremonies, getCeremonyTimeDate, getCeremonyTimeString } from "@/lib/ceremony-data";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -91,22 +92,22 @@ const FormSchema = z.object({
 			},
 		),
 	ceremonyTime: z
-		.date()
+		.string()
 		.refine(
 			(val) => {
-				const inputDate = val;
+				const inputDate = getCeremonyTimeDate(val);
 				return inputDate != nullDate;
 			},
 			{
 				message: "", // Not having this causes "Ceremony cannot be earlier than today.", which would be confusing
 			},
 		)
-		.refine((val) => !isNaN(Date.parse(val.toDateString())), {
+		.refine((val) => !isNaN(Date.parse(getCeremonyTimeDate(val).toString())), {
 			message: "Invalid ceremony time. Please enter a valid time.",
 		})
 		.refine(
 			(val) => {
-				const inputDate = val;
+				const inputDate = getCeremonyTimeDate(val);
 				return inputDate > maxDate;
 			},
 			{
@@ -288,6 +289,8 @@ export default function Playground({
 
 	return (
 		<main className="grid lg:grid-cols-[2fr_3fr] gap-20 lg:gap-12 w-full max-w-4xl">
+			{	getCeremonies()
+				}
 			<Form {...form}>
 				<form
 					id="passportform"
@@ -425,7 +428,7 @@ export default function Playground({
 								)}
 							/>
 							{form.getValues("sendToDb") ? (
-								<span>
+								<span className="relative w-full">
 									<br />
 									<FormField
 										control={form.control}
@@ -439,7 +442,7 @@ export default function Playground({
 												<FormControl>
 													<DropdownMenu>
 														<DropdownMenuTrigger asChild>
-															<Button variant="outline">
+															<Button variant="outline" className="w-full">
 																{
 																	ceremonyTime == "noPassportCeremony" ? (
 																		<p>Select a Date</p>
@@ -453,13 +456,21 @@ export default function Playground({
 																}
 															</Button>
 														</DropdownMenuTrigger>
-														<DropdownMenuContent className="w-56">
+														<DropdownMenuContent className="w-full min-w-0">
 															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
 															<DropdownMenuSeparator />
-															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimeDate(e)); setCeremonyTime(e) } }>
-																<DropdownMenuRadioItem value="noPassportCeremony">Select a Date</DropdownMenuRadioItem>
-																<DropdownMenuRadioItem value="ceremony-2024-09-20T20:00:00.000Z">09/20 - 8PM (4/10)</DropdownMenuRadioItem>
-																<DropdownMenuRadioItem value="ceremony-2024-09-27T22:00:00.000Z">09/27 - 10PM (8/10)</DropdownMenuRadioItem>
+															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimeString(e)); setCeremonyTime(e) } }>
+																<DropdownMenuRadioItem value="noPassportCeremony" className="flex justify-between items-center">Select a Date</DropdownMenuRadioItem>
+																<DropdownMenuRadioItem value="ceremony-2024-09-20T20:00:00.000Z" className="flex justify-between items-center">
+																	09/20 - 8PM
+																	<Badge 
+																		variant="outline"
+																		className=""
+																		>
+																			10/10 Slots
+																	</Badge>
+																</DropdownMenuRadioItem>
+																<DropdownMenuRadioItem value="ceremony-2024-09-27T22:00:00.000Z" className="flex justify-between items-center">09/27 - 10PM (8/10)</DropdownMenuRadioItem>
 															</DropdownMenuRadioGroup>
 														</DropdownMenuContent>
 													</DropdownMenu>

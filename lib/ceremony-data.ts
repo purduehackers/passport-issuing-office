@@ -1,4 +1,20 @@
-export function getCeremonyTimeDate(ceremony: string) {
+'use server'
+
+import prisma from "@/lib/prisma";
+
+export async function getCeremonies() {
+    let ceremonies = await prisma.ceremonies.findMany({
+        where: {
+            ceremony_time: {
+                gte: new Date(),
+            },
+        },
+    });
+
+    return ceremonies;
+}
+
+export async function getCeremonyTimeDate(ceremony: string) {
     if (ceremony != "noPassportCeremony") {
         return new Date(ceremony.replace("ceremony-", ""));
     } else {
@@ -6,7 +22,7 @@ export function getCeremonyTimeDate(ceremony: string) {
     }
 }
 
-export function getCeremonyTimeString(ceremony: string) {
+export async function getCeremonyTimeString(ceremony: string) {
     let ceremonyDate = new Date();
 
     if (ceremony != "noPassportCeremony") {

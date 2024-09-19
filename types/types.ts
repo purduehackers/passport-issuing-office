@@ -28,8 +28,8 @@ export interface Passport {
 	name: string;
 	date_of_birth: string;
 	date_of_issue: string;
-	place_of_origin: string;
 	ceremony_time: string;
+	place_of_origin: string;
 	secret: string;
 	activated: boolean;
 }
@@ -60,6 +60,7 @@ export interface PassportGenData {
 	firstName: string;
 	dateOfBirth: Date;
 	dateOfIssue: Date;
+	ceremonyTime: Date;
 	placeOfOrigin: string;
 	sendToDb: boolean;
 	portrait?: File;
