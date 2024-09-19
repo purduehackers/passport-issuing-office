@@ -85,7 +85,14 @@ export default async function Home({
 								To register for an upcoming ceremony, please join our Discord,
 								then refresh this page.
 							</p>
-							<JoinGuildButton dark />
+						</div>
+					) : null}
+					{!process.env.PRODUCTION ? (
+						<div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-10/12 gap-4 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
+							<p>
+								This is a staging instance of the Passport Data Page generator.
+								If you would like to attend a passport ceremony, use the live page.
+							</p>
 						</div>
 					) : null}
 				</div>
