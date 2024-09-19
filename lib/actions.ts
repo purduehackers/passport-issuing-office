@@ -75,35 +75,23 @@ export async function createPassport(formData: FormData) {
 		placeOfOrigin,
 		stringUserId,
 	} = parseFormData(formData);
-	
-	try {
-		const newPassport = await fetch(await getNewIdApi(), {
-			method: "POST",
-			headers: await apiHeaders(),
-			body: JSON.stringify({
-				discord_id: stringUserId,
-				surname: trueSurname,
-				name: trueFirstName,
-				date_of_birth: trueDateOfBirth,
-				date_of_issue: trueDateOfIssue,
-				place_of_origin: placeOfOrigin,
-				ceremony_time: trueCeremonyTime,
-			}),
-		});
-
-		if (!newPassport.ok) {
-			throw new Error(`HTTP error! Status: ${newPassport.status}`);
-		}
-
-		const passportData = await newPassport.json();
-		return {
-			passportNumber: passportData.id,
-		};
-	} catch (error) {
-		console.error("Error fetching:", error);
-	}
+	const newPassport = await fetch(await getNewIdApi(), {
+		method: "POST",
+		headers: await apiHeaders(),
+		body: JSON.stringify({
+			discord_id: stringUserId,
+			surname: trueSurname,
+			name: trueFirstName,
+			date_of_birth: trueDateOfBirth,
+			date_of_issue: trueDateOfIssue,
+			place_of_origin: placeOfOrigin,
+			ceremony_time: trueCeremonyTime,
+		}),
+	}).then((r) => r.json()).catch(err => console.error("Error fetching new passport:", err));
+	return {
+		passportNumber: newPassport.id,
+	};
 }
-
 
 export async function getNewIdApi() {
 	if (process.env.PRODUCTION) {
