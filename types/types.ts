@@ -29,6 +29,7 @@ export interface Passport {
 	date_of_birth: string;
 	date_of_issue: string;
 	place_of_origin: string;
+	ceremony_time: string;
 	secret: string;
 	activated: boolean;
 }

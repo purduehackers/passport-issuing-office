@@ -55,10 +55,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { getCeremonyTimeDate, getCeremonyTimeString } from "@/lib/ceremony-data";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
 const maxDate = new Date();
+const nullDate = new Date(-1);
 
 const FormSchema = z.object({
 	surname: z
@@ -89,21 +91,27 @@ const FormSchema = z.object({
 			},
 		),
 	ceremonyTime: z
-		.string()
-		//.refine((val) => !isNaN(Date.parse(val)), {
-		//	message: "Invalid ceremony time. Please enter a valid time.",
-		//})
-		//.refine(
-		//	(val) => {
-		//		const inputDate = new Date(val);
-		//		return inputDate > maxDate;
-		//	},
-		//	{
-		//		message: "Ceremony cannot be earlier than today.",
-		//	},
-		//)
-		.default(
-			"null_string"
+		.date()
+		.refine(
+			(val) => {
+				const inputDate = val;
+				return inputDate != nullDate;
+			},
+			{
+				message: "", // Not having this causes "Ceremony cannot be earlier than today.", which would be confusing
+			},
+		)
+		.refine((val) => !isNaN(Date.parse(val.toDateString())), {
+			message: "Invalid ceremony time. Please enter a valid time.",
+		})
+		.refine(
+			(val) => {
+				const inputDate = val;
+				return inputDate > maxDate;
+			},
+			{
+				message: "Ceremony cannot be earlier than today.",
+			},
 		),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
@@ -132,7 +140,9 @@ export default function Playground({
 				? formatDefaultDate(latestPassport.date_of_birth)
 				: undefined,
 			placeOfOrigin: latestPassport?.place_of_origin || ORIGINS[0],
-			ceremonyTime: undefined,
+			ceremonyTime: latestPassport
+				? formatDefaultDate(latestPassport.ceremony_time)
+				: undefined,
 			image: undefined,
 			passportNumber: "0",
 		},
@@ -436,7 +446,7 @@ export default function Playground({
 																	) : (
 																		<p>
 																			{
-																				field.value
+																				getCeremonyTimeString(ceremonyTime).toString()
 																			}
 																		</p>
 																	)
@@ -446,10 +456,10 @@ export default function Playground({
 														<DropdownMenuContent className="w-56">
 															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
 															<DropdownMenuSeparator />
-															<DropdownMenuRadioGroup value={field.value} onValueChange={field.onChange}>
+															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimeDate(e)); setCeremonyTime(e) } }>
 																<DropdownMenuRadioItem value="noPassportCeremony">Select a Date</DropdownMenuRadioItem>
-																<DropdownMenuRadioItem value={new Date("1970-01-01").toString()}>09/20 - 8PM (4/10)</DropdownMenuRadioItem>
-																<DropdownMenuRadioItem value="ceremony-9-27-24">09/27 - 10PM (8/10)</DropdownMenuRadioItem>
+																<DropdownMenuRadioItem value="ceremony-2024-09-20T20:00:00.000Z">09/20 - 8PM (4/10)</DropdownMenuRadioItem>
+																<DropdownMenuRadioItem value="ceremony-2024-09-27T22:00:00.000Z">09/27 - 10PM (8/10)</DropdownMenuRadioItem>
 															</DropdownMenuRadioGroup>
 														</DropdownMenuContent>
 													</DropdownMenu>
