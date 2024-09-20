@@ -25,16 +25,39 @@ export function getCeremonyTimeString(ceremony: string) {
         ceremonyDate = new Date(-1);
     }
 
-    //let cDateString = cMonth + "/" + cDay
-    let cDateString = ceremonyDate.toLocaleString('en-US', { day: 'numeric', month: 'numeric' });
+    // Return the concatanated string
+    return (
+        <span>
+            {new Date(ceremonyDate).toLocaleDateString('en-US', {
+                timeZone: 'UTC',
+                day: 'numeric',
+                month: 'numeric',
+            })} - {new Date(ceremonyDate).toLocaleTimeString('en-US', {
+                timeZone: 'UTC',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            })}
+        </span>
+    );
+}
 
-    let cTimeString = ceremonyDate.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+export function getCeremonySlotsBadge(ceremony: string) {
+    let ceremonyDate = new Date();
+
+    if (ceremony != "noPassportCeremony") {
+        ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+    } else {
+        ceremonyDate = new Date(-1);
+    }
 
     let cCurrentParticipants = 0 // Current Registered Participants
     let cTotalParticipants = 10 // Total Possible Participants
-
-    // Return the concatanated string
-    return cDateString + " - " + cTimeString + ": " + (cTotalParticipants - cCurrentParticipants) + "/" + cTotalParticipants + " Slots Available";
+    return (
+        <Badge variant="outline" className="">
+            {cTotalParticipants - cCurrentParticipants}/{cTotalParticipants} Slots
+        </Badge>
+    )
 }
 
 export default function CeremonyDropdown() {
@@ -70,9 +93,11 @@ export default function CeremonyDropdown() {
                     className="flex justify-between items-center"
                 >
                     {new Date(ceremony.ceremony_time).toLocaleDateString('en-US', {
+                        timeZone: 'UTC',
                         day: 'numeric',
                         month: 'numeric',
                     })} - {new Date(ceremony.ceremony_time).toLocaleTimeString('en-US', {
+                        timeZone: 'UTC',
                         hour: 'numeric',
                         minute: 'numeric',
                         hour12: true

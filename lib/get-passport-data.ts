@@ -21,8 +21,6 @@ export async function getAllPassports() {
 	try {
 		const passportList = await prisma.passport.findMany();
 
-		console.log(passportList)
-
 		return passportList.map(passport => ({
 			...passport,
 			date_of_issue: passport.date_of_issue.toISOString(),

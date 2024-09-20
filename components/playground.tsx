@@ -54,7 +54,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import CeremonyDropdown, { getCeremonyTimeDate, getCeremonyTimestamp, getCeremonyTimeString } from "@/lib/ceremony-data";
+import CeremonyDropdown, { getCeremonySlotsBadge, getCeremonyTimeDate, getCeremonyTimestamp, getCeremonyTimeString } from "@/lib/ceremony-data";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -367,7 +367,10 @@ export default function Playground({
 																	) : (
 																		<p>
 																			{
-																				getCeremonyTimeString(ceremonyTime).toString()
+																				getCeremonyTimeString(ceremonyTime)
+																			}
+																			{
+																				getCeremonySlotsBadge(ceremonyTime)
 																			}
 																		</p>
 																	)
