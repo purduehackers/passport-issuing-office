@@ -64,3 +64,20 @@ export function JoinGuildButton({ dark }: { dark?: boolean }) {
 		</Link>
 	);
 }
+
+export function AdminButton({ dark }: { dark?: boolean }) {
+	return (
+		<Link
+			href={`/admin`}
+			className="mx-auto shadow-blocks-tiny border-2 border-slate-400 shadow-slate-300"
+		>
+			<Button
+				type="submit"
+				variant="auth"
+				className="shadow-none border-none rounded-none h-6"
+			>
+				Admin Page
+			</Button>
+		</Link>
+	);
+}

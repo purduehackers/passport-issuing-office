@@ -29,6 +29,7 @@ export const authConfig = {
 			let passport: Passport | null = null;
 			const bigIntUserId = BigInt(`${token.sub}`);
 			let guildMember;
+			let role;
 
 			if (process.env.DISCORD_GUILD) {
 				const guilds = await fetch(
@@ -58,6 +59,7 @@ export const authConfig = {
 				},
 			});
 			if (user) {
+				role = user.role;
 				const latestPassport = await prisma.passport.findFirst({
 					where: {
 						owner_id: user.id,
@@ -86,7 +88,7 @@ export const authConfig = {
 				}
 			}
 
-			return { ...session, token, passport, guildMember };
+			return { ...session, token, passport, guildMember, role };
 		},
 		async jwt({ token, account }) {
 			if (account) {

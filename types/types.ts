@@ -7,6 +7,7 @@ export interface MySession {
 	token: Token;
 	passport: Passport | null;
 	guildMember: object | null | undefined;
+	role: string | undefined;
 }
 
 export interface Token {
