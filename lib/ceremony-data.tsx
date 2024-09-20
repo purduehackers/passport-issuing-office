@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { useState, useEffect } from "react";
-import { getCeremonyList } from "./get-ceremony-list";
+import { getCeremonyList } from "./get-passport-data";
 import { Ceremony } from "@/types/types";
 
 export function getCeremonyTimeDate(ceremony: string) {

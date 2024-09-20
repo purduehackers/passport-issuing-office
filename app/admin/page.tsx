@@ -43,7 +43,7 @@ export default async function Home({
 	return (
 		<main className="bg-black flex flex-col min-h-screen">
 			<UserInfo user={session?.user} role={session?.role} />
-			<div className="flex flex-col items-center gap-y-12 sm:gap-y-20 pb-4 px-4 pt-0 sm:px-24 sm:pt-4 sm:pb-24">
+			<div className="flex flex-col items-center pb-4 px-4 pt-0 sm:px-24 sm:pt-4 sm:pb-24">
 				<div className="rounded-sm flex flex-col justify-center p-2 sm:p-4 my-4 w-full md:w-9/12 mx-auto break-inside-avoid font-main">
 					<h1 className="font-bold text-3xl text-amber-400 sm:text-5xl lg:text-[5rem] text-center mx-auto mb-4 flex flex-col justify-center items-center gap-2 sm:gap-4">
 						<img
@@ -51,8 +51,8 @@ export default async function Home({
 							src="/cover.svg"
 							className="self-center flex-shrink-0 h-20 sm:h-[2em] w-auto pointer-events-none"
 						/>
-						Passport Data Pages
-            Admin Portal
+						<p>Passport Data Pages</p>
+						<p>Admin Portal</p>
 					</h1>
 					{!process.env.PRODUCTION ? (
 						<div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-10/12 gap-4 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
