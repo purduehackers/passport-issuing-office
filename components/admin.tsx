@@ -38,7 +38,7 @@ import {
 import { Ceremony, Passport } from "@/types/types"
 import { getAllPassports, getCeremonyList } from "@/lib/get-passport-data"
 import { useEffect, useState } from "react"
-import CeremonyDropdown, { getCeremonyTimeDate } from "@/lib/ceremony-data"
+import CeremonyDropdown, { getCeremonySlotsBadge, getCeremonyTimeDate, getCeremonyTimestamp, getCeremonyTimeString } from "@/lib/ceremony-data"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs"
 import {
     Form,
@@ -231,8 +231,20 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 ]
 
 
-const FormSchema = z.object({
+const CreateFormSchema = z.object({
     new_ceremony_time: z.date({
+        required_error: "A date of birth is required.",
+    }),
+})
+
+const ModifyFormSchema = z.object({
+    modify_ceremony_time: z.string({
+        required_error: "A date of birth is required.",
+    }),
+})
+
+const DeleteFormSchema = z.object({
+    delete_ceremony_time: z.string({
         required_error: "A date of birth is required.",
     }),
 })
@@ -277,11 +289,27 @@ export default function AdminPage({
         return (newDate);
     };
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const createForm = useForm<z.infer<typeof CreateFormSchema>>({
+        resolver: zodResolver(CreateFormSchema),
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    const modifyForm = useForm<z.infer<typeof ModifyFormSchema>>({
+        resolver: zodResolver(ModifyFormSchema),
+    })
+
+    const deleteForm = useForm<z.infer<typeof DeleteFormSchema>>({
+        resolver: zodResolver(DeleteFormSchema),
+    })
+
+    function onSubmitCreate(data: z.infer<typeof CreateFormSchema>) {
+        alert(JSON.stringify(data, null, 2))
+    }
+
+    function onSubmitModify(data: z.infer<typeof ModifyFormSchema>) {
+        alert(JSON.stringify(data, null, 2))
+    }
+
+    function onSubmitDelete(data: z.infer<typeof DeleteFormSchema>) {
         alert(JSON.stringify(data, null, 2))
     }
 
@@ -360,6 +388,8 @@ export default function AdminPage({
     })
 
     const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony")
+    const [modifyCeremonyTime, setModifyCeremonyTime] = useState("noPassportCeremony")
+    const [deleteCeremonyTime, setDeleteCeremonyTime] = useState("noPassportCeremony")
 
     return (
         <div className="w-full">
@@ -369,7 +399,7 @@ export default function AdminPage({
             <Tabs defaultValue="passports" className="w-full min-w-0">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="passports">Passport List</TabsTrigger>
-                    <TabsTrigger value="ceremonies">Ceremony List</TabsTrigger>
+                    <TabsTrigger value="ceremonies">Upcoming Ceremony List</TabsTrigger>
                 </TabsList>
                 <TabsContent value="passports">
                     <div className="flex items-center py-4">
@@ -382,9 +412,6 @@ export default function AdminPage({
                                         ) : (
                                             <p>
                                                 {
-                                                    //getCeremonyTimeString(ceremonyTime).toString()
-                                                    //table.getColumn("ceremony_time")?.getFilterValue() ?? ""
-
                                                     new Date((passportTable.getColumn("ceremony_time")?.getFilterValue() ?? "") as string).toLocaleDateString('en-US', {
                                                         timeZone: 'UTC',
                                                         day: 'numeric',
@@ -590,204 +617,199 @@ export default function AdminPage({
                             </div>
                         </div>
                     </div>
-                    <div className="grid lg:grid-cols-3 gap-20 lg:gap-12 w-full max-w-4xl">
-                        <Card className="space-y-8">
-                            <CardHeader>
-                                <CardTitle>Add a Ceremony</CardTitle>
-                                <CardDescription>Create a new Passport Ceremony. The ceremony will </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <Form {...form}>
-                                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                                        <FormField
-                                            control={form.control}
-                                            name="new_ceremony_time"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-col">
-                                                    <Popover>
-                                                        <PopoverTrigger asChild>
+                    <div className="grid grid-cols-3 gap-5 lg:gap-3 w-full max-w-4xl auto-cols-auto">
+                        <div className="grid-cols-subgrid">
+                            <Card className="space-y-8 mx-auto">
+                                <CardHeader>
+                                    <CardTitle>Add a Ceremony</CardTitle>
+                                    <CardDescription>Create a new Passport Ceremony. The ceremony will appear for selection once created.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Form {...createForm}>
+                                        <form onSubmit={createForm.handleSubmit(onSubmitCreate)} className="space-y-8">
+                                            <FormField
+                                                control={createForm.control}
+                                                name="new_ceremony_time"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex flex-col">
+                                                        <Popover>
+                                                            <PopoverTrigger asChild>
+                                                                <FormControl>
+                                                                    <Button
+                                                                        variant={"outline"}
+                                                                        className={cn(
+                                                                            "w-[240px] pl-3 text-left font-normal",
+                                                                            !field.value && "text-muted-foreground"
+                                                                        )}
+                                                                    >
+                                                                        {field.value ? (
+                                                                            format(field.value, "PPP")
+                                                                        ) : (
+                                                                            <span>Pick a date</span>
+                                                                        )}
+                                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                                    </Button>
+                                                                </FormControl>
+                                                            </PopoverTrigger>
+                                                            <PopoverContent className="w-auto p-0" align="start">
+                                                                <Calendar
+                                                                    mode="single"
+                                                                    selected={field.value}
+                                                                    onSelect={e => { field.onChange(handleDaySelect(e)) }}
+                                                                    disabled={(date) =>
+                                                                        date > new Date() || date < new Date("1900-01-01")
+                                                                    }
+                                                                    initialFocus
+                                                                />
+                                                            </PopoverContent>
+                                                        </Popover>
+                                                        <Label>
+                                                            <p className="pb-1">Set the time{" "}</p>
+                                                            <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
+                                                                "w-[240px] pl-3 pr-3 text-left font-normal",
+                                                                !field.value && "text-muted-foreground"
+                                                            )} />
+                                                        </Label>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <Button type="submit">Submit</Button>
+                                        </form>
+                                    </Form>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="grid-cols-subgrid">
+                            <Card className="space-y-8 mx-auto">
+                                <CardHeader>
+                                    <CardTitle>Modify a Ceremony</CardTitle>
+                                    <CardDescription>Change the number of allowed participants, or disable registrations.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Form {...modifyForm}>
+                                        <form onSubmit={modifyForm.handleSubmit(onSubmitModify)} className="space-y-8">
+                                            <FormField
+                                                control={modifyForm.control}
+                                                name="modify_ceremony_time"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex flex-col">
+                                                        <FormItem>
+                                                            <FormLabel>Ceremony Date</FormLabel>
                                                             <FormControl>
-                                                                <Button
-                                                                    variant={"outline"}
-                                                                    className={cn(
-                                                                        "w-[240px] pl-3 text-left font-normal",
-                                                                        !field.value && "text-muted-foreground"
-                                                                    )}
-                                                                >
-                                                                    {field.value ? (
-                                                                        format(field.value, "PPP")
-                                                                    ) : (
-                                                                        <span>Pick a date</span>
-                                                                    )}
-                                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                                </Button>
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant="outline" className="w-full">
+                                                                            {
+                                                                                modifyCeremonyTime == "noPassportCeremony" ? (
+                                                                                    <p>Select a Date</p>
+                                                                                ) : (
+                                                                                    <p>
+                                                                                        {
+                                                                                            getCeremonyTimeString(modifyCeremonyTime)
+                                                                                        }
+                                                                                        {
+                                                                                            getCeremonySlotsBadge(modifyCeremonyTime)
+                                                                                        }
+                                                                                    </p>
+                                                                                )
+                                                                            }
+                                                                        </Button>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent className="w-full min-w-0">
+                                                                        <DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
+                                                                        <DropdownMenuSeparator />
+                                                                        <DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimestamp(e)); setModifyCeremonyTime(e); }}>
+                                                                            <DropdownMenuRadioItem value="noPassportCeremony" className="flex justify-between items-center">Select a Date</DropdownMenuRadioItem>
+                                                                            <CeremonyDropdown />
+                                                                        </DropdownMenuRadioGroup>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
                                                             </FormControl>
-                                                        </PopoverTrigger>
-                                                        <PopoverContent className="w-auto p-0" align="start">
-                                                            <Calendar
-                                                                mode="single"
-                                                                selected={field.value}
-                                                                onSelect={e => { field.onChange(handleDaySelect(e)) }}
-                                                                disabled={(date) =>
-                                                                    date > new Date() || date < new Date("1900-01-01")
-                                                                }
-                                                                initialFocus
-                                                            />
-                                                        </PopoverContent>
-                                                    </Popover>
-                                                    <Label>
-                                                        <p className="pb-1">Set the time{" "}</p>
-                                                        <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
-                                                            "w-[240px] pl-3 text-left font-normal",
-                                                            !field.value && "text-muted-foreground"
-                                                        )} />
-                                                    </Label>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <Button type="submit">Submit</Button>
-                                    </form>
-                                </Form>
-                            </CardContent>
-                            <CardFooter>
-                                <p>Card Footer</p>
-                            </CardFooter>
-                        </Card>
-                        <aside>
-                            <div className="space-y-8">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Add a Ceremony</CardTitle>
-                                        <CardDescription>Create a new Passport Ceremony. The ceremony will </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Form {...form}>
-                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_ceremony_time"
-                                                    render={({ field }) => (
-                                                        <FormItem className="flex flex-col">
-                                                            <Popover>
-                                                                <PopoverTrigger asChild>
-                                                                    <FormControl>
-                                                                        <Button
-                                                                            variant={"outline"}
-                                                                            className={cn(
-                                                                                "w-[240px] pl-3 text-left font-normal",
-                                                                                !field.value && "text-muted-foreground"
-                                                                            )}
-                                                                        >
-                                                                            {field.value ? (
-                                                                                format(field.value, "PPP")
-                                                                            ) : (
-                                                                                <span>Pick a date</span>
-                                                                            )}
-                                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                                        </Button>
-                                                                    </FormControl>
-                                                                </PopoverTrigger>
-                                                                <PopoverContent className="w-auto p-0" align="start">
-                                                                    <Calendar
-                                                                        mode="single"
-                                                                        selected={field.value}
-                                                                        onSelect={e => { field.onChange(handleDaySelect(e)) }}
-                                                                        disabled={(date) =>
-                                                                            date > new Date() || date < new Date("1900-01-01")
-                                                                        }
-                                                                        initialFocus
-                                                                    />
-                                                                </PopoverContent>
-                                                            </Popover>
-                                                            <Label>
-                                                                <p className="pb-1">Set the time{" "}</p>
-                                                                <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
-                                                                    "w-[240px] pl-3 text-left font-normal",
-                                                                    !field.value && "text-muted-foreground"
-                                                                )} />
-                                                            </Label>
                                                             <FormMessage />
                                                         </FormItem>
-                                                    )}
-                                                />
-                                                <Button type="submit">Submit</Button>
-                                            </form>
-                                        </Form>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <p>Card Footer</p>
-                                    </CardFooter>
-                                </Card>
-                            </div>
-                        </aside>
-                        <aside>
-                            <div className="space-y-8">
-                                <Card>
-                                    <CardHeader>
-                                        <CardTitle>Add a Ceremony</CardTitle>
-                                        <CardDescription>Create a new Passport Ceremony. The ceremony will </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <Form {...form}>
-                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="new_ceremony_time"
-                                                    render={({ field }) => (
-                                                        <FormItem className="flex flex-col">
-                                                            <Popover>
-                                                                <PopoverTrigger asChild>
-                                                                    <FormControl>
-                                                                        <Button
-                                                                            variant={"outline"}
-                                                                            className={cn(
-                                                                                "w-[240px] pl-3 text-left font-normal",
-                                                                                !field.value && "text-muted-foreground"
-                                                                            )}
-                                                                        >
-                                                                            {field.value ? (
-                                                                                format(field.value, "PPP")
-                                                                            ) : (
-                                                                                <span>Pick a date</span>
-                                                                            )}
-                                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                        <Label>
+                                                            <p className="pb-1">Set the time{" "}</p>
+                                                            <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
+                                                                "w-[240px] pl-3 pr-3 text-left font-normal",
+                                                                !field.value && "text-muted-foreground"
+                                                            )} />
+                                                        </Label>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <Button type="submit">Submit</Button>
+                                        </form>
+                                    </Form>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="grid-cols-subgrid">
+                            <Card className="space-y-16 mx-auto">
+                                <CardHeader>
+                                    <CardTitle>Delete a Ceremony</CardTitle>
+                                    <CardDescription>Delete a Passport Ceremony.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-10/12 gap-4 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
+                                        <p>
+                                            WARNING! Deleting a Passport Ceremony does not clear the date on the
+                                            registered passports. The corresponding passports will still be &quot;registered&quot;
+                                            for the passport ceremony.
+                                        </p>
+                                    </div>
+                                    <Form {...deleteForm}>
+                                        <form onSubmit={deleteForm.handleSubmit(onSubmitDelete)} className="space-y-8">
+                                            <FormField
+                                                control={deleteForm.control}
+                                                name="delete_ceremony_time"
+                                                render={({ field }) => (
+                                                    <FormItem className="flex flex-col">
+                                                        <FormItem>
+                                                            <FormLabel>Ceremony Date</FormLabel>
+                                                            <FormControl>
+                                                                <DropdownMenu>
+                                                                    <DropdownMenuTrigger asChild>
+                                                                        <Button variant="outline" className="w-full">
+                                                                            {
+                                                                                deleteCeremonyTime == "noPassportCeremony" ? (
+                                                                                    <p>Select a Date</p>
+                                                                                ) : (
+                                                                                    <p>
+                                                                                        {
+                                                                                            getCeremonyTimeString(deleteCeremonyTime)
+                                                                                        }
+                                                                                        {
+                                                                                            getCeremonySlotsBadge(deleteCeremonyTime)
+                                                                                        }
+                                                                                    </p>
+                                                                                )
+                                                                            }
                                                                         </Button>
-                                                                    </FormControl>
-                                                                </PopoverTrigger>
-                                                                <PopoverContent className="w-auto p-0" align="start">
-                                                                    <Calendar
-                                                                        mode="single"
-                                                                        selected={field.value}
-                                                                        onSelect={e => { field.onChange(handleDaySelect(e)) }}
-                                                                        disabled={(date) =>
-                                                                            date > new Date() || date < new Date("1900-01-01")
-                                                                        }
-                                                                        initialFocus
-                                                                    />
-                                                                </PopoverContent>
-                                                            </Popover>
-                                                            <Label>
-                                                                <p className="pb-1">Set the time{" "}</p>
-                                                                <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
-                                                                    "w-[240px] pl-3 text-left font-normal",
-                                                                    !field.value && "text-muted-foreground"
-                                                                )} />
-                                                            </Label>
+                                                                    </DropdownMenuTrigger>
+                                                                    <DropdownMenuContent className="w-full min-w-0">
+                                                                        <DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
+                                                                        <DropdownMenuSeparator />
+                                                                        <DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimestamp(e)); setDeleteCeremonyTime(e); }}>
+                                                                            <DropdownMenuRadioItem value="noPassportCeremony" className="flex justify-between items-center">Select a Date</DropdownMenuRadioItem>
+                                                                            <CeremonyDropdown />
+                                                                        </DropdownMenuRadioGroup>
+                                                                    </DropdownMenuContent>
+                                                                </DropdownMenu>
+                                                            </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
-                                                    )}
-                                                />
-                                                <Button type="submit">Submit</Button>
-                                            </form>
-                                        </Form>
-                                    </CardContent>
-                                    <CardFooter>
-                                        <p>Card Footer</p>
-                                    </CardFooter>
-                                </Card>
-                            </div>
-                        </aside>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <Button type="submit">Submit</Button>
+                                        </form>
+                                    </Form>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </div>
                 </TabsContent>
             </Tabs>
