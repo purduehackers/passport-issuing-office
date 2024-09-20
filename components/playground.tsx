@@ -169,7 +169,7 @@ export default function Playground({
 	const [launchConfetti, setLaunchConfetti] = useState(false); // TODO: do this better
 	const [croppedImageFile, setCroppedImageFile] = useState<File>();
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
-		GENERATION_STEPS.base,
+		GENERATION_STEPS.register,
 	);
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony")
 
@@ -216,7 +216,7 @@ export default function Playground({
 			apiFormData.append("userId", userId);
 		}
 
-		if (data.sendToDb) {
+		if (data.sendToDb == "true") {
 			const { passportNumber } = await createPassport(apiFormData);
 			generatedPassportNumber = String(passportNumber);
 			apiFormData.set("passportNumber", String(passportNumber));
@@ -234,7 +234,7 @@ export default function Playground({
 		});
 		updateGenerationStepState("generating_data_page", "completed");
 
-		if (data.sendToDb) {
+		if (data.sendToDb == "true") {
 			const generateFullFrameReq = await fetch(`/api/generate-full-frame`, {
 				method: "POST",
 				body: apiFormData,
@@ -308,7 +308,16 @@ export default function Playground({
 										</FormDescription>
 										<FormControl>
 											<RadioGroup
-												onValueChange={field.onChange}
+												onValueChange={e => {
+													field.onChange(e);
+													{
+														if (e == "false") {
+															setGenerationSteps(GENERATION_STEPS.base);
+														} else {
+															setGenerationSteps(GENERATION_STEPS.register);
+														}
+													}
+												}}
 												defaultValue={field.value}
 												className="flex flex-col space-y-1"
 											>
@@ -338,7 +347,7 @@ export default function Playground({
 									</FormItem>
 								)}
 							/>
-							{(form.getValues("sendToDb") === "true") ? (
+							{(form.getValues("sendToDb") == "true") ? (
 								<span>
 									<br />
 									<FormField
@@ -348,9 +357,6 @@ export default function Playground({
 											<span>
 											<FormItem>
 												<FormLabel>Ceremony Date</FormLabel>
-												<FormDescription>
-
-												</FormDescription>
 												<FormControl>
 													<DropdownMenu>
 														<DropdownMenuTrigger asChild>
@@ -371,7 +377,7 @@ export default function Playground({
 														<DropdownMenuContent className="w-full min-w-0">
 															<DropdownMenuLabel>Upcoming Ceremonies</DropdownMenuLabel>
 															<DropdownMenuSeparator />
-															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimestamp(e)); setCeremonyTime(e) }}>
+															<DropdownMenuRadioGroup value={field.value} onValueChange={e => { field.onChange(getCeremonyTimestamp(e)); setCeremonyTime(e); }}>
 																<DropdownMenuRadioItem value="noPassportCeremony" className="flex justify-between items-center">Select a Date</DropdownMenuRadioItem>
 																<CeremonyDropdown />
 															</DropdownMenuRadioGroup>
@@ -525,7 +531,7 @@ export default function Playground({
 							</FormItem>
 						)}
 					/>
-					{form.getValues("sendToDb") === "true" ? (
+					{(form.getValues("sendToDb") == "true") ? (
 						<Dialog>
 							<DialogTrigger className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0" disabled={isLoading}>
 								{isLoading ? (
@@ -631,17 +637,17 @@ export default function Playground({
 							latestPassport={latestPassport}
 							firstName={form.getValues().firstName}
 							surname={form.getValues().surname}
-							sendToDb={(form.getValues().sendToDb === "true")}
+							sendToDb={(form.getValues().sendToDb == "true")}
 						/>
 					) : null}
-					{!isDefaultImage && !isLoading && !(form.getValues().sendToDb === "true") ? (
+					{!isDefaultImage && !isLoading && !(form.getValues().sendToDb == "true") ? (
 						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 							<p>
 								Nice Passport! Want to make it real? Register for an upcoming passport ceremony at step 1.
 							</p>
 						</div>
 					) : null}
-					{!isDefaultImage && !isLoading && (form.getValues().sendToDb === "true") ? (
+					{!isDefaultImage && !isLoading && (form.getValues().sendToDb == "true") ? (
 						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 							<p>
 								SOMETHING GOES HERE (MAKE IT NOT AMBER TOO) Ceremony Date: {getCeremonyTimeString(form.getValues().ceremonyTime)}
