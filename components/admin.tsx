@@ -590,7 +590,7 @@ export default function AdminPage({
                             </div>
                         </div>
                     </div>
-                    <div className="grid lg:grid-cols-[2fr_3fr] gap-20 lg:gap-12 w-full max-w-4xl">
+                    <div className="grid lg:grid-cols-3 gap-20 lg:gap-12 w-full max-w-4xl">
                         <Card className="space-y-8">
                             <CardHeader>
                                 <CardTitle>Add a Ceremony</CardTitle>
@@ -654,12 +654,141 @@ export default function AdminPage({
                                 <p>Card Footer</p>
                             </CardFooter>
                         </Card>
+                        <aside>
+                            <div className="space-y-8">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Add a Ceremony</CardTitle>
+                                        <CardDescription>Create a new Passport Ceremony. The ceremony will </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Form {...form}>
+                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_ceremony_time"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-col">
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <FormControl>
+                                                                        <Button
+                                                                            variant={"outline"}
+                                                                            className={cn(
+                                                                                "w-[240px] pl-3 text-left font-normal",
+                                                                                !field.value && "text-muted-foreground"
+                                                                            )}
+                                                                        >
+                                                                            {field.value ? (
+                                                                                format(field.value, "PPP")
+                                                                            ) : (
+                                                                                <span>Pick a date</span>
+                                                                            )}
+                                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                                        </Button>
+                                                                    </FormControl>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-0" align="start">
+                                                                    <Calendar
+                                                                        mode="single"
+                                                                        selected={field.value}
+                                                                        onSelect={e => { field.onChange(handleDaySelect(e)) }}
+                                                                        disabled={(date) =>
+                                                                            date > new Date() || date < new Date("1900-01-01")
+                                                                        }
+                                                                        initialFocus
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                            <Label>
+                                                                <p className="pb-1">Set the time{" "}</p>
+                                                                <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
+                                                                    "w-[240px] pl-3 text-left font-normal",
+                                                                    !field.value && "text-muted-foreground"
+                                                                )} />
+                                                            </Label>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <Button type="submit">Submit</Button>
+                                            </form>
+                                        </Form>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <p>Card Footer</p>
+                                    </CardFooter>
+                                </Card>
+                            </div>
+                        </aside>
+                        <aside>
+                            <div className="space-y-8">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Add a Ceremony</CardTitle>
+                                        <CardDescription>Create a new Passport Ceremony. The ceremony will </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <Form {...form}>
+                                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="new_ceremony_time"
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex flex-col">
+                                                            <Popover>
+                                                                <PopoverTrigger asChild>
+                                                                    <FormControl>
+                                                                        <Button
+                                                                            variant={"outline"}
+                                                                            className={cn(
+                                                                                "w-[240px] pl-3 text-left font-normal",
+                                                                                !field.value && "text-muted-foreground"
+                                                                            )}
+                                                                        >
+                                                                            {field.value ? (
+                                                                                format(field.value, "PPP")
+                                                                            ) : (
+                                                                                <span>Pick a date</span>
+                                                                            )}
+                                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                                        </Button>
+                                                                    </FormControl>
+                                                                </PopoverTrigger>
+                                                                <PopoverContent className="w-auto p-0" align="start">
+                                                                    <Calendar
+                                                                        mode="single"
+                                                                        selected={field.value}
+                                                                        onSelect={e => { field.onChange(handleDaySelect(e)) }}
+                                                                        disabled={(date) =>
+                                                                            date > new Date() || date < new Date("1900-01-01")
+                                                                        }
+                                                                        initialFocus
+                                                                    />
+                                                                </PopoverContent>
+                                                            </Popover>
+                                                            <Label>
+                                                                <p className="pb-1">Set the time{" "}</p>
+                                                                <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
+                                                                    "w-[240px] pl-3 text-left font-normal",
+                                                                    !field.value && "text-muted-foreground"
+                                                                )} />
+                                                            </Label>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <Button type="submit">Submit</Button>
+                                            </form>
+                                        </Form>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <p>Card Footer</p>
+                                    </CardFooter>
+                                </Card>
+                            </div>
+                        </aside>
                     </div>
-                    <aside>
-                        <div className="flex flex-col gap-4">
-
-                        </div>
-                    </aside>
                 </TabsContent>
             </Tabs>
         </div>
