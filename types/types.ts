@@ -36,9 +36,9 @@ export interface Passport {
 }
 
 export interface Ceremony {
-    ceremony_time: Date;
-    total_slots: number;
-    open_registration: boolean;
+	ceremony_time: Date;
+	total_slots: number;
+	open_registration: boolean;
 }
 
 export type GenerationStatus = "pending" | "completed" | "failed";

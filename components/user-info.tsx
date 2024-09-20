@@ -1,7 +1,13 @@
 import { User } from "next-auth";
 import { AdminButton, SignOutButton } from "./auth-buttons";
 
-export default function UserInfo( { user, role }: { user: User | undefined, role: string | undefined } ) {
+export default function UserInfo({
+	user,
+	role,
+}: {
+	user: User | undefined;
+	role: string | undefined;
+}) {
 	return (
 		<div className="clear-both mr-2 mt-4 lg:mr-4">
 			<div className="flex flex-row float-right gap-1 items-center text-sm">
@@ -17,8 +23,8 @@ export default function UserInfo( { user, role }: { user: User | undefined, role
 						<SignOutButton />
 						{role == "admin" ? (
 							<>
-							<p> </p>
-							<AdminButton />
+								<p> </p>
+								<AdminButton />
 							</>
 						) : null}
 					</>

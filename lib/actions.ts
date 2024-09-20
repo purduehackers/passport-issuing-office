@@ -87,7 +87,9 @@ export async function createPassport(formData: FormData) {
 			place_of_origin: placeOfOrigin,
 			ceremony_time: trueCeremonyTime,
 		}),
-	}).then((r) => r.json()).catch(err => console.log("Error fetching new passport:", err));
+	})
+		.then((r) => r.json())
+		.catch((err) => console.log("Error fetching new passport:", err));
 	return {
 		passportNumber: newPassport.id,
 	};
@@ -95,16 +97,17 @@ export async function createPassport(formData: FormData) {
 
 export async function getNewIdApi() {
 	if (process.env.PRODUCTION) {
-		return `https://id.purduehackers.com/api/new`
+		return `https://id.purduehackers.com/api/new`;
 	}
-	return `https://id-git-staging-purdue-hackers.vercel.app/api/new`
+	return `https://id-git-staging-purdue-hackers.vercel.app/api/new`;
 }
 
 export async function apiHeaders() {
 	if (process.env.PRODUCTION) {
-		return ({} as HeadersInit)
+		return {} as HeadersInit;
 	}
-	return ({
-		"x-vercel-protection-bypass": (process.env.ID_STAGING_AUTHENTICATION as string)
-	} as HeadersInit)
+	return {
+		"x-vercel-protection-bypass": process.env
+			.ID_STAGING_AUTHENTICATION as string,
+	} as HeadersInit;
 }
