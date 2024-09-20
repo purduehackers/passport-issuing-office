@@ -66,7 +66,7 @@ import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { addNewCeremony, deleteCeremony, modifyCeremony } from "@/lib/ceremony-utils"
 import { Switch } from "./ui/switch"
-import { toast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast"
 
 export const passportColumns: ColumnDef<Passport>[] = [
     {
@@ -236,7 +236,7 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 
 const CreateFormSchema = z.object({
     new_ceremony_time: z
-        .string({
+        .date({
             required_error: "A date of birth is required.",
         }),
     max_registrations: z
@@ -277,6 +277,8 @@ export default function AdminPage({
 
     }) {
 
+    const { toast } = useToast();
+
     const [selected, setSelected] = useState<Date>();
     const [timeValue, setTimeValue] = useState<string>("00:00");
 
@@ -301,9 +303,9 @@ export default function AdminPage({
             .split(":")
             .map((str) => parseInt(str, 10));
         const newDate = new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
+            date.getUTCFullYear(),
+            date.getUTCMonth(),
+            date.getUTCDate(),
             hours,
             minutes
         );
@@ -331,7 +333,7 @@ export default function AdminPage({
     })
 
     async function onSubmitCreate(data: z.infer<typeof CreateFormSchema>) {
-        let success = await addNewCeremony({
+        const success = await addNewCeremony({
             ceremony_time: new Date(data.new_ceremony_time),
             total_slots: parseInt(data.max_registrations),
             open_registration: data.open_registration,
@@ -340,19 +342,20 @@ export default function AdminPage({
         if (success) {
             toast({
                 title: "Success!",
-                description: "Successfully created a new passport ceremony: " + new Date(data.new_ceremony_time) + "!",
-            })
+                description: "Ceremony at " + new Date(data.new_ceremony_time) + " created!",
+              })
+              setReloadDatebase(true);
         } else {
             toast({
-                title: "Failed!",
+                title: "Meltdown Imminent!",
                 variant: "destructive",
-                description: "Creation of new ceremony: " + new Date(data.new_ceremony_time) + " failed.",
-            })
+                description: "Ceremony at " + new Date(data.new_ceremony_time) + " failed to be created. Are you using a duplicate date?",
+              })
         }
     }
 
     async function onSubmitModify(data: z.infer<typeof ModifyFormSchema>) {
-        let success = await modifyCeremony({
+        const success = await modifyCeremony({
             ceremony_time: new Date(data.modify_ceremony_time),
             total_slots: parseInt(data.max_registrations_mod),
             open_registration: data.open_registration_mod,
@@ -360,37 +363,41 @@ export default function AdminPage({
 
         if (success) {
             toast({
-                title: "Success",
-                description: "Your changes to the ceremony: " + new Date(data.modify_ceremony_time) + " succeded!",
-            })
+                title: "Success!",
+                description: "Ceremony at " + new Date(data.modify_ceremony_time) + " modified!",
+              })
+              setReloadDatebase(true);
         } else {
             toast({
-                title: "Success",
+                title: "Meltdown Imminent!",
                 variant: "destructive",
-                description: "Your changes to the ceremony: " + new Date(data.modify_ceremony_time) + " failed.",
-            })
+                description: "Ceremony at " + new Date(data.modify_ceremony_time) + " failed to be modified.",
+              })
         }
     }
 
     async function onSubmitDelete(data: z.infer<typeof DeleteFormSchema>) {
-        let success = await deleteCeremony(new Date(data.delete_ceremony_time));
-        
+        const success = await deleteCeremony(new Date(data.delete_ceremony_time));
+
         if (success) {
             toast({
                 title: "Success!",
-                description: "Successfully deleted the passport ceremony: " + new Date(data.delete_ceremony_time) + "!",
-            })
+                description: "Ceremony at " + new Date(data.delete_ceremony_time) + " deleted!",
+              })
+              setReloadDatebase(true);
         } else {
             toast({
-                title: "Failed!",
+                title: "Meltdown Imminent!",
                 variant: "destructive",
-                description: "Failed to delete ceremony: " + new Date(data.delete_ceremony_time) + ".",
-            })
+                description: "Ceremony at " + new Date(data.delete_ceremony_time) + " failed to be deleted.",
+              })
         }
     }
 
     const [passportData, setPassportData] = useState<Passport[]>([]);
     const [ceremonyData, setCeremonyData] = useState<Ceremony[]>([]);
+    const [reloadDatabase, setReloadDatebase] = useState(true);
+
     useEffect(() => {
         const fetchPassportData = async () => {
             try {
@@ -405,9 +412,12 @@ export default function AdminPage({
             } catch (e) { }
         };
 
+        if (reloadDatabase) {
         fetchPassportData();
         fetchCeremonyData();
-    }, []);
+        setReloadDatebase(false);
+        }
+    }, [reloadDatabase]);
 
     const [passportSorting, setPassportSorting] = React.useState<SortingState>([])
     const [passportColumnFilters, setPassportColumnFilters] = React.useState<ColumnFiltersState>(

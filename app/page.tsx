@@ -40,7 +40,7 @@ export default async function Home({
 	}
 
 	return (
-		<main className="bg-black flex flex-col min-h-screen">
+		<main className="bg-background flex flex-col min-h-screen">
 			<UserInfo user={session?.user} role={session?.role} />
 			<div className="flex flex-col items-center gap-y-12 sm:gap-y-20 pb-4 px-4 pt-0 sm:px-24 sm:pt-4 sm:pb-24">
 				<div className="rounded-sm flex flex-col justify-center p-2 sm:p-4 my-4 w-full md:w-9/12 mx-auto break-inside-avoid font-main">
