@@ -1,3 +1,5 @@
+'use server'
+
 import prisma from "@/lib/prisma";
 import { Ceremony } from "@/types/types";
 
@@ -35,7 +37,7 @@ export async function modifyCeremony(ceremonyData: Ceremony) {
 
 export async function deleteCeremony(ceremonyDate: Date) {
 	try {
-		const user = await prisma.ceremonies.delete({
+		await prisma.ceremonies.delete({
 			where: {
                 ceremony_time: ceremonyDate,
             },

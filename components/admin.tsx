@@ -64,6 +64,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
+import { addNewCeremony, deleteCeremony, modifyCeremony } from "@/lib/ceremony-utils"
+import { Switch } from "./ui/switch"
+import { toast } from "@/hooks/use-toast"
 
 export const passportColumns: ColumnDef<Passport>[] = [
     {
@@ -232,15 +235,33 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 
 
 const CreateFormSchema = z.object({
-    new_ceremony_time: z.date({
-        required_error: "A date of birth is required.",
-    }),
+    new_ceremony_time: z
+        .string({
+            required_error: "A date of birth is required.",
+        }),
+    max_registrations: z
+        .string({
+            required_error: "You must set a maximum number of participants."
+        }),
+    open_registration: z
+        .boolean({
+            required_error: "You must select an option.",
+        })
 })
 
 const ModifyFormSchema = z.object({
-    modify_ceremony_time: z.string({
-        required_error: "A date of birth is required.",
-    }),
+    modify_ceremony_time: z
+        .string({
+            required_error: "A date of birth is required.",
+        }),
+    max_registrations_mod: z
+        .string({
+            required_error: "You must set a maximum number of participants."
+        }),
+    open_registration_mod: z
+        .boolean({
+            required_error: "You must select an option.",
+        })
 })
 
 const DeleteFormSchema = z.object({
@@ -291,26 +312,81 @@ export default function AdminPage({
 
     const createForm = useForm<z.infer<typeof CreateFormSchema>>({
         resolver: zodResolver(CreateFormSchema),
+        defaultValues: {
+            max_registrations: "10",
+			open_registration: true,
+		},
     })
 
     const modifyForm = useForm<z.infer<typeof ModifyFormSchema>>({
         resolver: zodResolver(ModifyFormSchema),
+        defaultValues: {
+            max_registrations_mod: "10",
+			open_registration_mod: true,
+		},
     })
 
     const deleteForm = useForm<z.infer<typeof DeleteFormSchema>>({
         resolver: zodResolver(DeleteFormSchema),
     })
 
-    function onSubmitCreate(data: z.infer<typeof CreateFormSchema>) {
-        alert(JSON.stringify(data, null, 2))
+    async function onSubmitCreate(data: z.infer<typeof CreateFormSchema>) {
+        let success = await addNewCeremony({
+            ceremony_time: new Date(data.new_ceremony_time),
+            total_slots: parseInt(data.max_registrations),
+            open_registration: data.open_registration,
+        });
+
+        if (success) {
+            toast({
+                title: "Success!",
+                description: "Successfully created a new passport ceremony: " + new Date(data.new_ceremony_time) + "!",
+            })
+        } else {
+            toast({
+                title: "Failed!",
+                variant: "destructive",
+                description: "Creation of new ceremony: " + new Date(data.new_ceremony_time) + " failed.",
+            })
+        }
     }
 
-    function onSubmitModify(data: z.infer<typeof ModifyFormSchema>) {
-        alert(JSON.stringify(data, null, 2))
+    async function onSubmitModify(data: z.infer<typeof ModifyFormSchema>) {
+        let success = await modifyCeremony({
+            ceremony_time: new Date(data.modify_ceremony_time),
+            total_slots: parseInt(data.max_registrations_mod),
+            open_registration: data.open_registration_mod,
+        });
+
+        if (success) {
+            toast({
+                title: "Success",
+                description: "Your changes to the ceremony: " + new Date(data.modify_ceremony_time) + " succeded!",
+            })
+        } else {
+            toast({
+                title: "Success",
+                variant: "destructive",
+                description: "Your changes to the ceremony: " + new Date(data.modify_ceremony_time) + " failed.",
+            })
+        }
     }
 
-    function onSubmitDelete(data: z.infer<typeof DeleteFormSchema>) {
-        alert(JSON.stringify(data, null, 2))
+    async function onSubmitDelete(data: z.infer<typeof DeleteFormSchema>) {
+        let success = await deleteCeremony(new Date(data.delete_ceremony_time));
+        
+        if (success) {
+            toast({
+                title: "Success!",
+                description: "Successfully deleted the passport ceremony: " + new Date(data.delete_ceremony_time) + "!",
+            })
+        } else {
+            toast({
+                title: "Failed!",
+                variant: "destructive",
+                description: "Failed to delete ceremony: " + new Date(data.delete_ceremony_time) + ".",
+            })
+        }
     }
 
     const [passportData, setPassportData] = useState<Passport[]>([]);
@@ -654,10 +730,10 @@ export default function AdminPage({
                                                             <PopoverContent className="w-auto p-0" align="start">
                                                                 <Calendar
                                                                     mode="single"
-                                                                    selected={field.value}
+                                                                    selected={new Date(field.value)}
                                                                     onSelect={e => { field.onChange(handleDaySelect(e)) }}
                                                                     disabled={(date) =>
-                                                                        date > new Date() || date < new Date("1900-01-01")
+                                                                        date < new Date()
                                                                     }
                                                                     initialFocus
                                                                 />
@@ -674,7 +750,39 @@ export default function AdminPage({
                                                     </FormItem>
                                                 )}
                                             />
-                                            <Button type="submit">Submit</Button>
+                                            <FormField
+                                                control={createForm.control}
+                                                name="max_registrations"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <>
+                                                                <Label>Maximum Participant Count</Label>
+                                                                <Input type="number" {...field} />
+                                                            </>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                            <FormField
+                                                control={createForm.control}
+                                                name="open_registration"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <>
+                                                                <Label>Open for Registration</Label>
+                                                                <Switch
+                                                                    checked={field.value}
+                                                                    onCheckedChange={field.onChange}
+                                                                    aria-readonly
+                                                                />
+                                                            </>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                            <Button type="submit" className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0">Submit</Button>
                                         </form>
                                     </Form>
                                 </CardContent>
@@ -728,18 +836,43 @@ export default function AdminPage({
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
-                                                        <Label>
-                                                            <p className="pb-1">Set the time{" "}</p>
-                                                            <Input type="time" value={timeValue} onChange={handleTimeChange} className={cn(
-                                                                "w-[240px] pl-3 pr-3 text-left font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )} />
-                                                        </Label>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
-                                            <Button type="submit">Submit</Button>
+                                            <FormField
+                                                control={modifyForm.control}
+                                                name="max_registrations_mod"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <>
+                                                                <Label>Maximum Participant Count</Label>
+                                                                <Input type="number" {...field} />
+                                                            </>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                            <FormField
+                                                control={modifyForm.control}
+                                                name="open_registration_mod"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <>
+                                                                <Label>Open for Registration</Label>
+                                                                <Switch
+                                                                    checked={field.value}
+                                                                    onCheckedChange={field.onChange}
+                                                                    aria-readonly
+                                                                />
+                                                            </>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )} />
+                                            <Button type="submit" className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0">Submit</Button>
                                         </form>
                                     </Form>
                                 </CardContent>
@@ -804,7 +937,7 @@ export default function AdminPage({
                                                     </FormItem>
                                                 )}
                                             />
-                                            <Button type="submit">Submit</Button>
+                                            <Button type="submit" className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0">Submit</Button>
                                         </form>
                                     </Form>
                                 </CardContent>
