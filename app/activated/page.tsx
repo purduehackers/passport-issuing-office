@@ -26,7 +26,7 @@ export default async function Activated() {
 
 	return (
 		<main className="flex flex-col min-h-screen">
-			<UserInfo user={session?.user} />
+			<UserInfo user={session?.user} role={session?.role} />
 			<div className="flex flex-col items-center gap-y-12 md:gap-y-24 p-4 md:p-24">
 				<div className="flex flex-col gap-2 w-full md:w-9/12 mx-auto">
 					<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center gap-2 p-4 my-4 break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
