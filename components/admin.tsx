@@ -232,7 +232,7 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 
 
 const FormSchema = z.object({
-    dob: z.date({
+    new_ceremony_time: z.date({
         required_error: "A date of birth is required.",
     }),
 })
