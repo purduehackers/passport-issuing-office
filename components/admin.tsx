@@ -106,13 +106,7 @@ export const columns: ColumnDef<Passport>[] = [
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',
-                })} - {new Date(row.getValue("date_of_birth") as string).toLocaleTimeString('en-US', {
-                    timeZone: 'UTC',
-                    hour: 'numeric',
-                    minute: 'numeric',
-                    hour12: true
-                })
-                }
+                })}
             </div>
         ),
     }, {
@@ -125,11 +119,6 @@ export const columns: ColumnDef<Passport>[] = [
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric',
-                })} - {new Date(row.getValue("date_of_issue") as string).toLocaleTimeString('en-US', {
-                    timeZone: 'UTC',
-                    hour: 'numeric',
-                    minute: 'numeric',
-                    hour12: true
                 })
                 }
             </div>
