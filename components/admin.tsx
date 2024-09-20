@@ -479,7 +479,7 @@ export default function AdminPage({
 
     return (
         <div className="w-full">
-            <p>&quot;But wait!&quot; I hear you saying. &quot;Isn't everything just in random places?&quot;</p>
+            <p>&quot;But wait!&quot; I hear you saying. &quot;Isn&apos;t everything just in random places?&quot;</p>
             <p>Yes. :D</p>
             <br />
             <Tabs defaultValue="passports" className="w-full min-w-0">
