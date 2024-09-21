@@ -299,22 +299,32 @@ const DeleteFormSchema = z.object({
 	}),
 });
 
-export default function AdminPage({}: {}) {
+export default function AdminPage({ }: {}) {
 	const { toast } = useToast();
 
 	const [selected, setSelected] = useState<Date>();
 	const [timeValue, setTimeValue] = useState<string>("00:00");
+	const [dateValue, setDateValue] = useState<Date>();
 
 	const handleTimeChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
 		const time = e.target.value;
-		if (!selected) {
+		if (!timeValue || !dateValue) {
 			setTimeValue(time);
 			return;
 		}
 		const [hours, minutes] = time.split(":").map((str) => parseInt(str, 10));
-		const newSelectedDate = setHours(setMinutes(selected, minutes), hours);
-		setSelected(newSelectedDate);
+		//const newSelectedDate = setHours(setMinutes(selected, minutes), hours);
+		const newDate = new Date(
+			dateValue.getUTCFullYear(),
+			dateValue.getUTCMonth(),
+			dateValue.getUTCDate(),
+			hours,
+			minutes,
+		);
+		setSelected(newDate);
 		setTimeValue(time);
+		setDateValue(newDate);
+		return newDate;
 	};
 
 	const handleDaySelect = (date: Date | undefined) => {
@@ -332,6 +342,7 @@ export default function AdminPage({}: {}) {
 			hours,
 			minutes,
 		);
+		setDateValue(newDate);
 		return newDate;
 	};
 
@@ -438,13 +449,13 @@ export default function AdminPage({}: {}) {
 			try {
 				const result = await getAllPassports();
 				setPassportData(result ?? []);
-			} catch (e) {}
+			} catch (e) { }
 		};
 		const fetchCeremonyData = async () => {
 			try {
 				const result = await getCeremonyList();
 				setCeremonyData(result ?? []);
-			} catch (e) {}
+			} catch (e) { }
 		};
 
 		if (reloadDatabase) {
@@ -636,9 +647,9 @@ export default function AdminPage({}: {}) {
 													{header.isPlaceholder
 														? null
 														: flexRender(
-																header.column.columnDef.header,
-																header.getContext(),
-															)}
+															header.column.columnDef.header,
+															header.getContext(),
+														)}
 												</TableHead>
 											);
 										})}
@@ -712,9 +723,9 @@ export default function AdminPage({}: {}) {
 													{header.isPlaceholder
 														? null
 														: flexRender(
-																header.column.columnDef.header,
-																header.getContext(),
-															)}
+															header.column.columnDef.header,
+															header.getContext(),
+														)}
 												</TableHead>
 											);
 										})}
@@ -833,12 +844,21 @@ export default function AdminPage({}: {}) {
 																/>
 															</PopoverContent>
 														</Popover>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={createForm.control}
+												name="new_ceremony_time"
+												render={({ field }) => (
+													<FormItem>
 														<Label>
 															<p className="pb-1">Set the time </p>
 															<Input
 																type="time"
 																value={timeValue}
-																onChange={handleTimeChange}
+																onChange={(e) => { field.onChange(handleTimeChange(e)) }}
 																className={cn(
 																	"w-[240px] pl-3 pr-3 text-left font-normal",
 																	!field.value && "text-muted-foreground",
@@ -927,7 +947,7 @@ export default function AdminPage({}: {}) {
 																			className="w-full"
 																		>
 																			{modifyCeremonyTime ==
-																			"noPassportCeremony" ? (
+																				"noPassportCeremony" ? (
 																				<p>Select a Date</p>
 																			) : (
 																				<p>
@@ -1053,7 +1073,7 @@ export default function AdminPage({}: {}) {
 																			className="w-full"
 																		>
 																			{deleteCeremonyTime ==
-																			"noPassportCeremony" ? (
+																				"noPassportCeremony" ? (
 																				<p>Select a Date</p>
 																			) : (
 																				<p>
