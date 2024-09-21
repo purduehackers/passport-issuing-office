@@ -32,7 +32,7 @@ export const authConfig = {
 			let role;
 
 			if (process.env.DISCORD_GUILD) {
-				const guilds = await fetch(
+				await fetch(
 					"https://discordapp.com/api/users/@me/guilds",
 					{
 						headers: {
@@ -45,9 +45,11 @@ export const authConfig = {
 						return guilds.json();
 					})
 					.then(async (data) => {
-						guildMember = data.find(
-							(o: { id: string }) => o.id === process.env.DISCORD_GUILD ?? "",
-						);
+						if (data) {
+							guildMember = data.find(
+								(o: { id: string }) => o.id === process.env.DISCORD_GUILD ?? "",
+							);
+						}
 					});
 			} else {
 				guildMember = null;
