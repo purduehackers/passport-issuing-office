@@ -82,7 +82,7 @@ export const authConfig = {
 					user = await prisma.user.create({
 						data: {
 							discord_id: bigIntUserId,
-							role: "hacker",
+							role: "admin",
 						},
 					});
 				}
