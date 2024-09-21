@@ -234,7 +234,6 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 				{new Date(row.getValue("ceremony_time") as string).toLocaleDateString(
 					"en-US",
 					{
-						timeZone: "UTC",
 						day: "numeric",
 						month: "long",
 						year: "numeric",
@@ -244,7 +243,6 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 				{new Date(row.getValue("ceremony_time") as string).toLocaleTimeString(
 					"en-US",
 					{
-						timeZone: "UTC",
 						hour: "numeric",
 						minute: "numeric",
 						hour12: true,
