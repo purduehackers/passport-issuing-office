@@ -54,12 +54,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import CeremonyDropdown, {
+import {
 	getCeremonySlotsBadge,
 	getCeremonyTimeDate,
 	getCeremonyTimestamp,
 	getCeremonyTimeString,
 } from "@/lib/ceremony-data";
+import CeremonyDropdown from "@/lib/ceremony-dropdown"
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -677,25 +678,15 @@ export default function Playground({
 							sendToDb={form.getValues().sendToDb == "true"}
 						/>
 					) : null}
-					{!isDefaultImage &&
+					{
+					!isDefaultImage &&
 					!isLoading &&
+					!latestPassport &&
 					!(form.getValues().sendToDb == "true") ? (
 						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 							<p>
 								Nice Passport! Want to make it real? Register for an upcoming
 								passport ceremony at step 1.
-							</p>
-						</div>
-					) : null}
-					{!isDefaultImage &&
-					!isLoading &&
-					form.getValues().sendToDb == "true" ? (
-						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
-							<p>
-								SOMETHING GOES HERE (MAKE IT NOT AMBER TOO) Ceremony Date:{" "}<br />
-								{getCeremonyTimeString(form.getValues().ceremonyTime)}<br />
-								This will show for all &quot;existing&quot; passports, so it
-								will be here when returning as well
 							</p>
 						</div>
 					) : null}

@@ -39,12 +39,13 @@ import {
 import { Ceremony, Passport } from "@/types/types";
 import { getAllPassports, getCeremonyList } from "@/lib/get-passport-data";
 import { useEffect, useState } from "react";
-import CeremonyDropdown, {
+import {
 	getCeremonySlotsBadge,
 	getCeremonyTimeDate,
 	getCeremonyTimestamp,
 	getCeremonyTimeString,
 } from "@/lib/ceremony-data";
+import CeremonyDropdown from "@/lib/ceremony-dropdown"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
 	Form,
