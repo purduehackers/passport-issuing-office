@@ -5,6 +5,7 @@ import { format, setHours, setMinutes } from "date-fns";
 import {
 	ColumnDef,
 	ColumnFiltersState,
+	PaginationState,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -14,7 +15,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { CalendarIcon, ChevronDown } from "lucide-react";
+import { ArrowUpDown, CalendarIcon, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -78,28 +79,6 @@ import { Switch } from "./ui/switch";
 import { useToast } from "@/hooks/use-toast";
 
 export const passportColumns: ColumnDef<Passport>[] = [
-	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() ||
-					(table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-			/>
-		),
-		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(!!value)}
-				aria-label="Select row"
-			/>
-		),
-		enableSorting: false,
-		enableHiding: false,
-	},
 	{
 		accessorKey: "id",
 		header: "Passport ID",
@@ -205,30 +184,18 @@ export const passportColumns: ColumnDef<Passport>[] = [
 
 export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() ||
-					(table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-			/>
-		),
-		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(!!value)}
-				aria-label="Select row"
-			/>
-		),
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
 		accessorKey: "ceremony_time",
-		header: "Ceremony Time",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
+				>
+					Ceremony Time
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			)
+		},
 		cell: ({ row }) => (
 			<div className="capitalize">
 				{new Date(row.getValue("ceremony_time") as string).toLocaleDateString(
@@ -250,6 +217,8 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 				)}
 			</div>
 		),
+		enableSorting: true,
+		enableHiding: false,
 	},
 	{
 		accessorKey: "total_slots",
@@ -302,7 +271,6 @@ const DeleteFormSchema = z.object({
 export default function AdminPage({ }: {}) {
 	const { toast } = useToast();
 
-	const [selected, setSelected] = useState<Date>();
 	const [timeValue, setTimeValue] = useState<string>("00:00");
 	const [dateValue, setDateValue] = useState<Date>();
 
@@ -313,7 +281,6 @@ export default function AdminPage({ }: {}) {
 			return;
 		}
 		const [hours, minutes] = time.split(":").map((str) => parseInt(str, 10));
-		//const newSelectedDate = setHours(setMinutes(selected, minutes), hours);
 		const newDate = new Date(
 			dateValue.getUTCFullYear(),
 			dateValue.getUTCMonth(),
@@ -321,7 +288,6 @@ export default function AdminPage({ }: {}) {
 			hours,
 			minutes,
 		);
-		setSelected(newDate);
 		setTimeValue(time);
 		setDateValue(newDate);
 		return newDate;
@@ -329,7 +295,6 @@ export default function AdminPage({ }: {}) {
 
 	const handleDaySelect = (date: Date | undefined) => {
 		if (!timeValue || !date) {
-			setSelected(date);
 			return;
 		}
 		const [hours, minutes] = timeValue
@@ -473,6 +438,10 @@ export default function AdminPage({ }: {}) {
 	const [passportColumnVisibility, setPassportColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [passportRowSelection, setPassportRowSelection] = React.useState({});
+	const [passportPagination, setPassportPagination] = React.useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 5,
+	})
 
 	const [ceremonySorting, setCeremonySorting] = React.useState<SortingState>(
 		[],
@@ -482,6 +451,10 @@ export default function AdminPage({ }: {}) {
 	const [ceremonyColumnVisibility, setCeremonyColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [ceremonyRowSelection, setCeremonyRowSelection] = React.useState({});
+	const [ceremonyPagination, setCeremonyPagination] = React.useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 5,
+	})
 
 	const passportTable = useReactTable({
 		data: passportData,
@@ -494,11 +467,13 @@ export default function AdminPage({ }: {}) {
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setPassportColumnVisibility,
 		onRowSelectionChange: setPassportRowSelection,
+		onPaginationChange: setPassportPagination,
 		state: {
 			sorting: passportSorting,
 			columnFilters: passportColumnFilters,
 			columnVisibility: passportColumnVisibility,
 			rowSelection: passportRowSelection,
+			pagination: passportPagination,
 		},
 	});
 
@@ -513,11 +488,13 @@ export default function AdminPage({ }: {}) {
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setCeremonyColumnVisibility,
 		onRowSelectionChange: setCeremonyRowSelection,
+		onPaginationChange: setCeremonyPagination,
 		state: {
 			sorting: ceremonySorting,
 			columnFilters: ceremonyColumnFilters,
 			columnVisibility: ceremonyColumnVisibility,
 			rowSelection: ceremonyRowSelection,
+			pagination: ceremonyPagination,
 		},
 	});
 
@@ -590,10 +567,14 @@ export default function AdminPage({ }: {}) {
 											?.getFilterValue() as string) ?? ""
 									}
 									onValueChange={(e) => {
-										passportTable
-											.getColumn("ceremony_time")
-											?.setFilterValue(getCeremonyTimeDate(e).toISOString());
-										setCeremonyTime(e);
+										const column = passportTable.getColumn("ceremony_time");
+										if (e.valueOf() == "noPassportCeremony") {
+											column?.setFilterValue("");
+											setCeremonyTime("noPassportCeremony");
+										} else {
+											column?.setFilterValue(getCeremonyTimeDate(e).toISOString());
+											setCeremonyTime(e);
+										}
 									}}
 								>
 									<DropdownMenuRadioItem
@@ -661,7 +642,6 @@ export default function AdminPage({ }: {}) {
 									passportTable.getRowModel().rows.map((row) => (
 										<TableRow
 											key={row.id}
-											data-state={row.getIsSelected() && "selected"}
 										>
 											{row.getVisibleCells().map((cell) => (
 												<TableCell key={cell.id}>
@@ -688,8 +668,8 @@ export default function AdminPage({ }: {}) {
 					</div>
 					<div className="flex items-center justify-end space-x-2 py-4">
 						<div className="flex-1 text-sm text-muted-foreground">
-							{passportTable.getFilteredSelectedRowModel().rows.length} of{" "}
-							{passportTable.getFilteredRowModel().rows.length} row(s) selected.
+							Page {passportTable.getState().pagination.pageIndex + 1} of{" "}
+							{passportTable.getPageCount()}
 						</div>
 						<div className="space-x-2">
 							<Button
@@ -737,7 +717,6 @@ export default function AdminPage({ }: {}) {
 									ceremonyTable.getRowModel().rows.map((row) => (
 										<TableRow
 											key={row.id}
-											data-state={row.getIsSelected() && "selected"}
 										>
 											{row.getVisibleCells().map((cell) => (
 												<TableCell key={cell.id}>
@@ -763,11 +742,9 @@ export default function AdminPage({ }: {}) {
 						</Table>
 					</div>
 					<div className="flex items-center justify-end space-x-2 py-4">
-						<div>
 							<div className="flex-1 text-sm text-muted-foreground">
-								{ceremonyTable.getFilteredSelectedRowModel().rows.length} of{" "}
-								{ceremonyTable.getFilteredRowModel().rows.length} row(s)
-								selected.
+								Page {ceremonyTable.getState().pagination.pageIndex + 1} of{" "}
+								{ceremonyTable.getPageCount()}
 							</div>
 							<div className="space-x-2">
 								<Button
@@ -787,11 +764,10 @@ export default function AdminPage({ }: {}) {
 									Next
 								</Button>
 							</div>
-						</div>
 					</div>
 					<div className="grid grid-cols-3 gap-5 lg:gap-3 w-full max-w-4xl auto-cols-auto">
 						<div className="grid-cols-subgrid">
-							<Card className="space-y-8 mx-auto">
+							<Card className="mx-auto">
 								<CardHeader>
 									<CardTitle>Add a Ceremony</CardTitle>
 									<CardDescription>
@@ -816,7 +792,7 @@ export default function AdminPage({ }: {}) {
 																	<Button
 																		variant={"outline"}
 																		className={cn(
-																			"w-[240px] pl-3 text-left font-normal",
+																			"pl-3 text-left font-normal",
 																			!field.value && "text-muted-foreground",
 																		)}
 																	>
@@ -860,7 +836,7 @@ export default function AdminPage({ }: {}) {
 																value={timeValue}
 																onChange={(e) => { field.onChange(handleTimeChange(e)) }}
 																className={cn(
-																	"w-[240px] pl-3 pr-3 text-left font-normal",
+																	"pl-3 pr-3 text-left font-normal",
 																	!field.value && "text-muted-foreground",
 																)}
 															/>
@@ -918,7 +894,7 @@ export default function AdminPage({ }: {}) {
 							</Card>
 						</div>
 						<div className="grid-cols-subgrid">
-							<Card className="space-y-8 mx-auto">
+							<Card className="mx-auto">
 								<CardHeader>
 									<CardTitle>Modify a Ceremony</CardTitle>
 									<CardDescription>
@@ -1039,7 +1015,7 @@ export default function AdminPage({ }: {}) {
 							</Card>
 						</div>
 						<div className="grid-cols-subgrid">
-							<Card className="space-y-16 mx-auto">
+							<Card className="mx-auto">
 								<CardHeader>
 									<CardTitle>Delete a Ceremony</CardTitle>
 									<CardDescription>Delete a Passport Ceremony.</CardDescription>
