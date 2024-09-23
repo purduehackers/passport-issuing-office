@@ -61,8 +61,7 @@ export async function getCeremonyList() {
 				}
 			} catch {}
 		}
-
-		console.log(validCeremonies);
+		
 		return validCeremonies;
 	} catch (_err) {
 		return undefined;

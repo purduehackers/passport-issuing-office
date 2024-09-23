@@ -82,8 +82,6 @@ export const PassportBadge: React.FC<PassportBadgeProps> = ({ ceremony }) => {
         return <Badge variant="outline">Loading...</Badge>;
     }
 
-	console.log(ceremony)
-
     return (
         <Badge variant="outline">
             {ceremony.total_slots - passportCount}/{ceremony.total_slots} Slots
