@@ -107,7 +107,7 @@ export default function Playground({
 	// limit this week's signups.
 	// https://github.com/purduehackers/passport-issuing-office/pull/36
 	const registerCheckboxDisabled =
-		latestOverallPassportId === 80 &&
+		latestOverallPassportId === 81 &&
 		(!latestPassport || latestPassport.activated);
 
 	const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
