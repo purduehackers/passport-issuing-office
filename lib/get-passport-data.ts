@@ -1,6 +1,40 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { Ceremony } from "@/types/types";
+
+export async function getCeremonyPassports(ceremony: Ceremony) {
+	try {
+		const passports = await prisma.passport.findMany({
+			where: {
+				ceremony_time: {
+					equals: ceremony.ceremony_time,
+				},
+			},
+		});
+		return passports.length;
+	} catch (_err) {
+		return undefined;
+	}
+}
+
+export async function getCeremonyData(ceremony_time: string) {
+	try {
+		const ceremony = await prisma.ceremonies.findFirst({
+			where: {
+				ceremony_time: {
+					equals: ceremony_time,
+				},
+			},
+		});
+		if (ceremony) {
+			return ceremony;
+		}
+		return undefined;
+	} catch (_err) {
+		return undefined;
+	}
+}
 
 export async function getCeremonyList() {
 	try {
@@ -11,7 +45,25 @@ export async function getCeremonyList() {
 				},
 			},
 		});
-		return ceremonies;
+
+		let passportListLength: number | undefined = 0;
+		let validCeremonies: Ceremony[] = [];
+
+		for (const ceremony of ceremonies) {
+			try {
+				passportListLength = await getCeremonyPassports(ceremony);
+				if (passportListLength) {
+					if (ceremony.total_slots > passportListLength) {
+						validCeremonies.push(ceremony);
+					}
+				} else {
+					validCeremonies.push(ceremony);
+				}
+			} catch {}
+		}
+
+		console.log(validCeremonies);
+		return validCeremonies;
 	} catch (_err) {
 		return undefined;
 	}

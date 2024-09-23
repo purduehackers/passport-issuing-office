@@ -42,7 +42,7 @@ import {
 } from "@/types/types";
 import { formatDefaultDate } from "@/lib/format-default-date";
 import { GENERATION_STEPS } from "@/config";
-import { CheckCircle, Info } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import { ImageActions } from "./image-actions";
 import defaultImage from "@/public/passport/default.png";
 import {
@@ -55,7 +55,6 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-	getCeremonySlotsBadge,
 	getCeremonyTimeDate,
 	getCeremonyTimestamp,
 	getCeremonyTimeString,
@@ -155,14 +154,6 @@ export default function Playground({
 			passportNumber: "0",
 		},
 	});
-
-	// This is a temporary method of limiting passports for a ceremony. I'm planning
-	// to redo how passport ceremony registration works, but for now we just need to
-	// limit this week's signups.
-	// https://github.com/purduehackers/passport-issuing-office/pull/36
-	const registerCheckboxDisabled =
-		latestOverallPassportId === 800 &&
-		(!latestPassport || latestPassport.activated);
 
 	const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
 		optimizedLatestPassportImage?.latestPassportImageUrl ||
@@ -370,7 +361,6 @@ export default function Playground({
 																	) : (
 																		<p>
 																			{getCeremonyTimeString(ceremonyTime)}
-																			{getCeremonySlotsBadge(ceremonyTime)}
 																		</p>
 																	)}
 																</Button>

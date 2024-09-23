@@ -17,7 +17,6 @@ import {
 } from "@tanstack/react-table";
 import { ArrowUpDown, CalendarIcon, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
 	DropdownMenu,
 	DropdownMenuCheckboxItem,
@@ -40,7 +39,6 @@ import { Ceremony, Passport } from "@/types/types";
 import { getAllPassports, getCeremonyList } from "@/lib/get-passport-data";
 import { useEffect, useState } from "react";
 import {
-	getCeremonySlotsBadge,
 	getCeremonyTimeDate,
 	getCeremonyTimestamp,
 	getCeremonyTimeString,
@@ -59,7 +57,6 @@ import {
 	Card,
 	CardContent,
 	CardDescription,
-	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
@@ -743,28 +740,28 @@ export default function AdminPage({ }: {}) {
 						</Table>
 					</div>
 					<div className="flex items-center justify-end space-x-2 py-4">
-							<div className="flex-1 text-sm text-muted-foreground">
-								Page {ceremonyTable.getState().pagination.pageIndex + 1} of{" "}
-								{ceremonyTable.getPageCount()}
-							</div>
-							<div className="space-x-2">
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => ceremonyTable.previousPage()}
-									disabled={!ceremonyTable.getCanPreviousPage()}
-								>
-									Previous
-								</Button>
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => ceremonyTable.nextPage()}
-									disabled={!ceremonyTable.getCanNextPage()}
-								>
-									Next
-								</Button>
-							</div>
+						<div className="flex-1 text-sm text-muted-foreground">
+							Page {ceremonyTable.getState().pagination.pageIndex + 1} of{" "}
+							{ceremonyTable.getPageCount()}
+						</div>
+						<div className="space-x-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => ceremonyTable.previousPage()}
+								disabled={!ceremonyTable.getCanPreviousPage()}
+							>
+								Previous
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => ceremonyTable.nextPage()}
+								disabled={!ceremonyTable.getCanNextPage()}
+							>
+								Next
+							</Button>
+						</div>
 					</div>
 					<div className="grid grid-cols-3 gap-5 lg:gap-3 w-full max-w-4xl auto-cols-auto">
 						<div className="grid-cols-subgrid">
@@ -931,9 +928,6 @@ export default function AdminPage({ }: {}) {
 																					{getCeremonyTimeString(
 																						modifyCeremonyTime,
 																					)}
-																					{getCeremonySlotsBadge(
-																						modifyCeremonyTime,
-																					)}
 																				</p>
 																			)}
 																		</Button>
@@ -1055,9 +1049,6 @@ export default function AdminPage({ }: {}) {
 																			) : (
 																				<p>
 																					{getCeremonyTimeString(
-																						deleteCeremonyTime,
-																					)}
-																					{getCeremonySlotsBadge(
 																						deleteCeremonyTime,
 																					)}
 																				</p>
