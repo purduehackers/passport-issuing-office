@@ -95,34 +95,11 @@ const FormSchema = z.object({
 			},
 		),
 	ceremonyTime: z
-		.string()
-		.refine(
-			(val) => {
-				const inputDate = getCeremonyTimeDate(val);
-				return inputDate != nullDate;
-			},
-			{
-				message: "", // Not having this causes "Ceremony cannot be earlier than today.", which would be confusing
-			},
-		)
-		/*.refine((val) => {
-			console.log(val)
-			!isNaN(Date.parse(val))
-		}, {
-			message: "Invalid ceremony time. Please enter a valid time.",
-		})*/
-		.refine(
-			(val) => {
-				const inputDate = getCeremonyTimeDate(val);
-				return inputDate > maxDate;
-			},
-			{
-				message: "Ceremony cannot be earlier than today.",
-			},
-		),
+		.string() // Don't refine. Causes issues.
+		.optional(),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
-	sendToDb: z.string().optional().default("false"),
+	sendToDb: z.string().default("false"),
 });
 
 export default function Playground({
@@ -157,7 +134,7 @@ export default function Playground({
 
 	const [generatedImageUrl, setGeneratedImageUrl] = useState<string>(
 		optimizedLatestPassportImage?.latestPassportImageUrl ||
-			"/passport/default.png",
+		"/passport/default.png",
 	);
 	const [isDefaultImage, setIsDefaultImage] = useState(
 		generatedImageUrl === "/passport/default.png" ? true : false,
@@ -166,7 +143,7 @@ export default function Playground({
 	const [launchConfetti, setLaunchConfetti] = useState(false); // TODO: do this better
 	const [croppedImageFile, setCroppedImageFile] = useState<File>();
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
-		GENERATION_STEPS.register,
+		GENERATION_STEPS.base,
 	);
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
 
@@ -190,6 +167,10 @@ export default function Playground({
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
+		if (data.ceremonyTime == "9999-99-99T00:00:00.000Z") {
+			data.sendToDb = "false"
+		}
+
 		setIsLoading(true);
 		setLaunchConfetti(false);
 
@@ -416,12 +397,27 @@ export default function Playground({
 					) : (
 						<span>
 							{!userId ? (
-								<span className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
-									<p>
-										To register for an upcoming ceremony, please join our
-										Discord, then refresh this page.
-									</p>
-								</span>
+								<FormField
+									control={form.control}
+									name="ceremonyTime"
+									render={({ field }) => (
+										<FormItem>
+											<span className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+												<p>
+													To register for an upcoming ceremony, please join our
+													Discord, then refresh this page.
+												</p>
+											</span>
+											<FormControl>
+												<Input
+													type="hidden"
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
 							) : (
 								<></>
 							)}
@@ -599,7 +595,7 @@ export default function Playground({
 			<aside>
 				<div className="flex flex-col gap-4">
 					{generatedImageUrl ===
-					optimizedLatestPassportImage?.latestPassportImageUrl ? (
+						optimizedLatestPassportImage?.latestPassportImageUrl ? (
 						<Image
 							src={optimizedLatestPassportImage.latestPassportImageUrl}
 							alt="Passport preview"
@@ -638,13 +634,12 @@ export default function Playground({
 									className="flex flex-row items-center gap-1"
 								>
 									<li
-										className={`${
-											step.status === "completed"
+										className={`${step.status === "completed"
 												? "text-success"
 												: step.status === "failed"
 													? "text-destructive"
 													: "text-muted-foreground"
-										}`}
+											}`}
 									>
 										{step.name}...
 									</li>
@@ -669,17 +664,17 @@ export default function Playground({
 						/>
 					) : null}
 					{
-					!isDefaultImage &&
-					!isLoading &&
-					!latestPassport &&
-					!(form.getValues().sendToDb == "true") ? (
-						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
-							<p>
-								Nice Passport! Want to make it real? Register for an upcoming
-								passport ceremony at step 1.
-							</p>
-						</div>
-					) : null}
+						!isDefaultImage &&
+							!isLoading &&
+							!latestPassport &&
+							!(form.getValues().sendToDb == "true") ? (
+							<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+								<p>
+									Nice Passport! Want to make it real? Register for an upcoming
+									passport ceremony at step 1.
+								</p>
+							</div>
+						) : null}
 					{launchConfetti ? <LaunchConfetti /> : null}
 				</div>
 			</aside>
