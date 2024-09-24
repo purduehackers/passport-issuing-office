@@ -55,7 +55,6 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-	getCeremonyTimeDate,
 	getCeremonyTimestamp,
 	getCeremonyTimeString,
 } from "@/lib/ceremony-data";
