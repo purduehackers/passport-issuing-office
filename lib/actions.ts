@@ -88,7 +88,7 @@ export async function createPassport(formData: FormData) {
 			ceremony_time: trueCeremonyTime,
 		}),
 	})
-		.then((r) => console.log(r))
+		.then((r) => r.json())
 		.catch((err) => console.log("Error fetching new passport:", err));
 	return {
 		passportNumber: newPassport.id,
