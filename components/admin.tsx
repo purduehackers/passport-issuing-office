@@ -42,6 +42,8 @@ import {
 	getCeremonyTimeDate,
 	getCeremonyTimestamp,
 	getCeremonyTimeString,
+	getCeremonyTimeStringFullDate,
+	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
 import CeremonyDropdown from "@/lib/ceremony-dropdown"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
@@ -115,15 +117,7 @@ export const passportColumns: ColumnDef<Passport>[] = [
 		header: "Date of Birth",
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{new Date(row.getValue("date_of_birth") as string).toLocaleDateString(
-					"en-US",
-					{
-						timeZone: "UTC",
-						day: "numeric",
-						month: "long",
-						year: "numeric",
-					},
-				)}
+				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}
 			</div>
 		),
 	},
@@ -132,15 +126,7 @@ export const passportColumns: ColumnDef<Passport>[] = [
 		header: "Date of Issue",
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{new Date(row.getValue("date_of_issue") as string).toLocaleDateString(
-					"en-US",
-					{
-						timeZone: "UTC",
-						day: "numeric",
-						month: "long",
-						year: "numeric",
-					},
-				)}
+				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}
 			</div>
 		),
 	},
@@ -156,25 +142,9 @@ export const passportColumns: ColumnDef<Passport>[] = [
 		header: "Ceremony Time",
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{new Date(row.getValue("ceremony_time") as string).toLocaleDateString(
-					"en-US",
-					{
-						timeZone: "UTC",
-						day: "numeric",
-						month: "long",
-						year: "numeric",
-					},
-				)}{" "}
-				-{" "}
-				{new Date(row.getValue("ceremony_time") as string).toLocaleTimeString(
-					"en-US",
-					{
-						timeZone: "UTC",
-						hour: "numeric",
-						minute: "numeric",
-						hour12: true,
-					},
-				)}
+				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}{" "}
+				-
+				{" "}{getCeremonyTimeStringTime(row.getValue("ceremony_time"))}
 			</div>
 		),
 	},

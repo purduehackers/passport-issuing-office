@@ -22,13 +22,13 @@ export function getCeremonyTimeString(ceremony: string) {
 	// Return the concatanated string
 	return (
 		<span>
-			{new Date(ceremonyDate).toLocaleDateString("en-US", {
+			{ceremonyDate.toLocaleDateString("en-US", {
 				timeZone: "UTC",
 				day: "numeric",
 				month: "numeric",
 			})}{" "}
 			-{" "}
-			{new Date(ceremonyDate).toLocaleTimeString("en-US", {
+			{ceremonyDate.toLocaleTimeString("en-US", {
 				timeZone: "UTC",
 				hour: "numeric",
 				minute: "numeric",
@@ -50,10 +50,32 @@ export function getCeremonyTimeStringDate(ceremony: string) {
 	// Return the concatanated string
 	return (
 		<span>
-			{new Date(ceremonyDate).toLocaleDateString("en-US", {
+			{ceremonyDate.toLocaleDateString("en-US", {
 				timeZone: "UTC",
 				day: "numeric",
 				month: "numeric",
+			})}{" "}
+		</span>
+	);
+}
+
+export function getCeremonyTimeStringFullDate(ceremony: string) {
+	let ceremonyDate = new Date();
+
+	if (ceremony != "noPassportCeremony") {
+		ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+	} else {
+		ceremonyDate = new Date(-1);
+	}
+
+	// Return the concatanated string
+	return (
+		<span>
+			{ceremonyDate.toLocaleDateString("en-US", {
+				timeZone: "UTC",
+				day: "numeric",
+				month: "long",
+				year: "numeric",
 			})}{" "}
 		</span>
 	);
@@ -72,7 +94,7 @@ export function getCeremonyTimeStringTime(ceremony: string) {
 	return (
 		<span>
 			{" "}
-			{new Date(ceremonyDate).toLocaleTimeString("en-US", {
+			{ceremonyDate.toLocaleTimeString("en-US", {
 				timeZone: "UTC",
 				hour: "numeric",
 				minute: "numeric",
