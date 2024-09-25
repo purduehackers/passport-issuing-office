@@ -117,7 +117,7 @@ export const passportColumns: ColumnDef<Passport>[] = [
 		header: "Date of Birth",
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}
+				{getCeremonyTimeStringFullDate(row.getValue("date_of_birth"))}
 			</div>
 		),
 	},
@@ -126,7 +126,7 @@ export const passportColumns: ColumnDef<Passport>[] = [
 		header: "Date of Issue",
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}
+				{getCeremonyTimeStringFullDate(row.getValue("date_of_issue"))}
 			</div>
 		),
 	},
