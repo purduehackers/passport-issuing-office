@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 				ceremonyTime: trueCeremonyTime,
 				placeOfOrigin,
 				portrait: portraitImage,
-				sendToDb: sendToDb,
+				sendToDb,
 			},
 			request.url,
 		);
