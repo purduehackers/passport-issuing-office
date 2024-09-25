@@ -31,25 +31,41 @@ export default function CeremonyDropdown() {
 
     return (
         <>
-            {ceremonyList.map((ceremony, index) => (
-                <DropdownMenuRadioItem
-                    key={index}
-                    value={`ceremony-${ceremony.ceremony_time}`}
-                    className="flex justify-between items-center"
-                >
-                    {new Date(ceremony.ceremony_time).toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "numeric",
-                    })}{" "}
-                    -{" "}
-                    {new Date(ceremony.ceremony_time).toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "numeric",
-                        hour12: true,
-                    })}
-                    <PassportBadge ceremony={ceremony} />
-                </DropdownMenuRadioItem>
-            ))}
+            {!(ceremonyList[0] == null) ? (
+                <>
+                    {ceremonyList.map((ceremony, index) => (
+                        <DropdownMenuRadioItem
+                            key={index}
+                            value={`ceremony-${ceremony.ceremony_time}`}
+                            className="flex justify-between items-center"
+                        >
+                            {new Date(ceremony.ceremony_time).toLocaleDateString("en-US", {
+                                day: "numeric",
+                                month: "numeric",
+                            })}{" "}
+                            -{" "}
+                            {new Date(ceremony.ceremony_time).toLocaleTimeString("en-US", {
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                            })}
+                            <PassportBadge ceremony={ceremony} />
+                        </DropdownMenuRadioItem>
+                    ))
+                    }
+                </>
+            ) : (
+                <>
+                    <DropdownMenuRadioItem
+                        key={"noCeremony1"}
+                        value={`noPassportCeremony`}
+                        className="flex justify-between items-center"
+                        disabled={true}
+                    >
+                        No upcoming ceremonies
+                    </DropdownMenuRadioItem>
+                </>
+            )}
         </>
     );
 }
