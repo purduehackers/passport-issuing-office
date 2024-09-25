@@ -73,7 +73,7 @@ export default async function Home({
 					) : (
 						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 							<p>
-								You&apos;re registered for the passport ceremony happening on {getCeremonyTimeStringDate(latestPassport.ceremony_time, false)} at {getCeremonyTimeStringTime(latestPassport.ceremony_time, false)} 
+								You&apos;re registered for the passport ceremony happening on {getCeremonyTimeStringDate(latestPassport.ceremony_time, true)} at {getCeremonyTimeStringTime(latestPassport.ceremony_time, true)} 
 							</p>
 						</div>
 					)}
