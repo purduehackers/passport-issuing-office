@@ -8,6 +8,8 @@ export function getCeremonyTimeDate(ceremony: string | Date) {
 	} else {
 		ceremonyDate = ceremony;
 	}
+
+	return ceremonyDate;
 }
 
 export function getCeremonyTimestamp(ceremony: string) {
