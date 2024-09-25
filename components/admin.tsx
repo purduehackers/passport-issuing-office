@@ -269,6 +269,7 @@ const DeleteFormSchema = z.object({
 export default function AdminPage({ }: {}) {
 	const { toast } = useToast();
 
+	const [isLoading, setIsLoading] = useState(false); // TODO: do this better
 	const [timeValue, setTimeValue] = useState<string>("00:00");
 	const [dateValue, setDateValue] = useState<Date>();
 
@@ -330,6 +331,7 @@ export default function AdminPage({ }: {}) {
 	});
 
 	async function onSubmitCreate(data: z.infer<typeof CreateFormSchema>) {
+		setIsLoading(true);
 		const success = await addNewCeremony({
 			ceremony_time: new Date(data.new_ceremony_time),
 			total_slots: parseInt(data.max_registrations),
@@ -343,6 +345,7 @@ export default function AdminPage({ }: {}) {
 					"Ceremony at " + new Date(data.new_ceremony_time) + " created!",
 			});
 			setReloadDatebase(true);
+			setIsLoading(false);
 		} else {
 			toast({
 				title: "Meltdown Imminent!",
@@ -352,10 +355,12 @@ export default function AdminPage({ }: {}) {
 					new Date(data.new_ceremony_time) +
 					" failed to be created. Are you using a duplicate date?",
 			});
+			setIsLoading(false);
 		}
 	}
 
 	async function onSubmitModify(data: z.infer<typeof ModifyFormSchema>) {
+		setIsLoading(true);
 		const success = await modifyCeremony({
 			ceremony_time: new Date(data.modify_ceremony_time),
 			total_slots: parseInt(data.max_registrations_mod),
@@ -369,6 +374,7 @@ export default function AdminPage({ }: {}) {
 					"Ceremony at " + new Date(data.modify_ceremony_time) + " modified!",
 			});
 			setReloadDatebase(true);
+			setIsLoading(false);
 		} else {
 			toast({
 				title: "Meltdown Imminent!",
@@ -378,10 +384,12 @@ export default function AdminPage({ }: {}) {
 					new Date(data.modify_ceremony_time) +
 					" failed to be modified.",
 			});
+			setIsLoading(false);
 		}
 	}
 
 	async function onSubmitDelete(data: z.infer<typeof DeleteFormSchema>) {
+		setIsLoading(true);
 		const success = await deleteCeremony(new Date(data.delete_ceremony_time));
 
 		if (success) {
@@ -391,6 +399,7 @@ export default function AdminPage({ }: {}) {
 					"Ceremony at " + new Date(data.delete_ceremony_time) + " deleted!",
 			});
 			setReloadDatebase(true);
+			setIsLoading(false);
 		} else {
 			toast({
 				title: "Meltdown Imminent!",
@@ -400,6 +409,7 @@ export default function AdminPage({ }: {}) {
 					new Date(data.delete_ceremony_time) +
 					" failed to be deleted.",
 			});
+			setIsLoading(false);
 		}
 	}
 
@@ -883,8 +893,9 @@ export default function AdminPage({ }: {}) {
 											<Button
 												type="submit"
 												className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0"
+												disabled={isLoading}
 											>
-												Submit
+												{isLoading ? "Submitting..." : "Submit"}
 											</Button>
 										</form>
 									</Form>
@@ -1001,8 +1012,9 @@ export default function AdminPage({ }: {}) {
 											<Button
 												type="submit"
 												className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0"
+												disabled={isLoading}
 											>
-												Submit
+												{isLoading ? "Submitting..." : "Submit"}
 											</Button>
 										</form>
 									</Form>
@@ -1087,8 +1099,9 @@ export default function AdminPage({ }: {}) {
 											<Button
 												type="submit"
 												className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0"
+												disabled={isLoading}
 											>
-												Submit
+												{isLoading ? "Submitting..." : "Submit"}
 											</Button>
 										</form>
 									</Form>

@@ -63,7 +63,6 @@ import CeremonyDropdown from "@/lib/ceremony-dropdown"
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
 const maxDate = new Date();
-const nullDate = new Date(-1);
 
 const FormSchema = z.object({
 	surname: z
@@ -104,13 +103,11 @@ const FormSchema = z.object({
 export default function Playground({
 	userId,
 	latestPassport,
-	latestOverallPassportId,
 	optimizedLatestPassportImage,
 	guildMember,
 }: {
 	userId: string | undefined;
 	latestPassport: Passport | null | undefined;
-	latestOverallPassportId: number;
 	optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
 	guildMember: object | null | undefined;
 }) {
