@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
-import { getCeremonyTimeStringDate, getCeremonyTimeStringTime } from "@/lib/ceremony-data";
+import { getCeremonyTimeDate, getCeremonyTimeStringDate, getCeremonyTimeStringTime } from "@/lib/ceremony-data";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import { MySession, OptimizedLatestPassportImage } from "@/types/types";
 import { redirect } from "next/navigation";
@@ -50,7 +50,7 @@ export default async function Home({
 						/>
 						Passport Data Pages
 					</h1>
-					{!latestPassport ? (
+					{!latestPassport || latestPassport.activated || getCeremonyTimeDate(latestPassport.ceremony_time) < (new Date()) ? (
 						<>
 							<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 								<p className="text-base">
