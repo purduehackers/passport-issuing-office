@@ -101,7 +101,19 @@ const FormSchema = z.object({
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
 	sendToDb: z.boolean().default(false),
-});
+}).refine(
+	(data) => {
+		// If sendToDb is true, ceremonyTime must be defined and not empty
+		if (data.sendToDb) {
+			return !!data.ceremonyTime;
+		}
+		return true; // If sendToDb is false, no need to validate ceremonyTime
+	},
+	{
+		path: ["ceremonyTime"], // This points to the field where the error will be displayed
+		message: "Please choose a ceremony date to register a passport",
+	}
+);
 
 export default function Playground({
 	userId,
@@ -144,7 +156,6 @@ export default function Playground({
 		GENERATION_STEPS.base,
 	);
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
-	const [needsDate, setNeedsDate] = useState(false);
 
 	function updateGenerationStepState(
 		stepId: GenerationStepId,
@@ -166,12 +177,6 @@ export default function Playground({
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		setNeedsDate(false);
-		if (data.sendToDb && ((data.ceremonyTime == "noPassportCeremony") || (data.ceremonyTime == undefined))) {
-			setNeedsDate(true);
-			return;
-		}
-
 		setIsLoading(true);
 		setLaunchConfetti(false);
 
@@ -353,13 +358,6 @@ export default function Playground({
 														</DropdownMenu>
 													</FormControl>
 													<FormMessage />
-													{needsDate ? (
-														<p
-															className={"text-sm font-medium text-destructive"}
-														>
-															Please choose a ceremony date to register a passport
-														</p>
-													) : null}
 												</FormItem>
 												<br />
 											</span>
