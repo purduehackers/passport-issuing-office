@@ -193,31 +193,31 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 ];
 
 const CreateFormSchema = z.object({
-	new_ceremony_time: z.date({
+	newCeremonyTime: z.date({
 		required_error: "A date of birth is required.",
 	}),
-	max_registrations: z.string({
+	maxRegistrations: z.string({
 		required_error: "You must set a maximum number of participants.",
 	}),
-	open_registration: z.boolean({
+	openRegistration: z.boolean({
 		required_error: "You must select an option.",
 	}),
 });
 
 const ModifyFormSchema = z.object({
-	modify_ceremony_time: z.string({
+	modifyCeremonyTime: z.string({
 		required_error: "A date of birth is required.",
 	}),
-	max_registrations_mod: z.string({
+	maxRegistrationsMod: z.string({
 		required_error: "You must set a maximum number of participants.",
 	}),
-	open_registration_mod: z.boolean({
+	openRegistrationMod: z.boolean({
 		required_error: "You must select an option.",
 	}),
 });
 
 const DeleteFormSchema = z.object({
-	delete_ceremony_time: z.string({
+	deleteCeremonyTime: z.string({
 		required_error: "A date of birth is required.",
 	}),
 });
@@ -269,16 +269,16 @@ export default function AdminPage() {
 	const createForm = useForm<z.infer<typeof CreateFormSchema>>({
 		resolver: zodResolver(CreateFormSchema),
 		defaultValues: {
-			max_registrations: "10",
-			open_registration: true,
+			maxRegistrations: "10",
+			openRegistration: true,
 		},
 	});
 
 	const modifyForm = useForm<z.infer<typeof ModifyFormSchema>>({
 		resolver: zodResolver(ModifyFormSchema),
 		defaultValues: {
-			max_registrations_mod: "10",
-			open_registration_mod: true,
+			maxRegistrationsMod: "10",
+			openRegistrationMod: true,
 		},
 	});
 
@@ -289,16 +289,16 @@ export default function AdminPage() {
 	async function onSubmitCreate(data: z.infer<typeof CreateFormSchema>) {
 		setIsLoading(true);
 		const success = await addNewCeremony({
-			ceremony_time: new Date(data.new_ceremony_time),
-			total_slots: parseInt(data.max_registrations),
-			open_registration: data.open_registration,
+			ceremony_time: new Date(data.newCeremonyTime),
+			total_slots: parseInt(data.maxRegistrations),
+			open_registration: data.openRegistration,
 		});
 
 		if (success) {
 			toast({
 				title: "Success!",
 				description:
-					"Ceremony at " + new Date(data.new_ceremony_time) + " created!",
+					"Ceremony at " + new Date(data.newCeremonyTime) + " created!",
 			});
 			setReloadDatebase(true);
 			setIsLoading(false);
@@ -308,7 +308,7 @@ export default function AdminPage() {
 				variant: "destructive",
 				description:
 					"Ceremony at " +
-					new Date(data.new_ceremony_time) +
+					new Date(data.newCeremonyTime) +
 					" failed to be created. Are you using a duplicate date?",
 			});
 			setIsLoading(false);
@@ -318,16 +318,16 @@ export default function AdminPage() {
 	async function onSubmitModify(data: z.infer<typeof ModifyFormSchema>) {
 		setIsLoading(true);
 		const success = await modifyCeremony({
-			ceremony_time: new Date(data.modify_ceremony_time),
-			total_slots: parseInt(data.max_registrations_mod),
-			open_registration: data.open_registration_mod,
+			ceremony_time: new Date(data.modifyCeremonyTime),
+			total_slots: parseInt(data.maxRegistrationsMod),
+			open_registration: data.openRegistrationMod,
 		});
 
 		if (success) {
 			toast({
 				title: "Success!",
 				description:
-					"Ceremony at " + new Date(data.modify_ceremony_time) + " modified!",
+					"Ceremony at " + new Date(data.modifyCeremonyTime) + " modified!",
 			});
 			setReloadDatebase(true);
 			setIsLoading(false);
@@ -337,7 +337,7 @@ export default function AdminPage() {
 				variant: "destructive",
 				description:
 					"Ceremony at " +
-					new Date(data.modify_ceremony_time) +
+					new Date(data.modifyCeremonyTime) +
 					" failed to be modified.",
 			});
 			setIsLoading(false);
@@ -346,13 +346,13 @@ export default function AdminPage() {
 
 	async function onSubmitDelete(data: z.infer<typeof DeleteFormSchema>) {
 		setIsLoading(true);
-		const success = await deleteCeremony(new Date(data.delete_ceremony_time));
+		const success = await deleteCeremony(new Date(data.deleteCeremonyTime));
 
 		if (success) {
 			toast({
 				title: "Success!",
 				description:
-					"Ceremony at " + new Date(data.delete_ceremony_time) + " deleted!",
+					"Ceremony at " + new Date(data.deleteCeremonyTime) + " deleted!",
 			});
 			setReloadDatebase(true);
 			setIsLoading(false);
@@ -362,7 +362,7 @@ export default function AdminPage() {
 				variant: "destructive",
 				description:
 					"Ceremony at " +
-					new Date(data.delete_ceremony_time) +
+					new Date(data.deleteCeremonyTime) +
 					" failed to be deleted.",
 			});
 			setIsLoading(false);
@@ -741,7 +741,7 @@ export default function AdminPage() {
 										>
 											<FormField
 												control={createForm.control}
-												name="new_ceremony_time"
+												name="newCeremonyTime"
 												render={({ field }) => (
 													<FormItem className="flex flex-col">
 														<Popover>
@@ -784,7 +784,7 @@ export default function AdminPage() {
 											/>
 											<FormField
 												control={createForm.control}
-												name="new_ceremony_time"
+												name="newCeremonyTime"
 												render={({ field }) => (
 													<FormItem>
 														<Label>
@@ -805,7 +805,7 @@ export default function AdminPage() {
 											/>
 											<FormField
 												control={createForm.control}
-												name="max_registrations"
+												name="maxRegistrations"
 												render={({ field }) => (
 													<FormItem>
 														<FormControl>
@@ -823,7 +823,7 @@ export default function AdminPage() {
 											/>
 											<FormField
 												control={createForm.control}
-												name="open_registration"
+												name="openRegistration"
 												render={({ field }) => (
 													<FormItem>
 														<FormControl>
@@ -869,7 +869,7 @@ export default function AdminPage() {
 										>
 											<FormField
 												control={modifyForm.control}
-												name="modify_ceremony_time"
+												name="modifyCeremonyTime"
 												render={({ field }) => (
 													<FormItem className="flex flex-col">
 														<FormItem>
@@ -924,7 +924,7 @@ export default function AdminPage() {
 											/>
 											<FormField
 												control={modifyForm.control}
-												name="max_registrations_mod"
+												name="maxRegistrationsMod"
 												render={({ field }) => (
 													<FormItem>
 														<FormControl>
@@ -942,7 +942,7 @@ export default function AdminPage() {
 											/>
 											<FormField
 												control={modifyForm.control}
-												name="open_registration_mod"
+												name="openRegistrationMod"
 												render={({ field }) => (
 													<FormItem>
 														<FormControl>
@@ -993,7 +993,7 @@ export default function AdminPage() {
 										>
 											<FormField
 												control={deleteForm.control}
-												name="delete_ceremony_time"
+												name="deleteCeremonyTime"
 												render={({ field }) => (
 													<FormItem className="flex flex-col">
 														<FormItem>
