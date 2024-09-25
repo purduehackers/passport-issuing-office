@@ -547,7 +547,6 @@ export default function Playground({
 									</DialogTitle>
 								</DialogHeader>
 								<DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
-									<br />
 									<p>By clicking &quot;Register My Passport&quot;, you&apos;re signing up to make your own passport
 										at the passport ceremony on {getCeremonyTimeStringDate(ceremonyTime)} at {getCeremonyTimeStringTime(ceremonyTime)}. Please show up on time so that you have enough time to make your passport.
 										If you&apos;re late, we will start without you & you will need to re-register for the next one.</p>
