@@ -146,6 +146,7 @@ export default function Playground({
 		GENERATION_STEPS.base,
 	);
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
+	const [needsDate, setNeedsDate] = useState(false);
 
 	function updateGenerationStepState(
 		stepId: GenerationStepId,
@@ -167,8 +168,10 @@ export default function Playground({
 	}
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
-		if (data.ceremonyTime == "9999-99-99T00:00:00.000Z") {
-			data.sendToDb = false
+		setNeedsDate(false);
+		if (data.sendToDb && ((data.ceremonyTime == "noPassportCeremony") || (data.ceremonyTime == undefined))) {
+			setNeedsDate(true);
+			return;
 		}
 
 		setIsLoading(true);
@@ -286,13 +289,6 @@ export default function Playground({
 											<Switch
 												onCheckedChange={(e) => {
 													field.onChange(e);
-													{
-														if (e == false) {
-															setGenerationSteps(GENERATION_STEPS.base);
-														} else {
-															setGenerationSteps(GENERATION_STEPS.register);
-														}
-													}
 												}}
 												checked={field.value}
 												className=""
@@ -338,6 +334,13 @@ export default function Playground({
 																	onValueChange={(e) => {
 																		field.onChange(getCeremonyTimestamp(e));
 																		setCeremonyTime(e);
+																		{
+																			if ((e == "noPassportCeremony")) {
+																				setGenerationSteps(GENERATION_STEPS.base);
+																			} else {
+																				setGenerationSteps(GENERATION_STEPS.register);
+																			}
+																		}
 																	}}
 																>
 																	<DropdownMenuRadioItem
@@ -352,6 +355,13 @@ export default function Playground({
 														</DropdownMenu>
 													</FormControl>
 													<FormMessage />
+													{needsDate ? (
+														<p
+															className={"text-sm font-medium text-destructive"}
+														>
+															Please choose a ceremony date to register a passport
+														</p>
+													) : null}
 												</FormItem>
 												<br />
 											</span>
