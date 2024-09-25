@@ -166,23 +166,9 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 		},
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{new Date(row.getValue("ceremony_time") as string).toLocaleDateString(
-					"en-US",
-					{
-						day: "numeric",
-						month: "long",
-						year: "numeric",
-					},
-				)}{" "}
-				-{" "}
-				{new Date(row.getValue("ceremony_time") as string).toLocaleTimeString(
-					"en-US",
-					{
-						hour: "numeric",
-						minute: "numeric",
-						hour12: true,
-					},
-				)}
+				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}{" "}
+				-
+				{" "}{getCeremonyTimeStringTime(row.getValue("ceremony_time"))}
 			</div>
 		),
 		enableSorting: true,
