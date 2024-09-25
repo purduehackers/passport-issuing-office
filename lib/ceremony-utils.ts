@@ -7,13 +7,14 @@ export async function addNewCeremony(ceremonyData: Ceremony) {
 	try {
 		await prisma.ceremonies.create({
 			data: {
-				ceremony_time: ceremonyData.ceremony_time,
+				ceremony_time: (new Date(ceremonyData.ceremony_time.getTime() - (ceremonyData.ceremony_time.getTimezoneOffset() * 60000))),
 				total_slots: ceremonyData.total_slots,
 				open_registration: ceremonyData.open_registration,
 			},
 		});
 		return true;
 	} catch (_err) {
+		console.log(_err)
 		return false;
 	}
 }

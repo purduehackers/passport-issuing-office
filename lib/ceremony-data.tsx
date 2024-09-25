@@ -23,11 +23,13 @@ export function getCeremonyTimeString(ceremony: string) {
 	return (
 		<span>
 			{new Date(ceremonyDate).toLocaleDateString("en-US", {
+				timeZone: "UTC",
 				day: "numeric",
 				month: "numeric",
 			})}{" "}
 			-{" "}
 			{new Date(ceremonyDate).toLocaleTimeString("en-US", {
+				timeZone: "UTC",
 				hour: "numeric",
 				minute: "numeric",
 				hour12: true,
@@ -36,7 +38,7 @@ export function getCeremonyTimeString(ceremony: string) {
 	);
 }
 
-export function getCeremonyTimeStringDate(ceremony: string, utc: boolean) {
+export function getCeremonyTimeStringDate(ceremony: string) {
 	let ceremonyDate = new Date();
 
 	if (ceremony != "noPassportCeremony") {
@@ -46,29 +48,18 @@ export function getCeremonyTimeStringDate(ceremony: string, utc: boolean) {
 	}
 
 	// Return the concatanated string
-	if (utc) {
-		return (
-			<span>
-				{new Date(ceremonyDate).toLocaleDateString("en-US", {
-					timeZone: "utc",
-					day: "numeric",
-					month: "numeric",
-				})}{" "}
-			</span>
-		);
-	} else {
-		return (
-			<span>
-				{new Date(ceremonyDate).toLocaleDateString("en-US", {
-					day: "numeric",
-					month: "numeric",
-				})}{" "}
-			</span>
-		);
-	}
+	return (
+		<span>
+			{new Date(ceremonyDate).toLocaleDateString("en-US", {
+				timeZone: "UTC",
+				day: "numeric",
+				month: "numeric",
+			})}{" "}
+		</span>
+	);
 }
 
-export function getCeremonyTimeStringTime(ceremony: string, utc:boolean) {
+export function getCeremonyTimeStringTime(ceremony: string, utc: boolean) {
 	let ceremonyDate = new Date();
 
 	if (ceremony != "noPassportCeremony") {
@@ -78,28 +69,15 @@ export function getCeremonyTimeStringTime(ceremony: string, utc:boolean) {
 	}
 
 	// Return the concatanated string
-	if (utc) {
-		return (
-			<span>
-				{" "}
-				{new Date(ceremonyDate).toLocaleTimeString("en-US", {
-					timeZone: "utc",
-					hour: "numeric",
-					minute: "numeric",
-					hour12: true,
-				})}
-			</span>
-		);
-	} else {
-		return (
-			<span>
-				{" "}
-				{new Date(ceremonyDate).toLocaleTimeString("en-US", {
-					hour: "numeric",
-					minute: "numeric",
-					hour12: true,
-				})}
-			</span>
-		);
-	}
+	return (
+		<span>
+			{" "}
+			{new Date(ceremonyDate).toLocaleTimeString("en-US", {
+				timeZone: "UTC",
+				hour: "numeric",
+				minute: "numeric",
+				hour12: true,
+			})}
+		</span>
+	);
 }

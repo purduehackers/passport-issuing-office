@@ -40,11 +40,13 @@ export default function CeremonyDropdown() {
                             className="flex justify-between items-center"
                         >
                             {new Date(ceremony.ceremony_time).toLocaleDateString("en-US", {
+                                timeZone: "UTC",
                                 day: "numeric",
                                 month: "numeric",
                             })}{" "}
                             -{" "}
                             {new Date(ceremony.ceremony_time).toLocaleTimeString("en-US", {
+                                timeZone: "UTC",
                                 hour: "numeric",
                                 minute: "numeric",
                                 hour12: true,
