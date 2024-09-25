@@ -222,7 +222,7 @@ const DeleteFormSchema = z.object({
 	}),
 });
 
-export default function AdminPage({ }: {}) {
+export default function AdminPage() {
 	const { toast } = useToast();
 
 	const [isLoading, setIsLoading] = useState(false); // TODO: do this better
