@@ -278,8 +278,7 @@ export default function Playground({
 									<FormItem className="space-y-3">
 										<FormLabel>Register this passport</FormLabel>
 										<FormDescription>
-											Register for an upcoming passport ceremony? SOME OTHER
-											TEXT HERE (NTS: Ask Matthew Later -Michael)
+											Register for an hour-long passport ceremony to turn your data page into a real-life passport.
 										</FormDescription>
 										<FormControl>
 											<RadioGroup
