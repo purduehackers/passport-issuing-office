@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { SignInButton, JoinGuildButton } from "@/components/auth-buttons";
+import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
 import { getCeremonyTimeString } from "@/lib/ceremony-data";

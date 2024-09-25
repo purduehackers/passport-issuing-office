@@ -1,8 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
-import { getCeremonyData, getCeremonyPassports } from "./get-passport-data";
-import { Ceremony } from "@/types/types";
-
 export function getCeremonyTimeDate(ceremony: string) {
 	if (ceremony != "noPassportCeremony") {
 		return new Date(ceremony.replace("ceremony-", ""));

@@ -38,7 +38,6 @@ export function centerAspectCrop(
 
 export function Crop({
 	field,
-	croppedImageFile,
 	setCroppedImageFile,
 }: {
 	field: any;

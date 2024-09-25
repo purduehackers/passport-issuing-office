@@ -1,7 +1,5 @@
 import { auth } from "@/auth";
 import AdminPage from "@/components/admin";
-import { SignInButton, JoinGuildButton } from "@/components/auth-buttons";
-import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
 import { getLatestOverallPassportId } from "@/lib/get-latest-passport";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";

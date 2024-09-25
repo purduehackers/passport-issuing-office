@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { format, setHours, setMinutes } from "date-fns";
+import { format } from "date-fns";
 import {
 	ColumnDef,
 	ColumnFiltersState,

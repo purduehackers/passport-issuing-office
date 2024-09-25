@@ -2,7 +2,7 @@ import { Ceremony } from "@/types/types";
 import { DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
-import { getCeremonyData, getCeremonyList, getCeremonyPassports } from "./get-passport-data";
+import { getCeremonyList, getCeremonyPassports } from "./get-passport-data";
 
 
 export default function CeremonyDropdown() {
