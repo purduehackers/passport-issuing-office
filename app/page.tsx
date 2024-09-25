@@ -15,11 +15,6 @@ export default async function Home({
 }) {
 	const generateNew = searchParams["new"];
 
-	// This is a temporary method of limiting passports for a ceremony. I'm planning
-	// to redo how passport ceremony registration works, but for now we just need to
-	// limit this week's signups.
-	const latestOverallPassportId = await getLatestOverallPassportId();
-
 	// Although the session includes the JWT token type from `auth.ts`, when it gets here
 	// next-auth still thinks it doesn't exist, even though it does when I log it.
 	// As a temporary workaround, I've created my own Session type which contains
@@ -109,7 +104,6 @@ export default async function Home({
 				<Playground
 					userId={userId}
 					latestPassport={latestPassport}
-					latestOverallPassportId={latestOverallPassportId}
 					optimizedLatestPassportImage={optimizedLatestPassportImage}
 					guildMember={guildMember}
 				/>

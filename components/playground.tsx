@@ -57,6 +57,8 @@ import {
 import {
 	getCeremonyTimestamp,
 	getCeremonyTimeString,
+	getCeremonyTimeStringDate,
+	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
 import CeremonyDropdown from "@/lib/ceremony-dropdown"
 
@@ -265,7 +267,7 @@ export default function Playground({
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="w-full flex flex-col gap-y-6"
 				>
-					<p>1. Register</p>
+					{userId ? (<p>1. Register</p>) : (<></>)}
 
 					{userId && guildMember !== undefined ? (
 						<span>
@@ -392,7 +394,7 @@ export default function Playground({
 						</span>
 					) : (
 						<span>
-							{!userId ? (
+							{/* {!userId ? (
 								<FormField
 									control={form.control}
 									name="ceremonyTime"
@@ -416,7 +418,7 @@ export default function Playground({
 								/>
 							) : (
 								<></>
-							)}
+							)} */}
 							<FormField
 								control={form.control}
 								name="ceremonyTime"
@@ -435,7 +437,7 @@ export default function Playground({
 						</span>
 					)}
 
-					<p>2. Generate</p>
+					{userId ? (<p>2. Generate</p>) : (<></>)}
 					<FormField
 						control={form.control}
 						name="firstName"
@@ -554,16 +556,22 @@ export default function Playground({
 							>
 								{isLoading ? "Generating..." : "Generate"}
 							</DialogTrigger>
-							<DialogContent className="w-11/12 sm:w-auto max-h-screen h-128 overflow-y-auto">
+							<DialogContent className="w-11/12 sm:w-auto overflow-y-auto">
 								<DialogHeader>
 									<DialogTitle className="text-2xl">
 										Passport Ceremony Registration
 									</DialogTitle>
 								</DialogHeader>
 								<DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
-									<p>PLACEHOLDER TEXT HERE</p>
-									<p>PLEASE MAKE SURE YOU CAN MAKE IT TO THE CEREMONY</p>
-									<p>IF SOMETHING COMES UP TELL MATTHEW</p>
+									<br />
+									<p>By clicking &quot;Register My Passport&quot;, you&apos;re signing up to make your own passport
+										at the passport ceremony on {getCeremonyTimeStringDate(ceremonyTime)} at {getCeremonyTimeStringTime(ceremonyTime)}. Please show up on time so that you have enough time to make your passport.
+										If you&apos;re late, we will start without you & you will need to re-register for the next one.</p>
+
+									<p>We spend real money and human labor on each passport, so please make sure you&apos;re there!
+										If plans change & you can&apos;t make it, please post in #lounge or DM Matthew (@hewillyeah) and let us know
+										so that we don&apos;t prep the materials for your passport.</p>
+									<br />
 									<DialogClose asChild>
 										<Button
 											type="submit"
@@ -631,10 +639,10 @@ export default function Playground({
 								>
 									<li
 										className={`${step.status === "completed"
-												? "text-success"
-												: step.status === "failed"
-													? "text-destructive"
-													: "text-muted-foreground"
+											? "text-success"
+											: step.status === "failed"
+												? "text-destructive"
+												: "text-muted-foreground"
 											}`}
 									>
 										{step.name}...
@@ -663,6 +671,7 @@ export default function Playground({
 						!isDefaultImage &&
 							!isLoading &&
 							!latestPassport &&
+							userId &&
 							!(form.getValues().sendToDb == "true") ? (
 							<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 								<p>

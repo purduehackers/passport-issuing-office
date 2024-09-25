@@ -1,41 +1,19 @@
 import { auth } from "@/auth";
 import AdminPage from "@/components/admin";
 import UserInfo from "@/components/user-info";
-import { getLatestOverallPassportId } from "@/lib/get-latest-passport";
-import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
-import { MySession, OptimizedLatestPassportImage } from "@/types/types";
+import { MySession } from "@/types/types";
 import { redirect } from "next/navigation";
 
-export default async function Home({
-	searchParams,
-}: {
-	searchParams: { [key: string]: string | string[] | undefined };
-}) {
-	const generateNew = searchParams["new"];
-
-	// This is a temporary method of limiting passports for a ceremony. I'm planning
-	// to redo how passport ceremony registration works, but for now we just need to
-	// limit this week's signups.
-	const latestOverallPassportId = await getLatestOverallPassportId();
+export default async function Admin({}) {
 
 	// Although the session includes the JWT token type from `auth.ts`, when it gets here
 	// next-auth still thinks it doesn't exist, even though it does when I log it.
 	// As a temporary workaround, I've created my own Session type which contains
 	// what I'm actually getting from next-auth.
 	let session = (await auth()) as MySession | null;
-	const userId = session?.token?.sub;
-	const latestPassport = session?.passport;
-	const guildMember = session?.guildMember;
 
-	let optimizedLatestPassportImage: OptimizedLatestPassportImage | null = null;
-	if (latestPassport) {
-		optimizedLatestPassportImage = await getOptimizedLatestPassportImage(
-			latestPassport.id,
-		);
-	}
-
-	if (latestPassport?.activated && generateNew !== "true") {
-		redirect("/activated");
+	if (session?.role !== "admin") {
+		redirect("/");
 	}
 
 	if (session?.role == "admin") {

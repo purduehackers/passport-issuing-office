@@ -35,3 +35,45 @@ export function getCeremonyTimeString(ceremony: string) {
 		</span>
 	);
 }
+
+export function getCeremonyTimeStringDate(ceremony: string) {
+	let ceremonyDate = new Date();
+
+	if (ceremony != "noPassportCeremony") {
+		ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+	} else {
+		ceremonyDate = new Date(-1);
+	}
+
+	// Return the concatanated string
+	return (
+		<span>
+			{new Date(ceremonyDate).toLocaleDateString("en-US", {
+				day: "numeric",
+				month: "numeric",
+			})}{" "}
+		</span>
+	);
+}
+
+export function getCeremonyTimeStringTime(ceremony: string) {
+	let ceremonyDate = new Date();
+
+	if (ceremony != "noPassportCeremony") {
+		ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+	} else {
+		ceremonyDate = new Date(-1);
+	}
+
+	// Return the concatanated string
+	return (
+		<span>
+			{" "}
+			{new Date(ceremonyDate).toLocaleTimeString("en-US", {
+				hour: "numeric",
+				minute: "numeric",
+				hour12: true,
+			})}
+		</span>
+	);
+}
