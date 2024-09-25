@@ -1,8 +1,12 @@
-export function getCeremonyTimeDate(ceremony: string) {
-	if (ceremony != "noPassportCeremony") {
-		return new Date(ceremony.replace("ceremony-", ""));
+export function getCeremonyTimeDate(ceremony: string | Date) {
+	let ceremonyDate = new Date(-1);
+
+	if (typeof ceremony == "string") {
+		if (ceremony != "noPassportCeremony") {
+			ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+		}
 	} else {
-		return new Date(-1);
+		ceremonyDate = ceremony;
 	}
 }
 
@@ -10,13 +14,15 @@ export function getCeremonyTimestamp(ceremony: string) {
 	return ceremony.replace("ceremony-", "");
 }
 
-export function getCeremonyTimeString(ceremony: string) {
-	let ceremonyDate = new Date();
+export function getCeremonyTimeString(ceremony: string | Date) {
+	let ceremonyDate = new Date(-1);
 
-	if (ceremony != "noPassportCeremony") {
-		ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+	if (typeof ceremony == "string") {
+		if (ceremony != "noPassportCeremony") {
+			ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+		}
 	} else {
-		ceremonyDate = new Date(-1);
+		ceremonyDate = ceremony;
 	}
 
 	// Return the concatanated string
@@ -38,13 +44,15 @@ export function getCeremonyTimeString(ceremony: string) {
 	);
 }
 
-export function getCeremonyTimeStringDate(ceremony: string) {
-	let ceremonyDate = new Date();
+export function getCeremonyTimeStringDate(ceremony: string | Date) {
+	let ceremonyDate = new Date(-1);
 
-	if (ceremony != "noPassportCeremony") {
-		ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+	if (typeof ceremony == "string") {
+		if (ceremony != "noPassportCeremony") {
+			ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+		}
 	} else {
-		ceremonyDate = new Date(-1);
+		ceremonyDate = ceremony;
 	}
 
 	// Return the concatanated string
@@ -59,13 +67,15 @@ export function getCeremonyTimeStringDate(ceremony: string) {
 	);
 }
 
-export function getCeremonyTimeStringFullDate(ceremony: string) {
-	let ceremonyDate = new Date();
+export function getCeremonyTimeStringFullDate(ceremony: string | Date) {
+	let ceremonyDate = new Date(-1);
 
-	if (ceremony != "noPassportCeremony") {
-		ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+	if (typeof ceremony == "string") {
+		if (ceremony != "noPassportCeremony") {
+			ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+		}
 	} else {
-		ceremonyDate = new Date(-1);
+		ceremonyDate = ceremony;
 	}
 
 	// Return the concatanated string
@@ -81,13 +91,15 @@ export function getCeremonyTimeStringFullDate(ceremony: string) {
 	);
 }
 
-export function getCeremonyTimeStringTime(ceremony: string) {
-	let ceremonyDate = new Date();
+export function getCeremonyTimeStringTime(ceremony: string | Date) {
+	let ceremonyDate = new Date(-1);
 
-	if (ceremony != "noPassportCeremony") {
-		ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+	if (typeof ceremony == "string") {
+		if (ceremony != "noPassportCeremony") {
+			ceremonyDate = new Date(ceremony.replace("ceremony-", ""));
+		}
 	} else {
-		ceremonyDate = new Date(-1);
+		ceremonyDate = ceremony;
 	}
 
 	// Return the concatanated string
