@@ -202,7 +202,7 @@ export default function Playground({
     };
 
     function renderError(field: string) {
-        return <></>//errors?.[field] && <FormMessage>{errors[field]._errors.join(", ")}</FormMessage>;
+        return errors?.[field] && <FormMessage>{errors[field]._errors.join(", ")}</FormMessage>;
     };
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
