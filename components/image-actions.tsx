@@ -17,7 +17,7 @@ export function ImageActions({
 	latestPassport: Passport | null | undefined;
 	firstName: string;
 	surname: string;
-	sendToDb?: boolean;
+	sendToDb: boolean;
 }) {
 	function generateDownloadName() {
 		function processName(name: string) {

@@ -61,6 +61,7 @@ import {
 	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
 import CeremonyDropdown from "@/lib/ceremony-dropdown"
+import { Switch } from "./ui/switch";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -99,7 +100,7 @@ const FormSchema = z.object({
 		.optional(),
 	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
 	passportNumber: z.string().max(4).optional(),
-	sendToDb: z.string().default("false"),
+	sendToDb: z.boolean().default(false),
 });
 
 export default function Playground({
@@ -127,6 +128,7 @@ export default function Playground({
 				: undefined,
 			image: undefined,
 			passportNumber: "0",
+			sendToDb: false,
 		},
 	});
 
@@ -166,7 +168,7 @@ export default function Playground({
 
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
 		if (data.ceremonyTime == "9999-99-99T00:00:00.000Z") {
-			data.sendToDb = "false"
+			data.sendToDb = false
 		}
 
 		setIsLoading(true);
@@ -191,7 +193,7 @@ export default function Playground({
 			apiFormData.append("userId", userId);
 		}
 
-		if (data.sendToDb == "true") {
+		if (data.sendToDb) {
 			const { passportNumber } = await createPassport(apiFormData);
 			generatedPassportNumber = String(passportNumber);
 			apiFormData.set("passportNumber", String(passportNumber));
@@ -209,7 +211,7 @@ export default function Playground({
 		});
 		updateGenerationStepState("generating_data_page", "completed");
 
-		if (data.sendToDb == "true") {
+		if (data.sendToDb) {
 			const generateFullFrameReq = await fetch(`/api/generate-full-frame`, {
 				method: "POST",
 				body: apiFormData,
@@ -281,43 +283,26 @@ export default function Playground({
 											Register for an hour-long passport ceremony to turn your data page into a real-life passport.
 										</FormDescription>
 										<FormControl>
-											<RadioGroup
-												onValueChange={(e) => {
+											<Switch
+												onCheckedChange={(e) => {
 													field.onChange(e);
 													{
-														if (e == "false") {
+														if (e == false) {
 															setGenerationSteps(GENERATION_STEPS.base);
 														} else {
 															setGenerationSteps(GENERATION_STEPS.register);
 														}
 													}
 												}}
-												defaultValue={field.value}
-												className="flex flex-col space-y-1"
-											>
-												<FormItem className="flex space-x-1 space-y-0">
-													<span className="flex space-x-1 space-y-0">
-														<FormControl>
-															<RadioGroupItem value="true" />
-														</FormControl>
-														<FormLabel className="font-normal">Yes</FormLabel>
-													</span>
-												</FormItem>
-												<FormItem className="flex space-x-1 space-y-0">
-													<span className="flex space-x-1 space-y-0">
-														<FormControl>
-															<RadioGroupItem value="false" />
-														</FormControl>
-														<FormLabel className="font-normal">No</FormLabel>
-													</span>
-												</FormItem>
-											</RadioGroup>
+												checked={field.value}
+												className=""
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-							{form.getValues("sendToDb") == "true" ? (
+							{form.getValues("sendToDb") ? (
 								<span>
 									<br />
 									<FormField
@@ -547,7 +532,7 @@ export default function Playground({
 							</FormItem>
 						)}
 					/>
-					{form.getValues("sendToDb") == "true" ? (
+					{form.getValues("sendToDb") ? (
 						<Dialog>
 							<DialogTrigger
 								className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0"
@@ -663,7 +648,7 @@ export default function Playground({
 							latestPassport={latestPassport}
 							firstName={form.getValues().firstName}
 							surname={form.getValues().surname}
-							sendToDb={form.getValues().sendToDb == "true"}
+							sendToDb={form.getValues().sendToDb}
 						/>
 					) : null}
 					{
@@ -671,7 +656,7 @@ export default function Playground({
 							!isLoading &&
 							!latestPassport &&
 							userId &&
-							!(form.getValues().sendToDb == "true") ? (
+							!form.getValues().sendToDb ? (
 							<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 								<p>
 									Nice Passport! Want to make it real? Register for an upcoming
