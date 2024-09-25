@@ -2,8 +2,7 @@ import { auth } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
-import { getCeremonyTimeString } from "@/lib/ceremony-data";
-import { getLatestOverallPassportId } from "@/lib/get-latest-passport";
+import { getCeremonyTimeStringDate, getCeremonyTimeStringTime } from "@/lib/ceremony-data";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import { MySession, OptimizedLatestPassportImage } from "@/types/types";
 import { redirect } from "next/navigation";
@@ -74,10 +73,7 @@ export default async function Home({
 					) : (
 						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 							<p>
-								SOMETHING GOES HERE (MAKE IT NOT AMBER TOO) Ceremony Date:{" "}<br />
-								{getCeremonyTimeString(latestPassport.ceremony_time)}<br />
-								This will show for all &quot;existing&quot; passports, so it
-								will be here when returning as well
+								You&apos;re registered for the passport ceremony happening on {getCeremonyTimeStringDate(latestPassport.ceremony_time)} at {getCeremonyTimeStringTime(latestPassport.ceremony_time)} 
 							</p>
 						</div>
 					)}
