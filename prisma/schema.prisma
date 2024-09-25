@@ -16,6 +16,7 @@ model passport {
   name            String   @db.VarChar
   date_of_birth   DateTime @db.Date
   date_of_issue   DateTime @db.Date
+  ceremony_time   DateTime @db.Date
   place_of_origin String   @db.VarChar
   secret          String   @default("INSECURE") @db.VarChar
   activated       Boolean  @default(false)
@@ -32,6 +33,12 @@ model user {
   discord_id BigInt     @unique
   role       role_enum
   passport   passport[]
+}
+
+model ceremonies {
+  ceremony_time     DateTime @db.Date @id
+  total_slots       Int
+  open_registration Boolean
 }
 
 enum role_enum {

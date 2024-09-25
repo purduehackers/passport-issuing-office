@@ -29,9 +29,10 @@ export const authConfig = {
 			let passport: Passport | null = null;
 			const bigIntUserId = BigInt(`${token.sub}`);
 			let guildMember;
+			let role;
 
 			if (process.env.DISCORD_GUILD) {
-				const guilds = await fetch(
+				await fetch(
 					"https://discordapp.com/api/users/@me/guilds",
 					{
 						headers: {
@@ -44,9 +45,11 @@ export const authConfig = {
 						return guilds.json();
 					})
 					.then(async (data) => {
-						guildMember = data.find(
-							(o: { id: string }) => o.id === process.env.DISCORD_GUILD ?? "",
-						);
+						if (data) {
+							guildMember = data.find(
+								(o: { id: string }) => o.id === process.env.DISCORD_GUILD ?? "",
+							);
+						}
 					});
 			} else {
 				guildMember = null;
@@ -58,6 +61,7 @@ export const authConfig = {
 				},
 			});
 			if (user) {
+				role = user.role;
 				const latestPassport = await prisma.passport.findFirst({
 					where: {
 						owner_id: user.id,
@@ -71,6 +75,7 @@ export const authConfig = {
 						...latestPassport,
 						date_of_birth: latestPassport.date_of_birth.toISOString(),
 						date_of_issue: latestPassport.date_of_issue.toISOString(),
+						ceremony_time: latestPassport.ceremony_time.toISOString(),
 					};
 					passport = updatedPassport;
 				}
@@ -85,7 +90,7 @@ export const authConfig = {
 				}
 			}
 
-			return { ...session, token, passport, guildMember };
+			return { ...session, token, passport, guildMember, role };
 		},
 		async jwt({ token, account }) {
 			if (account) {

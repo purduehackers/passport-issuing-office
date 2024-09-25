@@ -1,5 +1,4 @@
 import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
-import { Description } from "./description";
 
 export function ImageSection({ imageUrl }: { imageUrl: string }) {
 	return (

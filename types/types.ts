@@ -7,6 +7,7 @@ export interface MySession {
 	token: Token;
 	passport: Passport | null;
 	guildMember: object | null | undefined;
+	role: string | undefined;
 }
 
 export interface Token {
@@ -28,9 +29,16 @@ export interface Passport {
 	name: string;
 	date_of_birth: string;
 	date_of_issue: string;
+	ceremony_time: string;
 	place_of_origin: string;
 	secret: string;
 	activated: boolean;
+}
+
+export interface Ceremony {
+	ceremony_time: Date;
+	total_slots: number;
+	open_registration: boolean;
 }
 
 export type GenerationStatus = "pending" | "completed" | "failed";
@@ -59,6 +67,7 @@ export interface PassportGenData {
 	firstName: string;
 	dateOfBirth: Date;
 	dateOfIssue: Date;
+	ceremonyTime: Date;
 	placeOfOrigin: string;
 	sendToDb: boolean;
 	portrait?: File;

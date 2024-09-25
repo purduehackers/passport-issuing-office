@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
-import { SignInButton, JoinGuildButton } from "@/components/auth-buttons";
+import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
-import { getLatestOverallPassportId } from "@/lib/get-latest-passport";
+import { getCeremonyTimeDate, getCeremonyTimeStringDate, getCeremonyTimeStringTime } from "@/lib/ceremony-data";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import { MySession, OptimizedLatestPassportImage } from "@/types/types";
 import { redirect } from "next/navigation";
@@ -13,11 +13,6 @@ export default async function Home({
 	searchParams: { [key: string]: string | string[] | undefined };
 }) {
 	const generateNew = searchParams["new"];
-
-	// This is a temporary method of limiting passports for a ceremony. I'm planning
-	// to redo how passport ceremony registration works, but for now we just need to
-	// limit this week's signups.
-	const latestOverallPassportId = await getLatestOverallPassportId();
 
 	// Although the session includes the JWT token type from `auth.ts`, when it gets here
 	// next-auth still thinks it doesn't exist, even though it does when I log it.
@@ -40,8 +35,11 @@ export default async function Home({
 	}
 
 	return (
-		<main className="bg-black flex flex-col min-h-screen">
-			<UserInfo user={session?.user} />
+		<main className="bg-background flex flex-col min-h-screen">
+			<UserInfo
+				user={session?.user}
+				role={session?.role}
+			/>
 			<div className="flex flex-col items-center gap-y-12 sm:gap-y-20 pb-4 px-4 pt-0 sm:px-24 sm:pt-4 sm:pb-24">
 				<div className="rounded-sm flex flex-col justify-center p-2 sm:p-4 my-4 w-full md:w-9/12 mx-auto break-inside-avoid font-main">
 					<h1 className="font-bold text-3xl text-amber-400 sm:text-5xl lg:text-[5rem] text-center mx-auto mb-4 flex flex-col justify-center items-center gap-2 sm:gap-4">
@@ -52,23 +50,36 @@ export default async function Home({
 						/>
 						Passport Data Pages
 					</h1>
-					<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
-						<p className="text-base">
-							Use this website to create your passport data page. 🛂
-						</p>
-						<p className="text-base">
-							The info can be whatever you want. Some people have put their real
-							info, others have put totally wacky stuff. Half of the passports
-							have a cat set as their portrait.
-						</p>{" "}
-						{userId ? (
-							<p className="text-base">
-								When you&#39;re ready to register for a passport ceremony, check
-								the checkbox to be assigned a passport number. Your passport
-								will be printed & ready to assemble at the next ceremony.
+					{!latestPassport || latestPassport.activated || getCeremonyTimeDate(latestPassport.ceremony_time) < (new Date()) ? (
+						<>
+							<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+								<p className="text-base">
+									Use this website to create your passport data page. 🛂
+								</p>
+								<p className="text-base">
+									The info can be whatever you want. Some people have put their real
+									info, others have put totally wacky stuff. Half of the passports
+									have a cat set as their portrait.
+								</p>{" "}
+								{userId ? (
+									<p className="text-base">
+										When you&#39;re ready to register for a passport ceremony, check
+										the checkbox to be assigned a passport number. Your passport
+										will be printed & ready to assemble at the next ceremony.
+									</p>
+								) : null}
+							</div>
+						</>
+					) : (
+						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
+							<p>
+								You&apos;re registered for the passport ceremony happening on {getCeremonyTimeStringDate(latestPassport.ceremony_time)} at {getCeremonyTimeStringTime(latestPassport.ceremony_time)}!
 							</p>
-						) : null}
-					</div>
+							<p>
+								If you need to cancel, please let us know in #lounge, or re-register for a different time.
+							</p>
+						</div>
+					)}
 					{!session?.user?.email ? (
 						<div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-10/12 gap-4 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
 							<p>
@@ -79,20 +90,19 @@ export default async function Home({
 							<SignInButton dark />
 						</div>
 					) : null}
-					{session?.user?.email && guildMember === undefined ? (
+					{!process.env.PRODUCTION ? (
 						<div className="rounded-sm border-[3px] border-red-400 flex flex-col justify-center w-full md:w-10/12 gap-4 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-red-600 shadow-blocks-sm font-main">
 							<p>
-								To register for an upcoming ceremony, please join our Discord,
-								then refresh this page.
+								This is a staging instance of the Passport Data Page generator.
+								If you would like to attend a passport ceremony, use the live
+								page.
 							</p>
-							<JoinGuildButton dark />
 						</div>
 					) : null}
 				</div>
 				<Playground
 					userId={userId}
 					latestPassport={latestPassport}
-					latestOverallPassportId={latestOverallPassportId}
 					optimizedLatestPassportImage={optimizedLatestPassportImage}
 					guildMember={guildMember}
 				/>

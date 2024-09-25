@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Agent, setGlobalDispatcher } from "undici";
+import { Toaster } from "@/components/ui/toaster";
+
+setGlobalDispatcher(new Agent({ connect: { timeout: 60_000 } }));
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ["latin"],
@@ -19,7 +23,10 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body className={spaceGrotesk.variable}>{children}</body>
+			<body className={spaceGrotesk.variable}>
+				{children}
+				<Toaster />
+			</body>
 		</html>
 	);
 }

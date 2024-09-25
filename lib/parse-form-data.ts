@@ -20,11 +20,16 @@ export function parseFormData(formValues: FormData) {
 			? (formValues.get("dateOfIssue") as string)
 			: Date.now(),
 	);
+	const trueCeremonyTime = new Date(
+		formValues.get("ceremonyTime")
+			? (formValues.get("ceremonyTime") as string)
+			: Date.now(),
+	);
 	const placeOfOrigin = formValues.get("placeOfOrigin")
 		? (formValues.get("placeOfOrigin") as string)
 		: "THE WOODS";
 
-	const sendToDb = formValues.get("sendToDb") as string | undefined;
+	const sendToDb = formValues.get("sendToDb") as unknown as boolean;
 	const portraitImage = formValues.get("portrait") as File;
 	const userId = formValues.get("userId") as string | undefined;
 	const bigIntUserId = BigInt(`${userId || "0"}`);
@@ -36,6 +41,7 @@ export function parseFormData(formValues: FormData) {
 		trueDateOfBirth,
 		trueDateOfIssue,
 		placeOfOrigin,
+		trueCeremonyTime,
 		sendToDb,
 		portraitImage,
 		userId: bigIntUserId,
