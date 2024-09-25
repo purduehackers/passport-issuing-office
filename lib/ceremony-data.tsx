@@ -59,7 +59,7 @@ export function getCeremonyTimeStringDate(ceremony: string) {
 	);
 }
 
-export function getCeremonyTimeStringTime(ceremony: string, utc: boolean) {
+export function getCeremonyTimeStringTime(ceremony: string) {
 	let ceremonyDate = new Date();
 
 	if (ceremony != "noPassportCeremony") {
