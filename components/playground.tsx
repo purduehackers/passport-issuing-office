@@ -262,7 +262,6 @@ export default function Playground({
             updateGenerationStepState("generating_frame", "completed");
 
             apiFormData.append("generatedImage", generatedImageFile);
-            if (process.env.PRODUCTION) {
                 try {
                     await uploadImageToR2(
                         "generated",
@@ -273,11 +272,11 @@ export default function Playground({
                     alert(
                         "Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
                     );
+                    console.log(error)
                     setIsLoading(false);
                     resetGenerationSteps();
                     return;
                 }
-            }
 
             updateGenerationStepState("uploading", "completed");
         }
