@@ -415,7 +415,7 @@ export default function Playground({
                         </span>
                     ) : (
                         <span>
-                            {userId && (guildMember !== undefined) ? (
+                            {userId && (guildMember == undefined) ? (
                                 <FormField
                                     control={form.control}
                                     name="ceremonyTime"
