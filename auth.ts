@@ -52,7 +52,7 @@ export const authConfig = {
 						}
 					});
 			} else {
-				guildMember = null;
+				guildMember = true;
 			}
 
 			let user = await prisma.user.findFirst({
