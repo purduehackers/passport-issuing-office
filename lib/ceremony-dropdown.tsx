@@ -38,6 +38,7 @@ export default function CeremonyDropdown() {
                             key={index}
                             value={`ceremony-${ceremony.ceremony_time}`}
                             className="flex justify-between items-center"
+                            disabled={!ceremony.open_registration}
                         >
                             {new Date(ceremony.ceremony_time).toLocaleDateString("en-US", {
                                 timeZone: "UTC",

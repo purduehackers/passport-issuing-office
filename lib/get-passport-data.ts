@@ -53,7 +53,10 @@ export async function getCeremonyList() {
 			try {
 				passportListLength = await getCeremonyPassports(ceremony);
 				if (passportListLength) {
-					if (ceremony.total_slots >= passportListLength) {
+					if (ceremony.total_slots > passportListLength) {
+						validCeremonies.push(ceremony);
+					} else {
+						ceremony.open_registration = false;
 						validCeremonies.push(ceremony);
 					}
 				} else {
