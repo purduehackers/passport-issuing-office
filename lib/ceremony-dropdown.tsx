@@ -2,7 +2,7 @@ import { Ceremony } from "@/types/types";
 import { DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
-import { getCeremonyList, getCeremonyPassports } from "./get-passport-data";
+import { getCeremonyList, getCeremonyPassports, getFullCeremonyList } from "./get-passport-data";
 
 
 export default function CeremonyDropdown() {
@@ -14,6 +14,73 @@ export default function CeremonyDropdown() {
             setCLoading(true);
             try {
                 const ceremonies = await getCeremonyList();
+                setCeremonyList(ceremonies || []);
+            } catch (error) {
+                setCeremonyList([]);
+            } finally {
+                setCLoading(false);
+            }
+        };
+
+        fetchCeremonies();
+    }, []);
+
+    if (cLoading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <>
+            {!(ceremonyList[0] == null) ? (
+                <>
+                    {ceremonyList.map((ceremony, index) => (
+                        <DropdownMenuRadioItem
+                            key={index}
+                            value={`ceremony-${ceremony.ceremony_time}`}
+                            className="flex justify-between items-center"
+                        >
+                            {new Date(ceremony.ceremony_time).toLocaleDateString("en-US", {
+                                timeZone: "UTC",
+                                day: "numeric",
+                                month: "numeric",
+                            })}{" "}
+                            -{" "}
+                            {new Date(ceremony.ceremony_time).toLocaleTimeString("en-US", {
+                                timeZone: "UTC",
+                                hour: "numeric",
+                                minute: "numeric",
+                                hour12: true,
+                            })}
+                            <PassportBadge ceremony={ceremony} />
+                        </DropdownMenuRadioItem>
+                    ))
+                    }
+                </>
+            ) : (
+                <>
+                    <DropdownMenuRadioItem
+                        key={"noCeremony1"}
+                        value={`noPassportCeremony`}
+                        className="flex justify-between items-center"
+                        disabled={true}
+                    >
+                        No upcoming ceremonies
+                    </DropdownMenuRadioItem>
+                </>
+            )}
+        </>
+    );
+}
+
+export function FullCeremonyDropdown() {
+    const [ceremonyList, setCeremonyList] = useState<Ceremony[]>([]);
+    const [cLoading, setCLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCeremonies = async () => {
+            setCLoading(true);
+            try {
+                const ceremonies = await getFullCeremonyList();
                 setCeremonyList(ceremonies || []);
             } catch (error) {
                 setCeremonyList([]);

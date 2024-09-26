@@ -36,7 +36,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Ceremony, Passport } from "@/types/types";
-import { getAllPassports, getCeremonyList } from "@/lib/get-passport-data";
+import { getAllPassports, getCeremonyList, getFullCeremonyList } from "@/lib/get-passport-data";
 import { useEffect, useState } from "react";
 import {
 	getCeremonyTimeDate,
@@ -45,7 +45,7 @@ import {
 	getCeremonyTimeStringFullDate,
 	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
-import CeremonyDropdown from "@/lib/ceremony-dropdown"
+import CeremonyDropdown, { FullCeremonyDropdown } from "@/lib/ceremony-dropdown"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
 	Form,
@@ -382,7 +382,7 @@ export default function AdminPage() {
 		};
 		const fetchCeremonyData = async () => {
 			try {
-				const result = await getCeremonyList();
+				const result = await getFullCeremonyList();
 				setCeremonyData(result ?? []);
 			} catch (e) { }
 		};
@@ -541,7 +541,7 @@ export default function AdminPage() {
 									>
 										Select a Date
 									</DropdownMenuRadioItem>
-									<CeremonyDropdown />
+									<FullCeremonyDropdown />
 								</DropdownMenuRadioGroup>
 							</DropdownMenuContent>
 						</DropdownMenu>
@@ -911,7 +911,7 @@ export default function AdminPage() {
 																			>
 																				Select a Date
 																			</DropdownMenuRadioItem>
-																			<CeremonyDropdown />
+																			<FullCeremonyDropdown />
 																		</DropdownMenuRadioGroup>
 																	</DropdownMenuContent>
 																</DropdownMenu>
@@ -1035,7 +1035,7 @@ export default function AdminPage() {
 																			>
 																				Select a Date
 																			</DropdownMenuRadioItem>
-																			<CeremonyDropdown />
+																			<FullCeremonyDropdown />
 																		</DropdownMenuRadioGroup>
 																	</DropdownMenuContent>
 																</DropdownMenu>

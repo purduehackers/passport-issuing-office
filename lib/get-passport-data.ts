@@ -53,12 +53,36 @@ export async function getCeremonyList() {
 			try {
 				passportListLength = await getCeremonyPassports(ceremony);
 				if (passportListLength) {
-					if (ceremony.total_slots > passportListLength) {
+					if (ceremony.total_slots >= passportListLength) {
 						validCeremonies.push(ceremony);
 					}
 				} else {
 					validCeremonies.push(ceremony);
 				}
+			} catch {}
+		}
+		
+		return validCeremonies;
+	} catch (_err) {
+		return undefined;
+	}
+}
+
+export async function getFullCeremonyList() {
+	try {
+		const ceremonies = await prisma.ceremonies.findMany({
+			where: {
+				ceremony_time: {
+					gte: new Date(),
+				},
+			},
+		});
+
+		let validCeremonies: Ceremony[] = [];
+
+		for (const ceremony of ceremonies) {
+			try {
+				validCeremonies.push(ceremony);
 			} catch {}
 		}
 		
