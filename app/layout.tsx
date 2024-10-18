@@ -12,8 +12,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-	title: "Passport Data Pages",
-	description: "Customize your passport data page!",
+	title: "Passport Issuing Office",
+	description:
+		"Register to make your Republic of Hackerland passport, & create your data page 🛂",
 };
 
 export default function RootLayout({

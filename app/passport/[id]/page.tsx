@@ -32,8 +32,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const latestPassport = await getLatestPassport(params.id);
 	if (!latestPassport) {
 		return {
-			title: "Passport Data Pages",
-			description: "Customize your passport data page!",
+			title: "Passport Issuing Office",
+			description:
+				"Register to make your Republic of Hackerland passport, & create your data page 🛂",
 		};
 	}
 
