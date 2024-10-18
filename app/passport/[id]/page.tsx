@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 		return {
 			title: "Passport Issuing Office",
 			description:
-				"Register to make your Republic of Hackerland passport, & create your data page 🛂",
+				"NFC-enabled passports that level you up. Generate yours here, then assemble it at Hack Night.",
 		};
 	}
 
