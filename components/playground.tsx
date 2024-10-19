@@ -61,6 +61,7 @@ import {
 } from "@/lib/ceremony-data";
 import CeremonyDropdown from "@/lib/ceremony-dropdown"
 import { Switch } from "./ui/switch";
+import { useKonamiCode } from "@/hooks/use-konami-code";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -157,6 +158,11 @@ export default function Playground({
     const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
     const [openDialog, setOpenDialog] = useState(false);
     const [errors, setErrors] = useState<any>(null);
+    const [secretOptionsEnabled, setSecretOptionsEnabled] = useState(false);
+
+    useKonamiCode(() => {
+        setSecretOptionsEnabled(true);
+    })
 
     function updateGenerationStepState(
         stepId: GenerationStepId,
@@ -381,7 +387,7 @@ export default function Playground({
                                                                     >
                                                                         Select a Date
                                                                     </DropdownMenuRadioItem>
-                                                                    <CeremonyDropdown />
+                                                                    <CeremonyDropdown secretOptionsEnabled={secretOptionsEnabled} />
                                                                 </DropdownMenuRadioGroup>
                                                             </DropdownMenuContent>
                                                         </DropdownMenu>

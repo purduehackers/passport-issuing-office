@@ -5,7 +5,9 @@ import { useState, useEffect } from "react";
 import { getCeremonyList, getCeremonyPassports, getFullCeremonyList } from "./get-passport-data";
 
 
-export default function CeremonyDropdown() {
+export default function CeremonyDropdown({ secretOptionsEnabled }: { 
+    secretOptionsEnabled: boolean
+}) {
     const [ceremonyList, setCeremonyList] = useState<Ceremony[]>([]);
     const [cLoading, setCLoading] = useState(true);
 
