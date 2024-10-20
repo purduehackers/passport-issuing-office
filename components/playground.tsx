@@ -232,6 +232,7 @@ export default function Playground({
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
 		setIsLoading(true);
 		setLaunchConfetti(false);
+		setOpenDialog(false);
 
 		let generatedPassportNumber = data.passportNumber || "0";
 
@@ -671,19 +672,18 @@ export default function Playground({
 											</>
 										)}
 										<br />
-										<DialogClose asChild>
-											<Button
-												type="submit"
-												form="passportform"
-												className="amberButton"
-												disabled={
-													isLoading ||
-													(secretOptionsEnabled && !secretSignatureSigned)
-												}
-											>
-												{"Register My Passport"}
-											</Button>
-										</DialogClose>
+										<Button
+											type="submit"
+											form="passportform"
+											className="amberButton"
+											disabled={
+												// isLoading
+												isLoading ||
+												(secretOptionsEnabled && !secretSignatureSigned)
+											}
+										>
+											{"Register My Passport"}
+										</Button>
 									</DialogDescription>
 								</DialogContent>
 							</Dialog>
