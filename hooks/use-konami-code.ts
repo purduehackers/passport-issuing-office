@@ -16,7 +16,6 @@ export function useKonamiCode(
 		"ArrowRight",
 		"b",
 		"a",
-		"Enter",
 	],
 ): void {
 	const buffer = useRef<string[]>([]);

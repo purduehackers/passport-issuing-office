@@ -164,6 +164,7 @@ export default function Playground({
 
 	useKonamiCode(() => {
 		setSecretOptionsEnabled(true);
+		// alert("enabled");
 	});
 
 	function updateGenerationStepState(
@@ -241,6 +242,13 @@ export default function Playground({
 		const apiFormData = new FormData();
 		for (const [key, val] of Object.entries(data)) {
 			if (key !== "image") {
+				if (key === "ceremonyTime" && val === "skipPassportCeremony") {
+					const noCeremonyVal = new Date(
+						"1970-01-01T00:00:00.000Z",
+					).toISOString();
+					apiFormData.append(key, noCeremonyVal);
+					continue;
+				}
 				apiFormData.append(key, String(val));
 			}
 		}
@@ -369,11 +377,12 @@ export default function Playground({
 																	variant="outline"
 																	className="w-full"
 																>
-																	{ceremonyTime == "noPassportCeremony" ? (
-																		<p>Select a Date</p>
-																	) : (
-																		<p>{getCeremonyTimeString(ceremonyTime)}</p>
-																	)}
+																	<p>
+																		{getCeremonyTimeString(
+																			ceremonyTime,
+																			secretOptionsEnabled,
+																		)}
+																	</p>
 																</Button>
 															</DropdownMenuTrigger>
 															<DropdownMenuContent className="w-full min-w-0">

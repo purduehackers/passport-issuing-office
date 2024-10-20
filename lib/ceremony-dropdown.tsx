@@ -30,6 +30,7 @@ export default function CeremonyDropdown({
 		};
 
 		fetchCeremonies();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	if (cLoading) {
@@ -62,7 +63,24 @@ export default function CeremonyDropdown({
 							<PassportBadge ceremony={ceremony} />
 						</DropdownMenuRadioItem>
 					))}
+					{secretOptionsEnabled && (
+						<DropdownMenuRadioItem
+							key="secret-option"
+							value={`skipPassportCeremony`}
+							className="flex justify-between items-center"
+						>
+							Secret option: skip ceremony
+						</DropdownMenuRadioItem>
+					)}
 				</>
+			) : secretOptionsEnabled ? (
+				<DropdownMenuRadioItem
+					key="secret-option"
+					value={`skipPassportCeremony`}
+					className="flex justify-between items-center"
+				>
+					Secret option: skip ceremony
+				</DropdownMenuRadioItem>
 			) : (
 				<>
 					<DropdownMenuRadioItem

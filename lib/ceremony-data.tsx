@@ -16,7 +16,17 @@ export function getCeremonyTimestamp(ceremony: string) {
 	return ceremony.replace("ceremony-", "");
 }
 
-export function getCeremonyTimeString(ceremony: string | Date) {
+export function getCeremonyTimeString(
+	ceremony: string | Date,
+	secretOptionsEnabled: boolean,
+) {
+	if (ceremony === "noPassportCeremony") {
+		return "Select a Date";
+	}
+	if (secretOptionsEnabled && ceremony === "skipPassportCeremony") {
+		return "Secret option: skip ceremony";
+	}
+
 	let ceremonyDate = new Date(-1);
 
 	if (typeof ceremony == "string") {
