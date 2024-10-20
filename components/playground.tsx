@@ -233,6 +233,7 @@ export default function Playground({
 		setIsLoading(true);
 		setLaunchConfetti(false);
 		setOpenDialog(false);
+		setSecretSignatureSigned(false);
 
 		let generatedPassportNumber = data.passportNumber || "0";
 
@@ -677,7 +678,6 @@ export default function Playground({
 											form="passportform"
 											className="amberButton"
 											disabled={
-												// isLoading
 												isLoading ||
 												(secretOptionsEnabled && !secretSignatureSigned)
 											}
