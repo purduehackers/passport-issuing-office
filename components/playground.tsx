@@ -61,6 +61,8 @@ import {
 } from "@/lib/ceremony-data";
 import CeremonyDropdown from "@/lib/ceremony-dropdown";
 import { Switch } from "./ui/switch";
+import { useKonamiCode } from "@/hooks/use-konami-code";
+import { SecretModalDescription } from "./secret-modal-description";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -159,6 +161,13 @@ export default function Playground({
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
 	const [openDialog, setOpenDialog] = useState(false);
 	const [errors, setErrors] = useState<any>(null);
+	const [secretOptionsEnabled, setSecretOptionsEnabled] = useState(false);
+	const [secretSignatureSigned, setSecretSignatureSigned] = useState(false);
+
+	useKonamiCode(() => {
+		setSecretOptionsEnabled(true);
+		alert("Secret options enabled 👀✨"); // TODO: do this more elegantly
+	});
 
 	function updateGenerationStepState(
 		stepId: GenerationStepId,
@@ -223,6 +232,8 @@ export default function Playground({
 	async function onSubmit(data: z.infer<typeof FormSchema>) {
 		setIsLoading(true);
 		setLaunchConfetti(false);
+		setOpenDialog(false);
+		setSecretSignatureSigned(false);
 
 		let generatedPassportNumber = data.passportNumber || "0";
 
@@ -235,6 +246,13 @@ export default function Playground({
 		const apiFormData = new FormData();
 		for (const [key, val] of Object.entries(data)) {
 			if (key !== "image") {
+				if (key === "ceremonyTime" && val === "skipPassportCeremony") {
+					const noCeremonyVal = new Date(
+						"1970-01-01T00:00:00.000Z",
+					).toISOString();
+					apiFormData.append(key, noCeremonyVal);
+					continue;
+				}
 				apiFormData.append(key, String(val));
 			}
 		}
@@ -363,11 +381,12 @@ export default function Playground({
 																	variant="outline"
 																	className="w-full"
 																>
-																	{ceremonyTime == "noPassportCeremony" ? (
-																		<p>Select a Date</p>
-																	) : (
-																		<p>{getCeremonyTimeString(ceremonyTime)}</p>
-																	)}
+																	<p>
+																		{getCeremonyTimeString(
+																			ceremonyTime,
+																			secretOptionsEnabled,
+																		)}
+																	</p>
 																</Button>
 															</DropdownMenuTrigger>
 															<DropdownMenuContent className="w-full min-w-0">
@@ -399,7 +418,9 @@ export default function Playground({
 																	>
 																		Select a Date
 																	</DropdownMenuRadioItem>
-																	<CeremonyDropdown />
+																	<CeremonyDropdown
+																		secretOptionsEnabled={secretOptionsEnabled}
+																	/>
 																</DropdownMenuRadioGroup>
 															</DropdownMenuContent>
 														</DropdownMenu>
@@ -610,7 +631,12 @@ export default function Playground({
 							</Button>
 							<Dialog
 								open={openDialog}
-								onOpenChange={setOpenDialog}
+								onOpenChange={(open) => {
+									setOpenDialog(open);
+									if (!open) {
+										setSecretSignatureSigned(false);
+									}
+								}}
 							>
 								<DialogContent className="w-11/12 sm:w-auto overflow-y-auto">
 									<DialogHeader>
@@ -619,34 +645,45 @@ export default function Playground({
 										</DialogTitle>
 									</DialogHeader>
 									<DialogDescription className="flex flex-col gap-2 leading-relaxed text-base">
-										<p>
-											By clicking &quot;Register My Passport&quot;, you&apos;re
-											signing up to make your own passport at the passport
-											ceremony on {getCeremonyTimeStringDate(ceremonyTime)} at{" "}
-											{getCeremonyTimeStringTime(ceremonyTime)}. Please show up
-											on time so that you have enough time to make your
-											passport. If you&apos;re late, we will start without you &
-											you will need to re-register for the next one.
-										</p>
+										{form.getValues("ceremonyTime") ===
+										"skipPassportCeremony" ? (
+											<SecretModalDescription
+												setSecretSignatureSigned={setSecretSignatureSigned}
+											/>
+										) : (
+											<>
+												<p>
+													By clicking &quot;Register My Passport&quot;,
+													you&apos;re signing up to make your own passport at
+													the passport ceremony on{" "}
+													{getCeremonyTimeStringDate(ceremonyTime)} at{" "}
+													{getCeremonyTimeStringTime(ceremonyTime)}. Please show
+													up on time so that you have enough time to make your
+													passport. If you&apos;re late, we will start without
+													you & you will need to re-register for the next one.
+												</p>
 
-										<p>
-											We spend real money and human labor on each passport, so
-											please make sure you&apos;re there! If plans change & you
-											can&apos;t make it, please post in #lounge or DM Matthew
-											(@hewillyeah) and let us know so that we don&apos;t prep
-											the materials for your passport.
-										</p>
+												<p>
+													We spend real money and human labor on each passport,
+													so please make sure you&apos;re there! If plans change
+													& you can&apos;t make it, please post in #lounge or DM
+													Matthew (@hewillyeah) and let us know so that we
+													don&apos;t prep the materials for your passport.
+												</p>
+											</>
+										)}
 										<br />
-										<DialogClose asChild>
-											<Button
-												type="submit"
-												form="passportform"
-												className="amberButton"
-												disabled={isLoading}
-											>
-												{"Register My Passport"}
-											</Button>
-										</DialogClose>
+										<Button
+											type="submit"
+											form="passportform"
+											className="amberButton"
+											disabled={
+												isLoading ||
+												(secretOptionsEnabled && !secretSignatureSigned)
+											}
+										>
+											{"Register My Passport"}
+										</Button>
 									</DialogDescription>
 								</DialogContent>
 							</Dialog>

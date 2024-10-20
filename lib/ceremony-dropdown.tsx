@@ -8,7 +8,11 @@ import {
 	getFullCeremonyList,
 } from "./get-passport-data";
 
-export default function CeremonyDropdown() {
+export default function CeremonyDropdown({
+	secretOptionsEnabled,
+}: {
+	secretOptionsEnabled: boolean;
+}) {
 	const [ceremonyList, setCeremonyList] = useState<Ceremony[]>([]);
 	const [cLoading, setCLoading] = useState(true);
 
@@ -26,6 +30,7 @@ export default function CeremonyDropdown() {
 		};
 
 		fetchCeremonies();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	if (cLoading) {
@@ -58,6 +63,15 @@ export default function CeremonyDropdown() {
 							<PassportBadge ceremony={ceremony} />
 						</DropdownMenuRadioItem>
 					))}
+					{secretOptionsEnabled && (
+						<DropdownMenuRadioItem
+							key="secret-option"
+							value={`skipPassportCeremony`}
+							className="flex justify-between items-center"
+						>
+							✨ Secret option: skip ceremony
+						</DropdownMenuRadioItem>
+					)}
 				</>
 			) : (
 				<>
@@ -69,6 +83,15 @@ export default function CeremonyDropdown() {
 					>
 						No upcoming ceremonies
 					</DropdownMenuRadioItem>
+					{secretOptionsEnabled ? (
+						<DropdownMenuRadioItem
+							key="secret-option"
+							value={`skipPassportCeremony`}
+							className="flex justify-between items-center"
+						>
+							✨ Secret option: skip ceremony
+						</DropdownMenuRadioItem>
+					) : null}
 				</>
 			)}
 		</>
