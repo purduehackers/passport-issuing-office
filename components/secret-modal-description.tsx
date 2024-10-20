@@ -31,9 +31,7 @@ export function SecretModalDescription({
 			</p>
 			<p>3. You are a good person who does not wish for the world to burn.</p>
 			<p>Sign below:</p>
-			<div className="rounded">
-				<Signature onPointerUp={() => setSecretSignatureSigned(true)} />
-			</div>
+			<Signature onPointerUp={() => setSecretSignatureSigned(true)} />
 		</>
 	);
 }
