@@ -24,7 +24,7 @@ export function getCeremonyTimeString(
 		return "Select a Date";
 	}
 	if (secretOptionsEnabled && ceremony === "skipPassportCeremony") {
-		return "Secret option: skip ceremony";
+		return "✨ Secret option: skip ceremony";
 	}
 
 	let ceremonyDate = new Date(-1);

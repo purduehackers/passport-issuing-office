@@ -69,18 +69,10 @@ export default function CeremonyDropdown({
 							value={`skipPassportCeremony`}
 							className="flex justify-between items-center"
 						>
-							Secret option: skip ceremony
+							✨ Secret option: skip ceremony
 						</DropdownMenuRadioItem>
 					)}
 				</>
-			) : secretOptionsEnabled ? (
-				<DropdownMenuRadioItem
-					key="secret-option"
-					value={`skipPassportCeremony`}
-					className="flex justify-between items-center"
-				>
-					Secret option: skip ceremony
-				</DropdownMenuRadioItem>
 			) : (
 				<>
 					<DropdownMenuRadioItem
@@ -91,6 +83,15 @@ export default function CeremonyDropdown({
 					>
 						No upcoming ceremonies
 					</DropdownMenuRadioItem>
+					{secretOptionsEnabled ? (
+						<DropdownMenuRadioItem
+							key="secret-option"
+							value={`skipPassportCeremony`}
+							className="flex justify-between items-center"
+						>
+							✨ Secret option: skip ceremony
+						</DropdownMenuRadioItem>
+					) : null}
 				</>
 			)}
 		</>
