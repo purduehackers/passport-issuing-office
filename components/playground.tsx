@@ -166,7 +166,7 @@ export default function Playground({
 
 	useKonamiCode(() => {
 		setSecretOptionsEnabled(true);
-		// alert("enabled");
+		alert("Secret options enabled 👀✨"); // TODO: do this more elegantly
 	});
 
 	function updateGenerationStepState(
