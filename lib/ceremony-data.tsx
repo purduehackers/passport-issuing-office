@@ -18,7 +18,7 @@ export function getCeremonyTimestamp(ceremony: string) {
 
 export function getCeremonyTimeString(
 	ceremony: string | Date,
-	secretOptionsEnabled: boolean,
+	secretOptionsEnabled?: boolean,
 ) {
 	if (ceremony === "noPassportCeremony") {
 		return "Select a Date";
