@@ -36,7 +36,11 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Ceremony, Passport } from "@/types/types";
-import { getAllPassports, getCeremonyList, getFullCeremonyList } from "@/lib/get-passport-data";
+import {
+	getAllPassports,
+	getCeremonyList,
+	getFullCeremonyList,
+} from "@/lib/get-passport-data";
 import { useEffect, useState } from "react";
 import {
 	getCeremonyTimeDate,
@@ -45,7 +49,9 @@ import {
 	getCeremonyTimeStringFullDate,
 	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
-import CeremonyDropdown, { FullCeremonyDropdown } from "@/lib/ceremony-dropdown"
+import CeremonyDropdown, {
+	FullCeremonyDropdown,
+} from "@/lib/ceremony-dropdown";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
 	Form,
@@ -142,9 +148,8 @@ export const passportColumns: ColumnDef<Passport>[] = [
 		header: "Ceremony Time",
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}{" "}
-				-
-				{" "}{getCeremonyTimeStringTime(row.getValue("ceremony_time"))}
+				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))} -{" "}
+				{getCeremonyTimeStringTime(row.getValue("ceremony_time"))}
 			</div>
 		),
 	},
@@ -162,13 +167,12 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 					Ceremony Time
 					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
-			)
+			);
 		},
 		cell: ({ row }) => (
 			<div className="capitalize">
-				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))}{" "}
-				-
-				{" "}{getCeremonyTimeStringTime(row.getValue("ceremony_time"))}
+				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))} -{" "}
+				{getCeremonyTimeStringTime(row.getValue("ceremony_time"))}
 			</div>
 		),
 		enableSorting: true,
@@ -378,13 +382,13 @@ export default function AdminPage() {
 			try {
 				const result = await getAllPassports();
 				setPassportData(result ?? []);
-			} catch (e) { }
+			} catch (e) {}
 		};
 		const fetchCeremonyData = async () => {
 			try {
 				const result = await getFullCeremonyList();
 				setCeremonyData(result ?? []);
-			} catch (e) { }
+			} catch (e) {}
 		};
 
 		if (reloadDatabase) {
@@ -402,10 +406,11 @@ export default function AdminPage() {
 	const [passportColumnVisibility, setPassportColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [passportRowSelection, setPassportRowSelection] = React.useState({});
-	const [passportPagination, setPassportPagination] = React.useState<PaginationState>({
-		pageIndex: 0,
-		pageSize: 5,
-	})
+	const [passportPagination, setPassportPagination] =
+		React.useState<PaginationState>({
+			pageIndex: 0,
+			pageSize: 5,
+		});
 
 	const [ceremonySorting, setCeremonySorting] = React.useState<SortingState>(
 		[],
@@ -415,10 +420,11 @@ export default function AdminPage() {
 	const [ceremonyColumnVisibility, setCeremonyColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [ceremonyRowSelection, setCeremonyRowSelection] = React.useState({});
-	const [ceremonyPagination, setCeremonyPagination] = React.useState<PaginationState>({
-		pageIndex: 0,
-		pageSize: 5,
-	})
+	const [ceremonyPagination, setCeremonyPagination] =
+		React.useState<PaginationState>({
+			pageIndex: 0,
+			pageSize: 5,
+		});
 
 	const passportTable = useReactTable({
 		data: passportData,
@@ -495,7 +501,7 @@ export default function AdminPage() {
 													.getColumn("ceremony_time")
 													?.getFilterValue() ?? "") as string,
 											).toLocaleDateString("en-US", {
-												timeZone: "UTC",
+												timeZone: "America/Indianapolis",
 												day: "numeric",
 												month: "long",
 												year: "numeric",
@@ -506,7 +512,7 @@ export default function AdminPage() {
 													.getColumn("ceremony_time")
 													?.getFilterValue() ?? "") as string,
 											).toLocaleTimeString("en-US", {
-												timeZone: "UTC",
+												timeZone: "America/Indianapolis",
 												hour: "numeric",
 												minute: "numeric",
 												hour12: true,
@@ -530,7 +536,9 @@ export default function AdminPage() {
 											column?.setFilterValue("");
 											setCeremonyTime("noPassportCeremony");
 										} else {
-											column?.setFilterValue(getCeremonyTimeDate(e).toISOString());
+											column?.setFilterValue(
+												getCeremonyTimeDate(e).toISOString(),
+											);
 											setCeremonyTime(e);
 										}
 									}}
@@ -586,9 +594,9 @@ export default function AdminPage() {
 													{header.isPlaceholder
 														? null
 														: flexRender(
-															header.column.columnDef.header,
-															header.getContext(),
-														)}
+																header.column.columnDef.header,
+																header.getContext(),
+															)}
 												</TableHead>
 											);
 										})}
@@ -598,9 +606,7 @@ export default function AdminPage() {
 							<TableBody>
 								{passportTable.getRowModel().rows?.length ? (
 									passportTable.getRowModel().rows.map((row) => (
-										<TableRow
-											key={row.id}
-										>
+										<TableRow key={row.id}>
 											{row.getVisibleCells().map((cell) => (
 												<TableCell key={cell.id}>
 													{flexRender(
@@ -661,9 +667,9 @@ export default function AdminPage() {
 													{header.isPlaceholder
 														? null
 														: flexRender(
-															header.column.columnDef.header,
-															header.getContext(),
-														)}
+																header.column.columnDef.header,
+																header.getContext(),
+															)}
 												</TableHead>
 											);
 										})}
@@ -673,9 +679,7 @@ export default function AdminPage() {
 							<TableBody>
 								{ceremonyTable.getRowModel().rows?.length ? (
 									ceremonyTable.getRowModel().rows.map((row) => (
-										<TableRow
-											key={row.id}
-										>
+										<TableRow key={row.id}>
 											{row.getVisibleCells().map((cell) => (
 												<TableCell key={cell.id}>
 													{flexRender(
@@ -792,7 +796,9 @@ export default function AdminPage() {
 															<Input
 																type="time"
 																value={timeValue}
-																onChange={(e) => { field.onChange(handleTimeChange(e)) }}
+																onChange={(e) => {
+																	field.onChange(handleTimeChange(e));
+																}}
 																className={cn(
 																	"pl-3 pr-3 text-left font-normal",
 																	!field.value && "text-muted-foreground",
@@ -882,7 +888,7 @@ export default function AdminPage() {
 																			className="w-full"
 																		>
 																			{modifyCeremonyTime ==
-																				"noPassportCeremony" ? (
+																			"noPassportCeremony" ? (
 																				<p>Select a Date</p>
 																			) : (
 																				<p>
@@ -1006,7 +1012,7 @@ export default function AdminPage() {
 																			className="w-full"
 																		>
 																			{deleteCeremonyTime ==
-																				"noPassportCeremony" ? (
+																			"noPassportCeremony" ? (
 																				<p>Select a Date</p>
 																			) : (
 																				<p>

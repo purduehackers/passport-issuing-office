@@ -41,13 +41,13 @@ export function getCeremonyTimeString(
 	return (
 		<span>
 			{ceremonyDate.toLocaleDateString("en-US", {
-				timeZone: "UTC",
+				timeZone: "America/Indianapolis",
 				day: "numeric",
 				month: "numeric",
 			})}{" "}
 			-{" "}
 			{ceremonyDate.toLocaleTimeString("en-US", {
-				timeZone: "UTC",
+				timeZone: "America/Indianapolis",
 				hour: "numeric",
 				minute: "numeric",
 				hour12: true,
@@ -71,7 +71,7 @@ export function getCeremonyTimeStringDate(ceremony: string | Date) {
 	return (
 		<span>
 			{ceremonyDate.toLocaleDateString("en-US", {
-				timeZone: "UTC",
+				timeZone: "America/Indianapolis",
 				day: "numeric",
 				month: "numeric",
 			})}{" "}
@@ -94,7 +94,7 @@ export function getCeremonyTimeStringFullDate(ceremony: string | Date) {
 	return (
 		<span>
 			{ceremonyDate.toLocaleDateString("en-US", {
-				timeZone: "UTC",
+				timeZone: "America/Indianapolis",
 				day: "numeric",
 				month: "long",
 				year: "numeric",
@@ -119,7 +119,7 @@ export function getCeremonyTimeStringTime(ceremony: string | Date) {
 		<span>
 			{" "}
 			{ceremonyDate.toLocaleTimeString("en-US", {
-				timeZone: "UTC",
+				timeZone: "America/Indianapolis",
 				hour: "numeric",
 				minute: "numeric",
 				hour12: true,
