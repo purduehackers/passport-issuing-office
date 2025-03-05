@@ -156,7 +156,6 @@ export default function Playground({
 
 	const ceremonyTimeFormValue = formValues.ceremonyTime;
 	const sendToDb = useMemo(() => {
-		console.log("recalculating sendToDb", ceremonyTimeFormValue);
 		return (
 			typeof ceremonyTimeFormValue !== "undefined" &&
 			ceremonyTimeFormValue !== "" &&
