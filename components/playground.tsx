@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import Image from "next/image";
 import { createPassport, uploadImageToR2 } from "@/lib/actions";
@@ -67,55 +67,40 @@ const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
 const maxDate = new Date();
 
-const FormSchema = z
-	.object({
-		surname: z
-			.string()
-			.min(1, {
-				message: "Name must be at least 1 character.",
-			})
-			.trim(),
-		firstName: z
-			.string()
-			.min(1, {
-				message: "Name must be at least 1 character.",
-			})
-			.trim(),
-		placeOfOrigin: z.string().max(13),
-		dateOfBirth: z
-			.string()
-			.refine((val) => !isNaN(Date.parse(val)), {
-				message: "Invalid date format. Please enter a valid date.",
-			})
-			.refine(
-				(val) => {
-					const inputDate = new Date(val);
-					return inputDate < maxDate;
-				},
-				{
-					message: "Date of birth cannot be later than today.",
-				},
-			),
-		ceremonyTime: z
-			.string() // Don't refine. Causes issues.
-			.optional(),
-		image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
-		passportNumber: z.string().max(4).optional(),
-		sendToDb: z.boolean().default(false),
-	})
-	.refine(
-		(data) => {
-			// If sendToDb is true, ceremonyTime must be defined and not empty
-			if (data.sendToDb) {
-				return !!data.ceremonyTime;
-			}
-			return true; // If sendToDb is false, no need to validate ceremonyTime
-		},
-		{
-			path: ["ceremonyTime"], // This points to the field where the error will be displayed
-			message: "Please choose a ceremony date to register a passport",
-		},
-	);
+const FormSchema = z.object({
+	surname: z
+		.string()
+		.min(1, {
+			message: "Name must be at least 1 character.",
+		})
+		.trim(),
+	firstName: z
+		.string()
+		.min(1, {
+			message: "Name must be at least 1 character.",
+		})
+		.trim(),
+	placeOfOrigin: z.string().max(13),
+	dateOfBirth: z
+		.string()
+		.refine((val) => !isNaN(Date.parse(val)), {
+			message: "Invalid date format. Please enter a valid date.",
+		})
+		.refine(
+			(val) => {
+				const inputDate = new Date(val);
+				return inputDate < maxDate;
+			},
+			{
+				message: "Date of birth cannot be later than today.",
+			},
+		),
+	ceremonyTime: z
+		.string() // Don't refine. Causes issues.
+		.optional(),
+	image: z.custom<File>((val) => val instanceof File, "Please upload a file"),
+	passportNumber: z.string().max(4).optional(),
+});
 
 export default function Playground({
 	userId,
@@ -140,7 +125,6 @@ export default function Playground({
 			ceremonyTime: undefined,
 			image: undefined,
 			passportNumber: "0",
-			sendToDb: false,
 		},
 	});
 
@@ -162,6 +146,23 @@ export default function Playground({
 	const [errors, setErrors] = useState<any>(null);
 	const [secretOptionsEnabled, setSecretOptionsEnabled] = useState(false);
 	const [secretSignatureSigned, setSecretSignatureSigned] = useState(false);
+
+	const hasSubmittedRef = useRef(false);
+
+	const formValues = form.watch();
+	useEffect(() => {
+		hasSubmittedRef.current = false;
+	}, [formValues]);
+
+	const ceremonyTimeFormValue = formValues.ceremonyTime;
+	const sendToDb = useMemo(() => {
+		console.log("recalculating sendToDb", ceremonyTimeFormValue);
+		return (
+			typeof ceremonyTimeFormValue !== "undefined" &&
+			ceremonyTimeFormValue !== "" &&
+			ceremonyTimeFormValue !== "noPassportCeremony"
+		);
+	}, [ceremonyTimeFormValue]);
 
 	useKonamiCode(() => {
 		setSecretOptionsEnabled(true);
@@ -193,7 +194,6 @@ export default function Playground({
 		placeOfOrigin: string;
 		dateOfBirth: string;
 		image: File;
-		sendToDb: boolean;
 		ceremonyTime?: string | undefined;
 		passportNumber?: string | undefined;
 	}) {
@@ -205,7 +205,6 @@ export default function Playground({
 			ceremonyTime: formValues.ceremonyTime,
 			image: formValues.image,
 			passportNumber: formValues.passportNumber,
-			sendToDb: formValues.sendToDb,
 		};
 
 		const validationResult = FormSchema.safeParse(formData);
@@ -261,7 +260,7 @@ export default function Playground({
 			apiFormData.append("userId", userId);
 		}
 
-		if (data.sendToDb) {
+		if (sendToDb) {
 			const { passportNumber } = await createPassport(apiFormData);
 			generatedPassportNumber = String(passportNumber);
 			apiFormData.set("passportNumber", String(passportNumber));
@@ -280,7 +279,7 @@ export default function Playground({
 		});
 		updateGenerationStepState("generating_data_page", "completed");
 
-		if (data.sendToDb) {
+		if (sendToDb) {
 			const generateFullFrameReq = await fetch(`/api/generate-full-frame`, {
 				method: "POST",
 				body: apiFormData,
@@ -327,6 +326,8 @@ export default function Playground({
 		setIsDefaultImage(false);
 		resetGenerationSteps();
 		setLaunchConfetti(true);
+
+		hasSubmittedRef.current = true;
 	}
 
 	return (
@@ -479,123 +480,80 @@ export default function Playground({
 									page into a real-life passport! :D
 								</p>
 								<p className="text-sm text-muted-foreground">
-									If you intend to sign up for a passport-making ceremony, you{" "}
-									<span className="italic">must</span> click this switch and
-									select an available time.
+									If you want to sign up for a passport-making ceremony, you{" "}
+									<span className="italic">must</span> select an available time
+									below. If you don’t select a time, your passport won’t be
+									registered!
 								</p>
 								<p className="text-sm text-muted-foreground">
-									If there are no open times or the next ceremony is full, you
-									can’t register this passport yet. Check the Discord server for
-									information on when the next passport ceremony will run.
+									If you just want to play around without registering, that’s ok
+									too :) Also you can replace your data page anytime—just make
+									sure to re-register every time you want to send a new data
+									page over.
 								</p>
 							</div>
 							<FormField
 								control={form.control}
-								name="sendToDb"
+								name="ceremonyTime"
 								render={({ field }) => (
-									<FormItem className="space-y-3">
-										<FormLabel>Register this passport</FormLabel>
-										<FormControl>
-											<Switch
-												onCheckedChange={(e) => {
-													field.onChange(e);
-												}}
-												checked={field.value}
-												className=""
-											/>
-										</FormControl>
-										<FormMessage />
-										{renderError("sendToDb")}
-									</FormItem>
-								)}
-							/>
-							{form.getValues("sendToDb") ? (
-								<span>
-									<br />
-									<FormField
-										control={form.control}
-										name="ceremonyTime"
-										render={({ field }) => (
-											<span>
-												<FormItem>
-													<FormLabel>Ceremony Date</FormLabel>
-													<FormControl>
-														<DropdownMenu>
-															<DropdownMenuTrigger asChild>
-																<Button
-																	variant="outline"
-																	className="w-full"
-																>
-																	<p>
-																		{getCeremonyTimeString(
-																			ceremonyTime,
-																			secretOptionsEnabled,
-																		)}
-																	</p>
-																</Button>
-															</DropdownMenuTrigger>
-															<DropdownMenuContent className="w-full min-w-0">
-																<DropdownMenuLabel>
-																	Upcoming Ceremonies
-																</DropdownMenuLabel>
-																<DropdownMenuSeparator />
-																<DropdownMenuRadioGroup
-																	value={field.value}
-																	onValueChange={(e) => {
-																		field.onChange(getCeremonyTimestamp(e));
-																		setCeremonyTime(e);
-																		{
-																			if (e == "noPassportCeremony") {
-																				setGenerationSteps(
-																					GENERATION_STEPS.base,
-																				);
-																			} else {
-																				setGenerationSteps(
-																					GENERATION_STEPS.register,
-																				);
-																			}
-																		}
-																	}}
-																>
-																	<DropdownMenuRadioItem
-																		value="noPassportCeremony"
-																		className="flex justify-between items-center"
-																	>
-																		Select a Date
-																	</DropdownMenuRadioItem>
-																	<CeremonyDropdown
-																		secretOptionsEnabled={secretOptionsEnabled}
-																	/>
-																</DropdownMenuRadioGroup>
-															</DropdownMenuContent>
-														</DropdownMenu>
-													</FormControl>
-													<FormMessage />
-													{renderError("ceremonyTime")}
-												</FormItem>
-												<br />
-											</span>
-										)}
-									/>
-								</span>
-							) : (
-								<FormField
-									control={form.control}
-									name="ceremonyTime"
-									render={({ field }) => (
+									<span>
 										<FormItem>
+											<FormLabel>Ceremony Date</FormLabel>
 											<FormControl>
-												<Input
-													type="hidden"
-													{...field}
-												/>
+												<DropdownMenu>
+													<DropdownMenuTrigger asChild>
+														<Button
+															variant="outline"
+															className="w-full"
+														>
+															<p>
+																{getCeremonyTimeString(
+																	ceremonyTime,
+																	secretOptionsEnabled,
+																)}
+															</p>
+														</Button>
+													</DropdownMenuTrigger>
+													<DropdownMenuContent className="w-full min-w-0">
+														<DropdownMenuLabel>
+															Upcoming Ceremonies
+														</DropdownMenuLabel>
+														<DropdownMenuSeparator />
+														<DropdownMenuRadioGroup
+															value={field.value}
+															onValueChange={(e) => {
+																field.onChange(getCeremonyTimestamp(e));
+																setCeremonyTime(e);
+																{
+																	if (e == "noPassportCeremony") {
+																		setGenerationSteps(GENERATION_STEPS.base);
+																	} else {
+																		setGenerationSteps(
+																			GENERATION_STEPS.register,
+																		);
+																	}
+																}
+															}}
+														>
+															<DropdownMenuRadioItem
+																value="noPassportCeremony"
+																className="flex justify-between items-center"
+															>
+																Select a Date
+															</DropdownMenuRadioItem>
+															<CeremonyDropdown
+																secretOptionsEnabled={secretOptionsEnabled}
+															/>
+														</DropdownMenuRadioGroup>
+													</DropdownMenuContent>
+												</DropdownMenu>
 											</FormControl>
 											<FormMessage />
 											{renderError("ceremonyTime")}
 										</FormItem>
-									)}
-								/>
-							)}
+									</span>
+								)}
+							/>
 						</span>
 					) : (
 						<span>
@@ -644,7 +602,7 @@ export default function Playground({
 						</span>
 					)}
 
-					{form.getValues("sendToDb") ? (
+					{sendToDb ? (
 						<>
 							<Button
 								className="amberButton"
@@ -802,18 +760,18 @@ export default function Playground({
 							latestPassport={latestPassport}
 							firstName={form.getValues().firstName}
 							surname={form.getValues().surname}
-							sendToDb={form.getValues().sendToDb}
+							sendToDb={sendToDb}
 						/>
 					) : null}
 					{!isDefaultImage &&
 					!isLoading &&
-					!latestPassport &&
 					userId &&
-					!form.getValues().sendToDb ? (
+					!sendToDb &&
+					hasSubmittedRef.current ? (
 						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 							<p>
-								Nice Passport! Want to make it real? Register for an upcoming
-								passport ceremony at step 1.
+								Nice Passport! Want to make it real? Select the next available
+								passport ceremony time at the “Register” step!
 							</p>
 						</div>
 					) : null}
