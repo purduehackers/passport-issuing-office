@@ -284,14 +284,14 @@ export default function Playground({
 				method: "POST",
 				body: apiFormData,
 			});
-			// if (generateFullFrameReq.status !== 200) {
-			// 	alert(
-			// 		"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew",
-			// 	);
-			// 	setIsLoading(false);
-			// 	resetGenerationSteps();
-			// 	return;
-			// }
+			if (generateFullFrameReq.status !== 200) {
+				alert(
+					"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew",
+				);
+				setIsLoading(false);
+				resetGenerationSteps();
+				return;
+			}
 			updateGenerationStepState("generating_frame", "completed");
 
 			apiFormData.append("generatedImage", generatedImageFile);
@@ -302,13 +302,13 @@ export default function Playground({
 					generatedPassportNumber,
 				);
 			} catch (error) {
-				// alert(
-				// 	"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
-				// );
-				// console.log(error);
-				// setIsLoading(false);
-				// resetGenerationSteps();
-				// return;
+				alert(
+					"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
+				);
+				console.log(error);
+				setIsLoading(false);
+				resetGenerationSteps();
+				return;
 			}
 
 			updateGenerationStepState("uploading", "completed");
