@@ -47,7 +47,6 @@ import { ImageActions } from "./image-actions";
 import defaultImage from "@/public/passport/default.png";
 import {
 	Dialog,
-	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogHeader,
@@ -63,6 +62,7 @@ import CeremonyDropdown from "@/lib/ceremony-dropdown";
 import { Switch } from "./ui/switch";
 import { useKonamiCode } from "@/hooks/use-konami-code";
 import { SecretModalDescription } from "./secret-modal-description";
+import { StepLabel } from "./step-label";
 
 const ORIGINS = ["The woods", "The deep sea", "The tundra"];
 
@@ -284,14 +284,14 @@ export default function Playground({
 				method: "POST",
 				body: apiFormData,
 			});
-			if (generateFullFrameReq.status !== 200) {
-				alert(
-					"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew",
-				);
-				setIsLoading(false);
-				resetGenerationSteps();
-				return;
-			}
+			// if (generateFullFrameReq.status !== 200) {
+			// 	alert(
+			// 		"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew",
+			// 	);
+			// 	setIsLoading(false);
+			// 	resetGenerationSteps();
+			// 	return;
+			// }
 			updateGenerationStepState("generating_frame", "completed");
 
 			apiFormData.append("generatedImage", generatedImageFile);
@@ -302,13 +302,13 @@ export default function Playground({
 					generatedPassportNumber,
 				);
 			} catch (error) {
-				alert(
-					"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
-				);
-				console.log(error);
-				setIsLoading(false);
-				resetGenerationSteps();
-				return;
+				// alert(
+				// 	"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
+				// );
+				// console.log(error);
+				// setIsLoading(false);
+				// resetGenerationSteps();
+				// return;
 			}
 
 			updateGenerationStepState("uploading", "completed");
@@ -336,20 +336,164 @@ export default function Playground({
 					onSubmit={form.handleSubmit(onSubmit)}
 					className="w-full flex flex-col gap-y-6"
 				>
-					{userId ? <p>1. Register</p> : <></>}
+					{userId ? (
+						<StepLabel
+							stepNumber="1"
+							stepName="Generate"
+						/>
+					) : (
+						<></>
+					)}
+					<FormField
+						control={form.control}
+						name="firstName"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>First name</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="Wack"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+								{renderError("firstName")}
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="surname"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Last name</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="Hacker"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+								{renderError("surname")}
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="placeOfOrigin"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Place of origin</FormLabel>
+								<FormControl>
+									<RadioGroup
+										onValueChange={field.onChange}
+										defaultValue={field.value}
+									>
+										{ORIGINS.map((origin) => (
+											<FormItem
+												key={origin}
+												className="flex-row items-center gap-x-2"
+											>
+												<FormControl>
+													<RadioGroupItem value={origin} />
+												</FormControl>
+												<FormLabel className="font-normal">{origin}</FormLabel>
+											</FormItem>
+										))}
+										<FormItem className="flex-row items-center gap-x-2">
+											<FormControl>
+												<RadioGroupItem value="" />
+											</FormControl>
+											<FormLabel className="font-normal">
+												Write your own…
+											</FormLabel>
+										</FormItem>
+										{!ORIGINS.includes(form.getValues().placeOfOrigin) && (
+											<div className="pl-6">
+												<Input
+													{...field}
+													className="h-8"
+													autoFocus
+												/>
+											</div>
+										)}
+									</RadioGroup>
+								</FormControl>
+								<FormMessage />
+								{renderError("placeOfOrigin")}
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="dateOfBirth"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Date of birth</FormLabel>
+								<FormControl>
+									<Input
+										type="date"
+										{...field}
+									/>
+								</FormControl>
+								<FormMessage />
+								{renderError("dateOfBirth")}
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="image"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Portrait</FormLabel>
+								<FormControl>
+									<Crop
+										field={field}
+										croppedImageFile={croppedImageFile}
+										setCroppedImageFile={setCroppedImageFile}
+									/>
+								</FormControl>
+								<FormMessage />
+								{renderError("image")}
+							</FormItem>
+						)}
+					/>
+
+					{userId ? (
+						<StepLabel
+							stepNumber="2"
+							stepName="Register"
+							className="-mb-4"
+						/>
+					) : (
+						<></>
+					)}
 
 					{userId && guildMember !== undefined ? (
 						<span>
+							<div className="flex flex-col gap-2 mb-6">
+								<p className="text-sm text-muted-foreground">
+									Register for an hour-long passport ceremony to turn your data
+									page into a real-life passport! :D
+								</p>
+								<p className="text-sm text-muted-foreground">
+									If you intend to sign up for a passport-making ceremony, you{" "}
+									<span className="italic">must</span> click this switch and
+									select an available time.
+								</p>
+								<p className="text-sm text-muted-foreground">
+									If there are no open times or the next ceremony is full, you
+									can’t register this passport yet. Check the Discord server for
+									information on when the next passport ceremony will run.
+								</p>
+							</div>
 							<FormField
 								control={form.control}
 								name="sendToDb"
 								render={({ field }) => (
 									<FormItem className="space-y-3">
 										<FormLabel>Register this passport</FormLabel>
-										<FormDescription>
-											Register for an hour-long passport ceremony to turn your
-											data page into a real-life passport.
-										</FormDescription>
 										<FormControl>
 											<Switch
 												onCheckedChange={(e) => {
@@ -499,122 +643,6 @@ export default function Playground({
 						</span>
 					)}
 
-					{userId ? <p>2. Generate</p> : <></>}
-					<FormField
-						control={form.control}
-						name="firstName"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>First name</FormLabel>
-								<FormControl>
-									<Input
-										placeholder="Wack"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-								{renderError("firstName")}
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="surname"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Last name</FormLabel>
-								<FormControl>
-									<Input
-										placeholder="Hacker"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-								{renderError("surname")}
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="placeOfOrigin"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Place of origin</FormLabel>
-								<FormControl>
-									<RadioGroup
-										onValueChange={field.onChange}
-										defaultValue={field.value}
-									>
-										{ORIGINS.map((origin) => (
-											<FormItem
-												key={origin}
-												className="flex-row items-center gap-x-2"
-											>
-												<FormControl>
-													<RadioGroupItem value={origin} />
-												</FormControl>
-												<FormLabel className="font-normal">{origin}</FormLabel>
-											</FormItem>
-										))}
-										<FormItem className="flex-row items-center gap-x-2">
-											<FormControl>
-												<RadioGroupItem value="" />
-											</FormControl>
-											<FormLabel className="font-normal">
-												Write your own…
-											</FormLabel>
-										</FormItem>
-										{!ORIGINS.includes(form.getValues().placeOfOrigin) && (
-											<div className="pl-6">
-												<Input
-													{...field}
-													className="h-8"
-													autoFocus
-												/>
-											</div>
-										)}
-									</RadioGroup>
-								</FormControl>
-								<FormMessage />
-								{renderError("placeOfOrigin")}
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="dateOfBirth"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Date of birth</FormLabel>
-								<FormControl>
-									<Input
-										type="date"
-										{...field}
-									/>
-								</FormControl>
-								<FormMessage />
-								{renderError("dateOfBirth")}
-							</FormItem>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="image"
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>Portrait</FormLabel>
-								<FormControl>
-									<Crop
-										field={field}
-										croppedImageFile={croppedImageFile}
-										setCroppedImageFile={setCroppedImageFile}
-									/>
-								</FormControl>
-								<FormMessage />
-								{renderError("image")}
-							</FormItem>
-						)}
-					/>
 					{form.getValues("sendToDb") ? (
 						<>
 							<Button
@@ -655,12 +683,17 @@ export default function Playground({
 												<p>
 													By clicking &quot;Register My Passport&quot;,
 													you&apos;re signing up to make your own passport at
-													the passport ceremony on{" "}
+													Hack Night on{" "}
 													{getCeremonyTimeStringDate(ceremonyTime)} at{" "}
 													{getCeremonyTimeStringTime(ceremonyTime)}. Please show
 													up on time so that you have enough time to make your
 													passport. If you&apos;re late, we will start without
 													you & you will need to re-register for the next one.
+												</p>
+
+												<p>
+													This ceremony will last one hour. Please make sure you
+													are able to stay for the full hour!
 												</p>
 
 												<p>
