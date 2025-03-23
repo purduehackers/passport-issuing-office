@@ -65,7 +65,7 @@ export default async function Passport({ params }: Props) {
 		notFound();
 	}
 
-	let session = (await auth()) as MySession | null;
+	const session = (await auth()) as MySession | null;
 
 	const { latestPassportImageUrl, base64, metadata } =
 		await getOptimizedLatestPassportImage(latestPassport.id);
