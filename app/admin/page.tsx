@@ -1,22 +1,22 @@
 import { auth } from "@/auth";
 import AdminPage from "@/components/admin";
 import UserInfo from "@/components/user-info";
-import { MySession } from "@/types/types";
+import type { MySession } from "@/types/types";
 import { redirect } from "next/navigation";
 
-export default async function Admin({}) {
+export default async function Admin() {
 
 	// Although the session includes the JWT token type from `auth.ts`, when it gets here
 	// next-auth still thinks it doesn't exist, even though it does when I log it.
 	// As a temporary workaround, I've created my own Session type which contains
 	// what I'm actually getting from next-auth.
-	let session = (await auth()) as MySession | null;
+	const session = (await auth()) as MySession | null;
 
 	if (session?.role !== "admin") {
 		redirect("/");
 	}
 
-	if (session?.role == "admin") {
+	if (session?.role === "admin") {
 		return (
 			<main className="bg-background flex flex-col min-h-screen">
 				<UserInfo
@@ -47,11 +47,13 @@ export default async function Admin({}) {
 				</div>
 			</main>
 		);
-	} else {
+	}
+
+	return (
 		<main>
 			<div>
 				Unauthorized.
 			</div>
 		</main>
-	}
+	);
 }

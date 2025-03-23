@@ -14,13 +14,13 @@ export default async function Home(props: {
 }) {
 	const searchParams = await props.searchParams;
 
-	const generateNew = searchParams["new"];
+	const generateNew = searchParams.new;
 
 	// Although the session includes the JWT token type from `auth.ts`, when it gets here
 	// next-auth still thinks it doesn't exist, even though it does when I log it.
 	// As a temporary workaround, I've created my own Session type which contains
 	// what I'm actually getting from next-auth.
-	let session = (await auth()) as MySession | null;
+	const session = (await auth()) as MySession | null;
 	const userId = session?.token?.sub;
 	const latestPassport = session?.passport;
 	const guildMember = session?.guildMember;
