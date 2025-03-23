@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getLatestPassport } from "@/lib/get-latest-passport";
-import { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import {
 	Dialog,
@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { auth } from "@/auth";
-import { MySession } from "@/types/types";
+import type { MySession } from "@/types/types";
 import { PreviewPageLink } from "@/components/preview-page-link";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 
