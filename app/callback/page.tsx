@@ -1,5 +1,8 @@
-function Callback({ searchParams }: { searchParams: { id: string } }) {
-	return <p className="p-2">{searchParams.id}</p>;
+type SearchParams = Promise<{ id: string }>
+
+async function Callback({ searchParams }: { searchParams: SearchParams }) {
+	const { id } = await searchParams;
+	return <p className="p-2">{id}</p>;
 }
 
 export default Callback;
