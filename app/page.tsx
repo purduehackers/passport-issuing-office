@@ -4,7 +4,7 @@ import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
 import { getCeremonyTimeDate, getCeremonyTimeStringDate, getCeremonyTimeStringTime } from "@/lib/ceremony-data";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
-import { MySession, OptimizedLatestPassportImage } from "@/types/types";
+import type { MySession, OptimizedLatestPassportImage } from "@/types/types";
 import { redirect } from "next/navigation";
 
 export default async function Home({
