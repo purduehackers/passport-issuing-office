@@ -7,13 +7,11 @@ import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-pass
 import type { MySession, OptimizedLatestPassportImage } from "@/types/types";
 import { redirect } from "next/navigation";
 
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-
-export default async function Home(props: {
-	searchParams: SearchParams;
+export default async function Home({
+	searchParams,
+}: {
+	searchParams: { [key: string]: string | string[] | undefined };
 }) {
-	const searchParams = await props.searchParams;
-
 	const generateNew = searchParams["new"];
 
 	// Although the session includes the JWT token type from `auth.ts`, when it gets here
