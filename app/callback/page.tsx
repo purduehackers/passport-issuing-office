@@ -1,4 +1,4 @@
-type SearchParams = Promise<{ id: string }>;
+type SearchParams = Promise<{ id: string }>
 
 async function Callback({ searchParams }: { searchParams: SearchParams }) {
 	const { id } = await searchParams;
