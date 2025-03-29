@@ -17,15 +17,11 @@ import { MySession } from "@/types/types";
 import { PreviewPageLink } from "@/components/preview-page-link";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 
-type Params = Promise<{
-	id: string;
-}>;
-
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
-
 interface Props {
-	params: Params;
-	searchParams: SearchParams;
+	params: {
+		id: string;
+	};
+	searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export const viewport: Viewport = {
@@ -33,9 +29,7 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-	const { id } = await params;
-
-	const latestPassport = await getLatestPassport(id);
+	const latestPassport = await getLatestPassport(params.id);
 	if (!latestPassport) {
 		return {
 			title: "Passport Issuing Office",
@@ -58,9 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Passport({ params }: Props) {
-	const { id } = await params;
-
-	const latestPassport = await getLatestPassport(id);
+	const latestPassport = await getLatestPassport(params.id);
 	if (!latestPassport) {
 		notFound();
 	}
