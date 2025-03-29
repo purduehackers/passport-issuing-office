@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import UserInfo from "@/components/user-info";
-import type { MySession } from "@/types/types";
+import { MySession } from "@/types/types";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import { ImageActions } from "@/components/image-actions";
@@ -13,7 +13,7 @@ export default async function Activated() {
 	// next-auth still thinks it doesn't exist, even though it does when I log it.
 	// As a temporary workaround, I've created my own Session type which contains
 	// what I'm actually getting from next-auth.
-	const session = (await auth()) as MySession | null;
+	let session = (await auth()) as MySession | null;
 	const userId = session?.token.sub;
 	const latestPassport = session?.passport;
 
