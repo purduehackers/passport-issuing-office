@@ -23,9 +23,10 @@ export async function modifyCeremony(ceremonyData: Ceremony) {
 	try {
 		await prisma.ceremonies.update({
 			where: {
-				ceremony_time: ceremonyData.ceremony_time,
+				ceremony_time: ceremonyData.old_ceremony_time,
 			},
 			data: {
+				ceremony_time: ceremonyData.ceremony_time,
 				total_slots: ceremonyData.total_slots,
 				open_registration: ceremonyData.open_registration,
 			},

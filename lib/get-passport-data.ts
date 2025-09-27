@@ -76,7 +76,7 @@ export async function getFullCeremonyList() {
 		const ceremonies = await prisma.ceremonies.findMany({
 			where: {
 				ceremony_time: {
-					gte: new Date(),
+					gte: new Date(new Date().setMonth(new Date().getMonth() - 3)),
 				},
 			},
 		});

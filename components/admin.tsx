@@ -87,12 +87,33 @@ import { useToast } from "@/hooks/use-toast";
 export const passportColumns: ColumnDef<Passport>[] = [
 	{
 		accessorKey: "id",
-		header: "Passport ID",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Passport ID
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
 		cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
+		enableSorting: true,
 	},
 	{
 		accessorKey: "owner_id",
-		header: "Owner ID",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Owner ID
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
 		cell: ({ row }) => (
 			<div className="capitalize">{row.getValue("owner_id")}</div>
 		),
@@ -145,7 +166,17 @@ export const passportColumns: ColumnDef<Passport>[] = [
 	},
 	{
 		accessorKey: "ceremony_time",
-		header: "Ceremony Time",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Ceremony Time
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
 		cell: ({ row }) => (
 			<div className="capitalize">
 				{getCeremonyTimeStringFullDate(row.getValue("ceremony_time"))} -{" "}
@@ -162,7 +193,7 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 			return (
 				<Button
 					variant="ghost"
-					onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
 					Ceremony Time
 					<ArrowUpDown className="ml-2 h-4 w-4" />
@@ -198,7 +229,7 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 
 const CreateFormSchema = z.object({
 	newCeremonyTime: z.date({
-		required_error: "A date of birth is required.",
+		required_error: "A ceremony date is required.",
 	}),
 	maxRegistrations: z.string({
 		required_error: "You must set a maximum number of participants.",
@@ -210,7 +241,10 @@ const CreateFormSchema = z.object({
 
 const ModifyFormSchema = z.object({
 	modifyCeremonyTime: z.string({
-		required_error: "A date of birth is required.",
+		required_error: "A ceremony date is required.",
+	}),
+	ceremonyTimeMod: z.date({
+		required_error: "You must set a ceremony date and time.",
 	}),
 	maxRegistrationsMod: z.string({
 		required_error: "You must set a maximum number of participants.",
@@ -304,7 +338,7 @@ export default function AdminPage() {
 				description:
 					"Ceremony at " + new Date(data.newCeremonyTime) + " created!",
 			});
-			setReloadDatebase(true);
+			setReloadDatabase(true);
 			setIsLoading(false);
 		} else {
 			toast({
@@ -322,7 +356,8 @@ export default function AdminPage() {
 	async function onSubmitModify(data: z.infer<typeof ModifyFormSchema>) {
 		setIsLoading(true);
 		const success = await modifyCeremony({
-			ceremony_time: new Date(data.modifyCeremonyTime),
+			old_ceremony_time: new Date(data.modifyCeremonyTime),
+			ceremony_time: new Date(data.ceremonyTimeMod),
 			total_slots: parseInt(data.maxRegistrationsMod),
 			open_registration: data.openRegistrationMod,
 		});
@@ -333,7 +368,7 @@ export default function AdminPage() {
 				description:
 					"Ceremony at " + new Date(data.modifyCeremonyTime) + " modified!",
 			});
-			setReloadDatebase(true);
+			setReloadDatabase(true);
 			setIsLoading(false);
 		} else {
 			toast({
@@ -358,7 +393,7 @@ export default function AdminPage() {
 				description:
 					"Ceremony at " + new Date(data.deleteCeremonyTime) + " deleted!",
 			});
-			setReloadDatebase(true);
+			setReloadDatabase(true);
 			setIsLoading(false);
 		} else {
 			toast({
@@ -375,7 +410,7 @@ export default function AdminPage() {
 
 	const [passportData, setPassportData] = useState<Passport[]>([]);
 	const [ceremonyData, setCeremonyData] = useState<Ceremony[]>([]);
-	const [reloadDatabase, setReloadDatebase] = useState(true);
+	const [reloadDatabase, setReloadDatabase] = useState(true);
 
 	useEffect(() => {
 		const fetchPassportData = async () => {
@@ -394,7 +429,7 @@ export default function AdminPage() {
 		if (reloadDatabase) {
 			fetchPassportData();
 			fetchCeremonyData();
-			setReloadDatebase(false);
+			setReloadDatabase(false);
 		}
 	}, [reloadDatabase]);
 
@@ -924,6 +959,72 @@ export default function AdminPage() {
 															</FormControl>
 															<FormMessage />
 														</FormItem>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={modifyForm.control}
+												name="ceremonyTimeMod"
+												render={({ field }) => (
+													<FormItem className="flex flex-col">
+														<Popover>
+															<PopoverTrigger asChild>
+																<FormControl>
+																	<Button
+																		variant={"outline"}
+																		className={cn(
+																			"pl-3 text-left font-normal",
+																			!field.value && "text-muted-foreground",
+																		)}
+																	>
+																		{field.value ? (
+																			format(field.value, "PPP")
+																		) : (
+																			<span>Pick a date</span>
+																		)}
+																		<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+																	</Button>
+																</FormControl>
+															</PopoverTrigger>
+															<PopoverContent
+																className="w-auto p-0"
+																align="start"
+															>
+																<Calendar
+																	mode="single"
+																	selected={new Date(field.value)}
+																	onSelect={(e) => {
+																		field.onChange(handleDaySelect(e));
+																	}}
+																	disabled={(date) => date < new Date()}
+																	initialFocus
+																/>
+															</PopoverContent>
+														</Popover>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+											<FormField
+												control={modifyForm.control}
+												name="ceremonyTimeMod"
+												render={({ field }) => (
+													<FormItem>
+														<Label>
+															<p className="pb-1">Set the time </p>
+															<Input
+																type="time"
+																value={timeValue}
+																onChange={(e) => {
+																	field.onChange(handleTimeChange(e));
+																}}
+																className={cn(
+																	"pl-3 pr-3 text-left font-normal",
+																	!field.value && "text-muted-foreground",
+																)}
+															/>
+														</Label>
 														<FormMessage />
 													</FormItem>
 												)}

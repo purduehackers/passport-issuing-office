@@ -36,6 +36,7 @@ export interface Passport {
 }
 
 export interface Ceremony {
+	old_ceremony_time?: Date; // Specifically for modifying ceremonies
 	ceremony_time: Date;
 	total_slots: number;
 	open_registration: boolean;
