@@ -44,7 +44,7 @@ export interface Ceremony {
 
 export interface Users {
 	id: number,
-	discord_id: number,
+	discord_id: bigint,
 	role: string,
 }
 
