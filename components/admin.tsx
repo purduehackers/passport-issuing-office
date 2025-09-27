@@ -35,11 +35,12 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { Ceremony, Passport } from "@/types/types";
+import { Ceremony, Passport, Users } from "@/types/types";
 import {
 	getAllPassports,
 	getCeremonyList,
 	getFullCeremonyList,
+	getAllUsers,
 } from "@/lib/get-passport-data";
 import { useEffect, useState } from "react";
 import {
@@ -227,6 +228,66 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 	},
 ];
 
+export const userColumns: ColumnDef<Users>[] = [
+	{
+		accessorKey: "id",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Owner ID
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
+		cell: ({ row }) => (
+			<div className="capitalize">{row.getValue("id")}</div>
+		),
+		enableSorting: true,
+		enableHiding: false,
+	},
+	{
+		accessorKey: "discord_id",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Discord ID
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
+		cell: ({ row }) => (
+			<div className="capitalize">{row.getValue("discord_id")}</div>
+		),
+		enableSorting: true,
+		enableHiding: false,
+	},
+	{
+		accessorKey: "role",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Role
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
+		cell: ({ row }) => (
+			<div className="capitalize">{row.getValue("role")}</div>
+		),
+		enableSorting: true,
+		enableHiding: false,
+	},
+];
+
 const CreateFormSchema = z.object({
 	newCeremonyTime: z.date({
 		required_error: "A ceremony date is required.",
@@ -410,6 +471,7 @@ export default function AdminPage() {
 
 	const [passportData, setPassportData] = useState<Passport[]>([]);
 	const [ceremonyData, setCeremonyData] = useState<Ceremony[]>([]);
+	const [userData, setUserData] = useState<Users[]>([]);
 	const [reloadDatabase, setReloadDatabase] = useState(true);
 
 	useEffect(() => {
@@ -425,10 +487,17 @@ export default function AdminPage() {
 				setCeremonyData(result ?? []);
 			} catch (e) {}
 		};
+		const fetchUserData = async () => {
+			try {
+				const result = await getAllUsers();
+				setUserData(result ?? []);
+			} catch (e) {}
+		};
 
 		if (reloadDatabase) {
 			fetchPassportData();
 			fetchCeremonyData();
+			fetchUserData();
 			setReloadDatabase(false);
 		}
 	}, [reloadDatabase]);
@@ -444,7 +513,7 @@ export default function AdminPage() {
 	const [passportPagination, setPassportPagination] =
 		React.useState<PaginationState>({
 			pageIndex: 0,
-			pageSize: 5,
+			pageSize: 10,
 		});
 
 	const [ceremonySorting, setCeremonySorting] = React.useState<SortingState>(
@@ -458,7 +527,21 @@ export default function AdminPage() {
 	const [ceremonyPagination, setCeremonyPagination] =
 		React.useState<PaginationState>({
 			pageIndex: 0,
-			pageSize: 5,
+			pageSize: 10,
+		});
+
+	const [userSorting, setUserSorting] = React.useState<SortingState>(
+		[],
+	);
+	const [userColumnFilters, setUserColumnFilters] =
+		React.useState<ColumnFiltersState>([]);
+	const [userColumnVisibility, setUserColumnVisibility] =
+		React.useState<VisibilityState>({});
+	const [userRowSelection, setUserRowSelection] = React.useState({});
+	const [userPagination, setUserPagination] =
+		React.useState<PaginationState>({
+			pageIndex: 0,
+			pageSize: 10,
 		});
 
 	const passportTable = useReactTable({
@@ -503,6 +586,27 @@ export default function AdminPage() {
 		},
 	});
 
+	const userTable = useReactTable({
+		data: userData,
+		columns: userColumns,
+		onSortingChange: setUserSorting,
+		onColumnFiltersChange: setUserColumnFilters,
+		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		getSortedRowModel: getSortedRowModel(),
+		getFilteredRowModel: getFilteredRowModel(),
+		onColumnVisibilityChange: setUserColumnVisibility,
+		onRowSelectionChange: setUserRowSelection,
+		onPaginationChange: setUserPagination,
+		state: {
+			sorting: userSorting,
+			columnFilters: userColumnFilters,
+			columnVisibility: userColumnVisibility,
+			rowSelection: userRowSelection,
+			pagination: userPagination,
+		},
+	});
+
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
 	const [modifyCeremonyTime, setModifyCeremonyTime] =
 		useState("noPassportCeremony");
@@ -515,9 +619,10 @@ export default function AdminPage() {
 				defaultValue="passports"
 				className="w-full min-w-0"
 			>
-				<TabsList className="grid w-full grid-cols-2">
+				<TabsList className="grid w-full grid-cols-3">
 					<TabsTrigger value="passports">Passport List</TabsTrigger>
 					<TabsTrigger value="ceremonies">Upcoming Ceremony List</TabsTrigger>
+					<TabsTrigger value="users">User List</TabsTrigger>
 				</TabsList>
 				<TabsContent value="passports">
 					<div className="flex items-center py-4">
@@ -1164,6 +1269,79 @@ export default function AdminPage() {
 									</Form>
 								</CardContent>
 							</Card>
+						</div>
+					</div>
+				</TabsContent>
+				<TabsContent value="users">
+					<div className="rounded-md border">
+						<Table>
+							<TableHeader>
+								{userTable.getHeaderGroups().map((headerGroup) => (
+									<TableRow key={headerGroup.id}>
+										{headerGroup.headers.map((header) => {
+											return (
+												<TableHead key={header.id}>
+													{header.isPlaceholder
+														? null
+														: flexRender(
+																header.column.columnDef.header,
+																header.getContext(),
+															)}
+												</TableHead>
+											);
+										})}
+									</TableRow>
+								))}
+							</TableHeader>
+							<TableBody>
+								{userTable.getRowModel().rows?.length ? (
+									userTable.getRowModel().rows.map((row) => (
+										<TableRow key={row.id}>
+											{row.getVisibleCells().map((cell) => (
+												<TableCell key={cell.id}>
+													{flexRender(
+														cell.column.columnDef.cell,
+														cell.getContext(),
+													)}
+												</TableCell>
+											))}
+										</TableRow>
+									))
+								) : (
+									<TableRow>
+										<TableCell
+											colSpan={userColumns.length}
+											className="h-24 text-center"
+										>
+											No results.
+										</TableCell>
+									</TableRow>
+								)}
+							</TableBody>
+						</Table>
+					</div>
+					<div className="flex items-center justify-end space-x-2 py-4">
+						<div className="flex-1 text-sm text-muted-foreground">
+							Page {userTable.getState().pagination.pageIndex + 1} of{" "}
+							{userTable.getPageCount()}
+						</div>
+						<div className="space-x-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => userTable.previousPage()}
+								disabled={!userTable.getCanPreviousPage()}
+							>
+								Previous
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => userTable.nextPage()}
+								disabled={!userTable.getCanNextPage()}
+							>
+								Next
+							</Button>
 						</div>
 					</div>
 				</TabsContent>
