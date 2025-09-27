@@ -32,7 +32,6 @@ model user {
   id         Int        @id @default(autoincrement())
   discord_id BigInt     @unique
   role       role_enum
-  totp       String
   passport   passport[]
 }
 

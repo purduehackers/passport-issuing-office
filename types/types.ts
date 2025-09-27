@@ -46,7 +46,6 @@ export interface Users {
 	id: number,
 	discord_id: number,
 	role: string,
-	totp: string,
 }
 
 export type GenerationStatus = "pending" | "completed" | "failed";
