@@ -121,12 +121,23 @@ export const passportColumns: ColumnDef<Passport>[] = [
 	},
 	{
 		accessorKey: "activated",
-		header: "Activated",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Activation Status
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
 		cell: ({ row }) => (
 			<div className="capitalize">
 				{(row.getValue("activated") as string).toString()}
 			</div>
 		),
+		enableSorting: true,
 	},
 	{
 		accessorKey: "surname",
@@ -151,12 +162,23 @@ export const passportColumns: ColumnDef<Passport>[] = [
 	},
 	{
 		accessorKey: "date_of_issue",
-		header: "Date of Issue",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Date of Issue
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
 		cell: ({ row }) => (
 			<div className="capitalize">
 				{getCeremonyTimeStringFullDate(row.getValue("date_of_issue"))}
 			</div>
 		),
+		enableSorting: true,
 	},
 	{
 		accessorKey: "place_of_origin",
