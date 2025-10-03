@@ -1,4 +1,4 @@
-//import { getPlaiceholder } from "plaiceholder";
+import { getPlaiceholder } from "plaiceholder";
 
 export async function getOptimizedLatestPassportImage(
 	latestPassportId: number,
@@ -7,7 +7,6 @@ export async function getOptimizedLatestPassportImage(
 	const buffer = await fetch(latestPassportImageUrl).then(async (res) =>
 		Buffer.from(await res.arrayBuffer()),
 	);
-	//const { metadata, base64 } = await getPlaiceholder(buffer);
-	const { metadata, base64 } = { metadata: "", base64: "" };
+	const { metadata, base64 } = await getPlaiceholder(buffer);
 	return { latestPassportImageUrl, metadata, base64 };
 }
