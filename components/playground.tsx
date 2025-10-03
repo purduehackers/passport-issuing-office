@@ -256,7 +256,8 @@ export default function Playground({
 				apiFormData.append(key, String(val));
 			}
 		}
-		apiFormData.append("portrait", imageData);
+		apiFormData.append("portrait", croppedImageFile);
+		apiFormData.append("datapage", imageData);
 		if (userId) {
 			apiFormData.append("userId", userId);
 		}
@@ -273,6 +274,7 @@ export default function Playground({
 			method: "POST",
 			body: apiFormData,
 		});
+
 		const generatedImageBlob = await postRes.blob();
 		const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
 			type: "image/png",

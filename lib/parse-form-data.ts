@@ -31,6 +31,7 @@ export function parseFormData(formValues: FormData) {
 
 	const sendToDb = formValues.get("sendToDb") as unknown as boolean;
 	const portraitImage = formValues.get("portrait") as File;
+	const datapageImage = formValues.get("datapage") as File;
 	const userId = formValues.get("userId") as string | undefined;
 	const bigIntUserId = BigInt(`${userId || "0"}`);
 
@@ -44,6 +45,7 @@ export function parseFormData(formValues: FormData) {
 		trueCeremonyTime,
 		sendToDb,
 		portraitImage,
+		datapageImage,
 		userId: bigIntUserId,
 		stringUserId: userId,
 	};

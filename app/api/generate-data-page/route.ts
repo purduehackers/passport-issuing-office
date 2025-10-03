@@ -15,6 +15,7 @@ export async function POST(request: Request) {
 		trueCeremonyTime,
 		placeOfOrigin,
 		portraitImage,
+		datapageImage,
 		sendToDb,
 	} = parseFormData(formValues);
 
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
 			ceremonyTime: trueCeremonyTime,
 			placeOfOrigin,
 			portrait: portraitImage,
+			datapage: datapageImage,
 			sendToDb: sendToDb,
 		},
 		request.url,
