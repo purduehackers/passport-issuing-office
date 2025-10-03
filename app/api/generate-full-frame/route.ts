@@ -17,6 +17,7 @@ export async function POST(request: Request) {
 			trueCeremonyTime,
 			placeOfOrigin,
 			portraitImage,
+			datapageImage,
 			sendToDb,
 		} = parseFormData(formValues);
 
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
 				ceremonyTime: trueCeremonyTime,
 				placeOfOrigin,
 				portrait: portraitImage,
+				datapage: datapageImage,
 				sendToDb,
 			},
 			request.url,
@@ -39,11 +41,28 @@ export async function POST(request: Request) {
 			type: "image/png",
 		});
 
-		const data = new FormData();
-		data.append("fullFrameImage", fullFrameFile);
+		const datapageData = new FormData();
+		datapageData.append("fullFrameImage", fullFrameFile);
 
 		try {
-			await uploadImageToR2("full", data, String(trueID));
+			await uploadImageToR2("full", datapageData, String(trueID));
+		} catch (error) {
+			return Response.json(
+				{
+					ok: false,
+					error: `Error uploading full image to R2: ${error}`,
+				},
+				{
+					status: 500,
+				},
+			);
+		}
+
+		const portraitData = new FormData();
+		portraitData.append("portraitImage", portraitImage);
+
+		try {
+			await uploadImageToR2("portrait", portraitData, String(trueID));
 		} catch (error) {
 			return Response.json(
 				{

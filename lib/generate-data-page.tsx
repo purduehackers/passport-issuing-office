@@ -4,24 +4,24 @@ import { PassportGenData } from "@/types/types";
 import { ImageResponse } from "next/og";
 
 export async function fetchAssets(data: PassportGenData, url?: string) {
-	let portrait: File;
-	if (data.portrait) {
-		portrait = data.portrait;
+	let datapage: File;
+	if (data.datapage) {
+		datapage = data.datapage;
 	} else {
-		const defaultPortraitUrl = new URL(
+		const defaultDatapageUrl = new URL(
 			"/passport/no-image.png",
 			url ?? "https://passport-data-pages.vercel.app",
 		).href;
-		const defaultPortraitRes = await fetch(defaultPortraitUrl);
-		const defaultPortraitBlob = await defaultPortraitRes.blob();
-		portrait = new File([defaultPortraitBlob], "default_portrait.png", {
+		const defaultDatapageRes = await fetch(defaultDatapageUrl);
+		const defaultDatapageBlob = await defaultDatapageRes.blob();
+		datapage = new File([defaultDatapageBlob], "default_portrait.png", {
 			type: "image/png",
 		});
 	}
 
-	const portraitImageBuffer = Buffer.from(await portrait.arrayBuffer());
-	const portraitUrlB64 =
-		`data:${portrait.type};base64,` + portraitImageBuffer.toString("base64");
+	const datapageImageBuffer = Buffer.from(await datapage.arrayBuffer());
+	const datapageUrlB64 =
+		`data:${datapage.type};base64,` + datapageImageBuffer.toString("base64");
 
 	const interFontData = await fetch(
 		new URL("../assets/Inter-Regular.ttf", import.meta.url),
@@ -35,17 +35,10 @@ export async function fetchAssets(data: PassportGenData, url?: string) {
 		new URL("../assets/OCRB-Regular.ttf", import.meta.url),
 	).then((res) => res.arrayBuffer());
 
-	// const dataPageBgUrl = new URL(
-	//   "/passport/data-page-bg.png",
-	//   url ?? "https://passport-data-pages.vercel.app"
-	// ).href;
-
-	// ^ That randomly stopped working in production, no idea why.
-	// Temporary solution I guess?
 	const dataPageBgUrl = `${process.env.R2_PUBLIC_URL}/data-page-bg.png`;
 
 	return {
-		portraitUrlB64,
+		datapageUrlB64,
 		dataPageBgUrl,
 		interFontData,
 		interBoldFontData,
@@ -58,7 +51,7 @@ export async function generateDataPage(
 	url?: string,
 ): Promise<ImageResponse> {
 	const {
-		portraitUrlB64,
+		datapageUrlB64,
 		dataPageBgUrl,
 		interFontData,
 		interBoldFontData,
@@ -69,7 +62,7 @@ export async function generateDataPage(
 		(
 			<Passport
 				data={data}
-				portraitUrlB64={portraitUrlB64}
+				datapageUrlB64={datapageUrlB64}
 				dataPageBgUrl={dataPageBgUrl}
 			/>
 		),

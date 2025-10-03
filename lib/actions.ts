@@ -5,7 +5,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { parseFormData } from "./parse-form-data";
 
 export async function getPreSignedUrl(
-	which: "generated" | "full",
+	which: "generated" | "full" | "portrait",
 	passportNumber: string | undefined,
 ) {
 	const S3 = new S3Client({
@@ -17,10 +17,15 @@ export async function getPreSignedUrl(
 		},
 	});
 
-	const Key =
-		which === "generated"
-			? (passportNumber || "0") + ".png"
-			: `${passportNumber}-full.png` || "0-full.png";
+	let Key = "";
+
+	if (which === "generated") {
+		Key = (passportNumber || "0") + ".png";
+	} else if (which === "portrait") {
+		Key = (passportNumber || "0") + "-portrait.png";
+	} else {
+		Key = (passportNumber || "0") + "-full.png";
+	}
 
 	const preSignedUrl = await getSignedUrl(
 		S3,
@@ -37,13 +42,15 @@ export async function getPreSignedUrl(
 }
 
 export async function uploadImageToR2(
-	which: "generated" | "full",
+	which: "generated" | "full" | "portrait",
 	data: FormData,
 	passportNumber: string,
 ) {
 	let imageToUpload;
 	if (which === "generated") {
 		imageToUpload = data.get("generatedImage") as File;
+	} else if (which === "portrait") {
+		imageToUpload = data.get("portraitImage") as File;
 	} else {
 		imageToUpload = data.get("fullFrameImage") as File;
 	}

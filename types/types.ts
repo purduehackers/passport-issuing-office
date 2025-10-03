@@ -43,9 +43,9 @@ export interface Ceremony {
 }
 
 export interface Users {
-	id: number,
-	discord_id: bigint,
-	role: string,
+	id: number;
+	discord_id: bigint;
+	role: string;
 }
 
 export type GenerationStatus = "pending" | "completed" | "failed";
@@ -78,6 +78,7 @@ export interface PassportGenData {
 	placeOfOrigin: string;
 	sendToDb: boolean;
 	portrait?: File;
+	datapage?: File;
 }
 
 export type OptimizedLatestPassportImage = Awaited<
