@@ -12,6 +12,7 @@
 	"prisma": {
 		"schema": "prisma/schema.prisma"
 	},
+	"packageManager": "pnpm@10.15.0",
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.504.0",
 		"@aws-sdk/s3-request-presigner": "^3.504.0",
