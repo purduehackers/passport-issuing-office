@@ -38,7 +38,6 @@ import {
 import { Ceremony, Passport, Users } from "@/types/types";
 import {
 	getAllPassports,
-	getCeremonyList,
 	getFullCeremonyList,
 	getAllUsers,
 } from "@/lib/get-passport-data";
@@ -50,9 +49,7 @@ import {
 	getCeremonyTimeStringFullDate,
 	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
-import CeremonyDropdown, {
-	FullCeremonyDropdown,
-} from "@/lib/ceremony-dropdown";
+import { FullCeremonyDropdown } from "@/lib/ceremony-dropdown";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
 	Form,
@@ -264,9 +261,7 @@ export const userColumns: ColumnDef<Users>[] = [
 				</Button>
 			);
 		},
-		cell: ({ row }) => (
-			<div className="capitalize">{row.getValue("id")}</div>
-		),
+		cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
 		enableSorting: true,
 		enableHiding: false,
 	},
@@ -302,9 +297,7 @@ export const userColumns: ColumnDef<Users>[] = [
 				</Button>
 			);
 		},
-		cell: ({ row }) => (
-			<div className="capitalize">{row.getValue("role")}</div>
-		),
+		cell: ({ row }) => <div className="capitalize">{row.getValue("role")}</div>,
 		enableSorting: true,
 		enableHiding: false,
 	},
@@ -552,19 +545,16 @@ export default function AdminPage() {
 			pageSize: 10,
 		});
 
-	const [userSorting, setUserSorting] = React.useState<SortingState>(
-		[],
-	);
+	const [userSorting, setUserSorting] = React.useState<SortingState>([]);
 	const [userColumnFilters, setUserColumnFilters] =
 		React.useState<ColumnFiltersState>([]);
 	const [userColumnVisibility, setUserColumnVisibility] =
 		React.useState<VisibilityState>({});
 	const [userRowSelection, setUserRowSelection] = React.useState({});
-	const [userPagination, setUserPagination] =
-		React.useState<PaginationState>({
-			pageIndex: 0,
-			pageSize: 10,
-		});
+	const [userPagination, setUserPagination] = React.useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: 10,
+	});
 
 	const passportTable = useReactTable({
 		data: passportData,
