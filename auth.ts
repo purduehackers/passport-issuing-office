@@ -47,7 +47,7 @@ export const authConfig = {
 					.then(async (data) => {
 						if (data) {
 							guildMember = data.find(
-								(o: { id: string }) => o.id === process.env.DISCORD_GUILD ?? "",
+								(o: { id: string }) => o.id === process.env.DISCORD_GUILD,
 							);
 						}
 					});
