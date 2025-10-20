@@ -1,24 +1,13 @@
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
-import { User } from "next-auth";
+import { JWT, User } from "next-auth";
 
 export interface MySession {
 	user: User;
 	expires: string;
-	token: Token;
+	token: JWT;
 	passport: Passport | null;
 	guildMember: object | null | undefined;
 	role: string | undefined;
-}
-
-export interface Token {
-	name: string;
-	email: string;
-	picture: string;
-	sub: string;
-	accessToken: string;
-	iat: number;
-	exp: number;
-	jti: string;
 }
 
 export interface Passport {

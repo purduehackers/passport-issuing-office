@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import prisma from "@/lib/prisma";
-import { Passport, Token } from "./types/types";
+import { Passport } from "./types/types";
 
 export const authConfig = {
 	providers: [
@@ -19,17 +19,22 @@ export const authConfig = {
 	},
 	secret: process.env.AUTH_SECRET,
 	callbacks: {
-		async session({ session, token: jwtToken }) {
-			const token = jwtToken as Token;
+		async session({ session, token }) {
 			let passport: Passport | null = null;
-			const bigIntUserId = BigInt(`${token.sub}`);
+			// This broke! Why? Who knows!
+			//const bigIntUserId = BigInt(`${token.sub}`);
+
+			// Jank workaround to grab the Discord ID
+			const url = new URL(token.picture ?? "");
+			const discordUserId = BigInt(url.pathname.split("/")[2]);
+
 			let guildMember;
 			let role;
 
 			if (process.env.DISCORD_GUILD) {
 				await fetch("https://discordapp.com/api/users/@me/guilds", {
 					headers: {
-						"Authorization": "Bearer " + token.accessToken,
+						"Authorization": "Bearer " + token.access_token,
 						"Content-Type": "application/json",
 					},
 				})
@@ -49,7 +54,7 @@ export const authConfig = {
 
 			let user = await prisma.user.findFirst({
 				where: {
-					discord_id: bigIntUserId,
+					discord_id: discordUserId,
 				},
 			});
 			if (user) {
@@ -75,7 +80,7 @@ export const authConfig = {
 				if (guildMember) {
 					user = await prisma.user.create({
 						data: {
-							discord_id: bigIntUserId,
+							discord_id: discordUserId,
 							role: "hacker",
 						},
 					});
@@ -86,7 +91,10 @@ export const authConfig = {
 		},
 		async jwt({ token, account }) {
 			if (account) {
-				token.accessToken = account.access_token;
+				return {
+					...token,
+					access_token: account.access_token,
+				};
 			}
 			return token;
 		},
@@ -99,3 +107,10 @@ export const {
 	signOut,
 	auth,
 } = NextAuth(authConfig);
+
+// Extend JWT types
+declare module "next-auth" {
+	interface JWT {
+		access_token: string;
+	}
+}
