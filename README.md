@@ -28,6 +28,9 @@ S3_ACCESS_KEY_ID=
 S3_SECRET_ACCESS_KEY=
 R2_ENDPOINT=
 R2_PUBLIC_URL=
+AUTH_SECRET=
+POSTGRES_URL_NON_POOLING=
+POSTGRES_PRISMA_URL=
 ```
 
 Reach out to a Purdue Hackers organizer for more details.
