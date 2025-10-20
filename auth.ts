@@ -19,11 +19,6 @@ export const authConfig = {
 	},
 	secret: process.env.AUTH_SECRET,
 	callbacks: {
-		// next-auth thinks `token` doesn't exist. This is an issue on 5.0.0@beta.5.
-		// Later beta versions fixed this, but introduced new problems that broke auth entirely.
-		// I will check in periodically & fix this once new beta versions of next-auth
-		// are released.
-		//@ts-expect-error
 		async session({ session, token: jwtToken }) {
 			const token = jwtToken as Token;
 			let passport: Passport | null = null;
@@ -32,15 +27,12 @@ export const authConfig = {
 			let role;
 
 			if (process.env.DISCORD_GUILD) {
-				await fetch(
-					"https://discordapp.com/api/users/@me/guilds",
-					{
-						headers: {
-							"Authorization": "Bearer " + token.accessToken,
-							"Content-Type": "application/json",
-						},
+				await fetch("https://discordapp.com/api/users/@me/guilds", {
+					headers: {
+						"Authorization": "Bearer " + token.accessToken,
+						"Content-Type": "application/json",
 					},
-				)
+				})
 					.then((guilds) => {
 						return guilds.json();
 					})
