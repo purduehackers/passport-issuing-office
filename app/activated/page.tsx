@@ -14,7 +14,7 @@ export default async function Activated() {
 	// As a temporary workaround, I've created my own Session type which contains
 	// what I'm actually getting from next-auth.
 	const session = (await auth()) as MySession | null;
-  const userId = getDiscordId(session?.token);
+	const userId = getDiscordId(session?.token)?.toString();
 	const latestPassport = session?.passport;
 
 	if (!latestPassport) {
