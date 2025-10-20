@@ -1,7 +1,15 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
+import NextAuth, { JWT, NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import prisma from "@/lib/prisma";
 import { Passport } from "./types/types";
+
+export const getDiscordId = (token?: JWT): BigInt | null => {
+	if (!token) return null;
+
+	// Jank workaround to grab the Discord ID
+	const url = new URL(token.picture ?? "");
+	return BigInt(url.pathname.split("/")[2]);
+};
 
 export const authConfig = {
 	providers: [
@@ -21,12 +29,7 @@ export const authConfig = {
 	callbacks: {
 		async session({ session, token }) {
 			let passport: Passport | null = null;
-			// This broke! Why? Who knows!
-			//const bigIntUserId = BigInt(`${token.sub}`);
-
-			// Jank workaround to grab the Discord ID
-			const url = new URL(token.picture ?? "");
-			const discordUserId = BigInt(url.pathname.split("/")[2]);
+			const discordUserId = getDiscordId(token) as bigint;
 
 			let guildMember;
 			let role;
@@ -111,6 +114,7 @@ export const {
 // Extend JWT types
 declare module "next-auth" {
 	interface JWT {
-		access_token: string;
+		access_token?: string;
+		picture?: string | null;
 	}
 }

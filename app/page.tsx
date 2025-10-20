@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth, getDiscordId } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
@@ -21,7 +21,7 @@ export default async function Home(props: {
 	// As a temporary workaround, I've created my own Session type which contains
 	// what I'm actually getting from next-auth.
 	const session = (await auth()) as MySession | null;
-	const userId = session?.token?.sub;
+	const userId = getDiscordId(session?.token);
 	const latestPassport = session?.passport;
 	const guildMember = session?.guildMember;
 

@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth, getDiscordId } from "@/auth";
 import UserInfo from "@/components/user-info";
 import type { MySession } from "@/types/types";
 import { redirect } from "next/navigation";
@@ -14,7 +14,7 @@ export default async function Activated() {
 	// As a temporary workaround, I've created my own Session type which contains
 	// what I'm actually getting from next-auth.
 	const session = (await auth()) as MySession | null;
-	const userId = session?.token.sub;
+  const userId = getDiscordId(session?.token);
 	const latestPassport = session?.passport;
 
 	if (!latestPassport) {
