@@ -14,3 +14,20 @@ Learn more about passports: https://blog.purduehackers.com/posts/papers-please
 
 - [`purduehackers/id`](https://github.com/purduehackers/id)
 - [`purduehackers/door-opener`](https://github.com/purduehackers/door-opener)
+
+## Developing
+
+You need a file containing all the environment variables, like this:
+
+```
+DISCORD_CLIENT_SECRET=
+DISCORD_CLIENT_ID=
+DISCORD_GUILD=
+CLOUDFLARE_R2_TOKEN=
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
+R2_ENDPOINT=
+R2_PUBLIC_URL=
+```
+
+Reach out to a Purdue Hackers organizer for more details.
