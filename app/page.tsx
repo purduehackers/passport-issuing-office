@@ -2,7 +2,11 @@ import { auth, getDiscordId } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
-import { getCeremonyTimeDate, getCeremonyTimeStringDate, getCeremonyTimeStringTime } from "@/lib/ceremony-data";
+import {
+	getCeremonyTimeDate,
+	getCeremonyTimeStringDate,
+	getCeremonyTimeStringTime,
+} from "@/lib/ceremony-data";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import type { MySession, OptimizedLatestPassportImage } from "@/types/types";
 import { redirect } from "next/navigation";
@@ -52,22 +56,25 @@ export default async function Home(props: {
 						/>
 						Passport Data Pages
 					</h1>
-					{!latestPassport || latestPassport.activated || getCeremonyTimeDate(latestPassport.ceremony_time) < (new Date()) ? (
+					{!latestPassport ||
+					latestPassport.activated ||
+					getCeremonyTimeDate(latestPassport.ceremony_time) < new Date() ? (
 						<>
 							<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 								<p className="text-base">
 									Use this website to create your passport data page. 🛂
 								</p>
 								<p className="text-base">
-									The info can be whatever you want. Some people have put their real
-									info, others have put totally wacky stuff. Half of the passports
-									have a cat set as their portrait.
+									The info can be whatever you want. Some people have put their
+									real info, others have put totally wacky stuff. Half of the
+									passports have a cat set as their portrait.
 								</p>{" "}
 								{userId ? (
 									<p className="text-base">
-										When you&#39;re ready to register for a passport ceremony, check
-										the checkbox to be assigned a passport number. Your passport
-										will be printed & ready to assemble at the next ceremony.
+										When you&#39;re ready to register for a passport ceremony,
+										check the checkbox to be assigned a passport number. Your
+										passport will be printed & ready to assemble at the next
+										ceremony.
 									</p>
 								) : null}
 							</div>
@@ -75,10 +82,13 @@ export default async function Home(props: {
 					) : (
 						<div className="rounded-sm border-[3px] border-amber-400 flex flex-col justify-center w-full md:w-10/12 gap-2 p-3 sm:p-4 my-4 mx-auto break-inside-avoid shadow-amber-600 shadow-blocks-sm font-main">
 							<p>
-								You&apos;re registered for the passport ceremony happening on {getCeremonyTimeStringDate(latestPassport.ceremony_time)} at {getCeremonyTimeStringTime(latestPassport.ceremony_time)}!
+								You&apos;re registered for the passport ceremony happening on{" "}
+								{getCeremonyTimeStringDate(latestPassport.ceremony_time)} at{" "}
+								{getCeremonyTimeStringTime(latestPassport.ceremony_time)}!
 							</p>
 							<p>
-								If you need to cancel, please let us know in #lounge, or re-register for a different time.
+								If you need to cancel, please let us know in #lounge, or
+								re-register for a different time.
 							</p>
 						</div>
 					)}
