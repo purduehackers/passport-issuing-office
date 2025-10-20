@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export default async function Home(props: {
-	searchParams: SearchParams;
+	searchParams: Promise<SearchParams>;
 }) {
 	const searchParams = await props.searchParams;
 
