@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import AdminPage from "@/components/admin";
+import AdminPage from "@/components/admin/index";
 import UserInfo from "@/components/user-info";
 import type { MySession } from "@/types/types";
 import { redirect } from "next/navigation";
