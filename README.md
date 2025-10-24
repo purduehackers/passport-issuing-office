@@ -20,17 +20,15 @@ Learn more about passports: https://blog.purduehackers.com/posts/papers-please
 You need a file containing all the environment variables, like this:
 
 ```
-DISCORD_CLIENT_SECRET=
-DISCORD_CLIENT_ID=
+AUTH_SECRET=
 DISCORD_GUILD=
-CLOUDFLARE_R2_TOKEN=
+DISCORD_CLIENT_ID=
+DISCORD_CLIENT_SECRET=
+DATABASE_URL=
 S3_ACCESS_KEY_ID=
 S3_SECRET_ACCESS_KEY=
 R2_ENDPOINT=
 R2_PUBLIC_URL=
-AUTH_SECRET=
-POSTGRES_URL_NON_POOLING=
-POSTGRES_PRISMA_URL=
 ```
 
 Reach out to a Purdue Hackers organizer for more details.

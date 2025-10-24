@@ -1,5 +1,0 @@
-ignoredBuiltDependencies:
-  - aws-crt
-
-onlyBuiltDependencies:
-  - sharp
