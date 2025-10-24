@@ -82,9 +82,11 @@ export async function createPassport(formData: FormData) {
 		placeOfOrigin,
 		stringUserId,
 	} = parseFormData(formData);
-	const newPassport = await fetch(await getNewIdApi(), {
+	const newPassport = await fetch("https://id.purduehackers.com/api/new", {
 		method: "POST",
-		headers: await apiHeaders(),
+		headers: {
+			"Content-Type": "application/json",
+		},
 		body: JSON.stringify({
 			discord_id: stringUserId,
 			surname: trueSurname,
@@ -102,19 +104,19 @@ export async function createPassport(formData: FormData) {
 	};
 }
 
-export async function getNewIdApi() {
-	if (process.env.PRODUCTION) {
-		return `https://id.purduehackers.com/api/new`;
-	}
-	return `https://id-git-staging-purdue-hackers.vercel.app/api/new`;
-}
+// export async function getNewIdApi() {
+// 	if (process.env.PRODUCTION) {
+// 		return `https://id.purduehackers.com/api/new`;
+// 	}
+// 	return `https://id.purduehackers.com/api/new`;
+// }
 
-export async function apiHeaders() {
-	if (process.env.PRODUCTION) {
-		return {} as HeadersInit;
-	}
-	return {
-		"x-vercel-protection-bypass": process.env
-			.ID_STAGING_AUTHENTICATION as string,
-	} as HeadersInit;
-}
+// export async function apiHeaders() {
+// 	if (process.env.PRODUCTION) {
+// 		return {} as HeadersInit;
+// 	}
+// 	return {
+// 		"x-vercel-protection-bypass": process.env
+// 			.ID_STAGING_AUTHENTICATION as string,
+// 	} as HeadersInit;
+// }
