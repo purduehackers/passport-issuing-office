@@ -115,13 +115,7 @@ export async function getPassport(id: string): Promise<Passport | null> {
 export async function getAllPassports() {
 	try {
 		const passportList = await prisma.passport.findMany();
-
-		return passportList.map((passport) => ({
-			...passport,
-			date_of_issue: passport.date_of_issue.toISOString(),
-			date_of_birth: passport.date_of_birth.toISOString(),
-			ceremony_time: passport.ceremony_time.toISOString(),
-		}));
+		return passportList;
 	} catch (_err) {
 		console.log(_err);
 		return undefined;

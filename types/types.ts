@@ -16,9 +16,9 @@ export interface Passport {
 	version: number;
 	surname: string;
 	name: string;
-	date_of_birth: string;
-	date_of_issue: string;
-	ceremony_time: string;
+	date_of_birth: Date;
+	date_of_issue: Date;
+	ceremony_time: Date;
 	place_of_origin: string;
 	secret: string;
 	activated: boolean;
