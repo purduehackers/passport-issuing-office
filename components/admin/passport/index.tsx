@@ -23,7 +23,7 @@ const IndividualPassportAdmin = ({ id }: { id: string }) => {
 		})();
 	}, [id]);
 
-	const supportsWebNFC = "NDEF" in window;
+	const supportsWebNFC = "NDEFReader" in window;
 
 	const writeNFCTag = useCallback(async () => {
 		try {
