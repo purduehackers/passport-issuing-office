@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { Ceremony, Users } from "@/types/types";
+import { Ceremony, Passport, Users } from "@/types/types";
 
 export async function getCeremonyPassports(ceremony: Ceremony) {
 	try {
@@ -95,16 +95,27 @@ export async function getFullCeremonyList() {
 	}
 }
 
+export async function getPassport(id: string): Promise<Passport | null> {
+	try {
+		const passport = await prisma.passport.findFirst({
+			where: {
+				id: Number(id),
+			},
+		});
+
+		if (passport) {
+			return passport;
+		}
+	} catch (_err) {
+		return null;
+	}
+  return null;
+}
+
 export async function getAllPassports() {
 	try {
 		const passportList = await prisma.passport.findMany();
-
-		return passportList.map((passport) => ({
-			...passport,
-			date_of_issue: passport.date_of_issue.toISOString(),
-			date_of_birth: passport.date_of_birth.toISOString(),
-			ceremony_time: passport.ceremony_time.toISOString(),
-		}));
+		return passportList;
 	} catch (_err) {
 		console.log(_err);
 		return undefined;

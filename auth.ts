@@ -71,13 +71,7 @@ export const authConfig = {
 					},
 				});
 				if (latestPassport) {
-					const updatedPassport = {
-						...latestPassport,
-						date_of_birth: latestPassport.date_of_birth.toISOString(),
-						date_of_issue: latestPassport.date_of_issue.toISOString(),
-						ceremony_time: latestPassport.ceremony_time.toISOString(),
-					};
-					passport = updatedPassport;
+					passport = latestPassport;
 				}
 			} else {
 				if (guildMember) {
