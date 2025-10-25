@@ -71,7 +71,6 @@ const IndividualPassportAdmin = ({ id }: { id: string }) => {
 					<Button
 						className="rounded-[0.25rem] border-2 border-slate-800 bg-amber-500 px-4 py-2 text-sm font-bold text-slate-800 shadow-[4px_4px_0_0_#0f172a] transition-colors hover:bg-amber-500/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white focus-visible:ring-offset-0"
 						onClick={writeNFCTag}
-						disabled={!supportsWebNFC}
 					>
 						Activate
 					</Button>
