@@ -36,7 +36,7 @@ const IndividualPassportAdmin = ({ id }: { id: string }) => {
 					},
 					{
 						recordType: "text",
-						data: passport!.id,
+						data: String(passport!.id),
 					},
 					{
 						recordType: "text",
