@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import IndividualPassportAdmin from "@/components/admin/passport";
 import UserInfo from "@/components/user-info";
-import { getLatestPassport } from "@/lib/get-latest-passport";
+import { getPassport } from "@/lib/get-passport-data";
 import type { MySession } from "@/types/types";
 import { notFound, redirect } from "next/navigation";
 
@@ -16,7 +16,7 @@ interface Props {
 export default async function IndividualPassportAdminPage({ params }: Props) {
 	const { id } = await params;
 
-	const latestPassport = await getLatestPassport(id);
+	const latestPassport = await getPassport(id);
 	if (!latestPassport) {
 		notFound();
 	}

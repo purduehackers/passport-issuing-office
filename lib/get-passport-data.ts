@@ -95,6 +95,22 @@ export async function getFullCeremonyList() {
 	}
 }
 
+export async function getPassport(id: string) {
+	try {
+		const passport = await prisma.passport.findFirst({
+			where: {
+				id: Number(id),
+			},
+		});
+
+		if (passport) {
+			return passport;
+		}
+	} catch (_err) {
+		return undefined;
+	}
+}
+
 export async function getAllPassports() {
 	try {
 		const passportList = await prisma.passport.findMany();
