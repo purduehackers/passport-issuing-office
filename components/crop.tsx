@@ -12,7 +12,8 @@ import ReactCrop, {
 import { generateNewCroppedImageFile } from "@/lib/generate-new-cropped-image-file";
 import "react-image-crop/dist/ReactCrop.css";
 import { CROP_ASPECT } from "@/config";
-import { Dialog, DialogContent } from "./ui/dialog";
+import { Dialog, DialogTitle, DialogContent } from "./ui/dialog";
+import { VisuallyHidden } from "./ui/visuallyhidden";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
@@ -78,6 +79,7 @@ export function Crop({
 			/>
 			<Dialog open={dialogOpen}>
 				<DialogContent>
+				  <VisuallyHidden><DialogTitle>Crop Image</DialogTitle></VisuallyHidden>
 					<div className="flex flex-col gap-4">
 						<div className="flex justify-center">
 							<ReactCrop
