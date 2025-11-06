@@ -273,6 +273,9 @@ export default function Playground({
 				method: "POST",
 				body: apiFormData,
 			});
+			if (!postRes.ok) {
+				throw new Error(`Data page form upload failed`);
+			}
 		} catch (error) {
 			alert(
 				"An error occurred while uploading the form data. Try again? If this issue persists, please ask on our Discord for help!",
