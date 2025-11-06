@@ -44,7 +44,7 @@ export function Crop({
 	croppedImageFile: File | undefined;
 	setCroppedImageFile: Dispatch<SetStateAction<File | undefined>>;
 }) {
-	const [imgSrc, setImgSrc] = useState("");
+	const [imgSrc, setImgSrc] = useState<string | undefined>(undefined);
 	const imgRef = useRef<HTMLImageElement>(null);
 	const [crop, setCrop] = useState<Crop>();
 	const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
