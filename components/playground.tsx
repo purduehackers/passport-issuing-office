@@ -267,10 +267,21 @@ export default function Playground({
 			updateGenerationStepState("assigning_passport_number", "completed");
 		}
 
-		const postRes: ImageResponse = await fetch(`/api/generate-data-page`, {
-			method: "POST",
-			body: apiFormData,
-		});
+		let postRes: ImageResponse;
+		try {
+			postRes = await fetch(`/api/generate-data-page`, {
+				method: "POST",
+				body: apiFormData,
+			});
+		} catch (error) {
+			alert(
+				"An error occurred while uploading the form data. Try again? If this issue persists, please ask on our Discord for help!",
+			);
+			console.log(error);
+			setIsLoading(false);
+			resetGenerationSteps();
+			return;
+		}
 
 		const generatedImageBlob = await postRes.blob();
 		const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
