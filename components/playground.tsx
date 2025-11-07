@@ -258,6 +258,7 @@ export default function Playground({
 		if (userId) {
 			apiFormData.append("userId", userId);
 		}
+		apiFormData.append("sendToDb", sendToDb.toString());
 
 		if (sendToDb) {
 			const { passportNumber } = await createPassport(apiFormData);
