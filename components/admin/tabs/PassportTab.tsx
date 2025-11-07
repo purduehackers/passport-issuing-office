@@ -43,6 +43,7 @@ import {
 	getCeremonyTimeStringTime,
 	getCeremonyTimeStringFullDate,
 } from "@/lib/ceremony-data";
+import Link from "next/link";
 
 export const passportColumns: ColumnDef<Passport>[] = [
 	{
@@ -58,7 +59,14 @@ export const passportColumns: ColumnDef<Passport>[] = [
 				</Button>
 			);
 		},
-		cell: ({ row }) => <div className="capitalize">{row.getValue("id")}</div>,
+		cell: ({ row }) => {
+			const passportId: string = row.getValue("id");
+			return (
+				<div className="capitalize">
+					<Link href={`/admin/passport/${passportId}`}>{passportId}</Link>
+				</div>
+			);
+		},
 		enableSorting: true,
 	},
 	{
