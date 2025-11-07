@@ -5,6 +5,7 @@ import {
 	ColumnDef,
 	ColumnFiltersState,
 	PaginationState,
+	Row,
 	SortingState,
 	VisibilityState,
 	flexRender,
@@ -173,6 +174,12 @@ export const passportColumns: ColumnDef<Passport>[] = [
 				{getCeremonyTimeStringTime(row.getValue("ceremony_time"))}
 			</div>
 		),
+		filterFn: (row: Row<Passport>, columnId: string, filterValue: Date) => {
+			return (
+				(row.getValue("ceremony_time") as Date).getTime() ===
+				filterValue.getTime()
+			);
+		},
 	},
 ];
 
@@ -222,7 +229,7 @@ const PassportTab = ({ reloadKey }: { reloadKey: number }) => {
 		},
 	});
 
-	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
+	const [ceremonyTime, setCeremonyTime] = useState<Date | null>(null);
 
 	return (
 		<>
@@ -233,7 +240,7 @@ const PassportTab = ({ reloadKey }: { reloadKey: number }) => {
 							variant="outline"
 							className="max-w-sm"
 						>
-							{ceremonyTime == "noPassportCeremony" ? (
+							{!ceremonyTime ? (
 								<p>Select a date to filter by</p>
 							) : (
 								<p>
@@ -274,11 +281,11 @@ const PassportTab = ({ reloadKey }: { reloadKey: number }) => {
 							onValueChange={(e) => {
 								const column = passportTable.getColumn("ceremony_time");
 								if (e.valueOf() == "noPassportCeremony") {
-									column?.setFilterValue("");
-									setCeremonyTime("noPassportCeremony");
+									column?.setFilterValue(null);
+									setCeremonyTime(null);
 								} else {
-									column?.setFilterValue(getCeremonyTimeDate(e).toISOString());
-									setCeremonyTime(e);
+									column?.setFilterValue(getCeremonyTimeDate(e));
+									setCeremonyTime(getCeremonyTimeDate(e));
 								}
 							}}
 						>
