@@ -31,9 +31,13 @@ export default async function Home(props: {
 
 	let optimizedLatestPassportImage: OptimizedLatestPassportImage | null = null;
 	if (latestPassport) {
-		optimizedLatestPassportImage = await getOptimizedLatestPassportImage(
-			latestPassport.id,
-		);
+		try {
+			optimizedLatestPassportImage = await getOptimizedLatestPassportImage(
+				latestPassport.id,
+			);
+		} catch (error) {
+			console.error("Failed to fetch passport image. It may not exist on R2.");
+		}
 	}
 
 	if (latestPassport?.activated && generateNew !== "true") {
