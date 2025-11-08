@@ -79,7 +79,9 @@ export function Crop({
 			/>
 			<Dialog open={dialogOpen}>
 				<DialogContent>
-				  <VisuallyHidden><DialogTitle>Crop Image</DialogTitle></VisuallyHidden>
+					<VisuallyHidden>
+						<DialogTitle>Crop Image</DialogTitle>
+					</VisuallyHidden>
 					<div className="flex flex-col gap-4">
 						<div className="flex justify-center">
 							<ReactCrop
@@ -88,6 +90,7 @@ export function Crop({
 								onComplete={(c) => setCompletedCrop(c)}
 								aspect={CROP_ASPECT}
 								ruleOfThirds
+								className="max-h-[80dvh]"
 							>
 								<img
 									ref={imgRef}
