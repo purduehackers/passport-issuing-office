@@ -14,7 +14,7 @@ export async function uploadToPresignedUrl(
 			body: file,
 		});
 		if (retryResponse.status !== 200) {
-			throw new Error(`Error uploading to presigned URL`);
+			throw new Error(`Error uploading to presigned URL. Status code: ${retryResponse.status}`);
 		}
 	}
 }
