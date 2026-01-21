@@ -31,8 +31,7 @@ import { Crop } from "./crop";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import Image from "next/image";
-import { createPassport, getPreSignedUrl } from "@/lib/actions";
-import { uploadToPresignedUrl } from "@/lib/upload-to-presigned-url";
+import { createPassport, uploadImageToR2 } from "@/lib/actions";
 import {
 	GenerationStatus,
 	GenerationStep,
@@ -309,12 +308,13 @@ export default function Playground({
 			}
 			updateGenerationStepState("generating_frame", "completed");
 
+			apiFormData.append("generatedImage", generatedImageFile);
 			try {
-				const presignedUrl = await getPreSignedUrl(
+				await uploadImageToR2(
 					"generated",
+					apiFormData,
 					generatedPassportNumber,
 				);
-				await uploadToPresignedUrl(presignedUrl, generatedImageFile);
 			} catch (error) {
 				alert(
 					"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
