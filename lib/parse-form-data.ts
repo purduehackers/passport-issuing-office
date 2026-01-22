@@ -30,8 +30,8 @@ export function parseFormData(formValues: FormData) {
 		: "THE WOODS";
 
 	const sendToDb = formValues.get("sendToDb") as unknown as boolean;
-	const portraitImage = formValues.get("portrait") as File;
-	const datapageImage = formValues.get("datapage") as File;
+	const portraitImageObjectKey = formValues.get("portraitKey") as string;
+	const datapageImageObjectKey = formValues.get("datapageKey") as string;
 	const userId = formValues.get("userId") as string | undefined;
 	const bigIntUserId = BigInt(`${userId || "0"}`);
 
@@ -44,8 +44,8 @@ export function parseFormData(formValues: FormData) {
 		placeOfOrigin,
 		trueCeremonyTime,
 		sendToDb,
-		portraitImage,
-		datapageImage,
+		portraitImageObjectKey,
+		datapageImageObjectKey,
 		userId: bigIntUserId,
 		stringUserId: userId,
 	};

@@ -31,7 +31,8 @@ import { Crop } from "./crop";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageResponse } from "next/og";
 import Image from "next/image";
-import { createPassport, uploadImageToR2 } from "@/lib/actions";
+import { createPassport } from "@/lib/actions";
+import { clientR2Upload } from "@/lib/r2";
 import {
 	GenerationStatus,
 	GenerationStep,
@@ -253,8 +254,21 @@ export default function Playground({
 				apiFormData.append(key, String(val));
 			}
 		}
-		apiFormData.append("portrait", croppedImageFile);
-		apiFormData.append("datapage", imageData);
+		try {
+			const [portraitKey, datapageKey] = await Promise.all([
+				clientR2Upload(croppedImageFile),
+				clientR2Upload(imageData),
+			]);
+			apiFormData.append("portraitKey", portraitKey);
+			apiFormData.append("datapageKey", datapageKey);
+		} catch (error) {
+			alert(
+				"Failed to upload images. If this issue persists, please ask on our Discord for help!",
+			);
+			setIsLoading(false);
+			resetGenerationSteps();
+			throw error;
+		}
 		if (userId) {
 			apiFormData.append("userId", userId);
 		}
@@ -268,29 +282,42 @@ export default function Playground({
 			updateGenerationStepState("assigning_passport_number", "completed");
 		}
 
-		let postRes: ImageResponse;
+		let postRes: { imageUrl: string; imageKey: string };
 		try {
-			postRes = await fetch(`/api/generate-data-page`, {
+			const response = await fetch(`/api/generate-data-page`, {
 				method: "POST",
 				body: apiFormData,
 			});
-			if (!postRes.ok) {
+			if (!response.ok) {
 				throw new Error(`Data page form upload failed`);
 			}
+			postRes = await response.json();
 		} catch (error) {
 			alert(
 				"An error occurred while uploading the form data. Try again? If this issue persists, please ask on our Discord for help!",
 			);
-			console.log(error);
 			setIsLoading(false);
 			resetGenerationSteps();
-			return;
+			throw error;
 		}
-
-		const generatedImageBlob = await postRes.blob();
-		const generatedImageFile = new File([generatedImageBlob], "data_page.png", {
-			type: "image/png",
-		});
+		const generatedDataPageImageUrl = postRes.imageUrl;
+		const generatedDataPageObjectKey = postRes.imageKey;
+		let generatedImageBlob: Blob;
+		try {
+			const response = await fetch(generatedDataPageImageUrl);
+			if (!response.ok)
+				throw new Error("Failed to download data page image from R2", {
+					cause: response,
+				});
+			generatedImageBlob = await response.blob();
+		} catch (error) {
+			alert(
+				"An error occurred while downloading the generated image. If this issue persists, please ask on our Discord for help!",
+			);
+			setIsLoading(false);
+			resetGenerationSteps();
+			throw error; // re-throw error for logging & Sentry
+		}
 		updateGenerationStepState("generating_data_page", "completed");
 
 		if (sendToDb) {
@@ -307,23 +334,6 @@ export default function Playground({
 				return;
 			}
 			updateGenerationStepState("generating_frame", "completed");
-
-			apiFormData.append("generatedImage", generatedImageFile);
-			try {
-				await uploadImageToR2(
-					"generated",
-					apiFormData,
-					generatedPassportNumber,
-				);
-			} catch (error) {
-				alert(
-					"Wtf for some reason your data page failed to upload. Try again? If this issue persists DM Matthew",
-				);
-				console.log(error);
-				setIsLoading(false);
-				resetGenerationSteps();
-				return;
-			}
 
 			updateGenerationStepState("uploading", "completed");
 		}
