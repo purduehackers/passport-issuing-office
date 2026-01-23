@@ -1,6 +1,7 @@
-import { uploadImageToR2 } from "@/lib/actions";
 import { generateFullFrame } from "@/lib/generate-data-page";
 import { parseFormData } from "@/lib/parse-form-data";
+import { serverR2Download, serverR2Upload } from "@/lib/r2";
+import { captureException } from "@sentry/nextjs";
 
 export const runtime = "edge";
 
@@ -16,10 +17,41 @@ export async function POST(request: Request) {
 			trueDateOfIssue,
 			trueCeremonyTime,
 			placeOfOrigin,
-			portraitImage,
-			datapageImage,
+			portraitImageObjectKey,
+			datapageImageObjectKey,
 			sendToDb,
 		} = parseFormData(formValues);
+
+		for (const key of [portraitImageObjectKey, datapageImageObjectKey]) {
+			// Return 403 forbidden if the client tries to use an image other than a temporary one.
+			// We assume any temporary one belongs to the requesting user because the chance of them correctly
+			// guessing a random UUID is negligible.
+			if (!key.startsWith("temp/")) {
+				return Response.json(
+					{
+						ok: false,
+						error:
+							"Invalid object image key. Only temporary images can be used.",
+						details: { key },
+					},
+					{ status: 403 },
+				);
+			}
+		}
+		let portraitImage: File;
+		let datapageImage: File;
+		try {
+			[portraitImage, datapageImage] = await Promise.all([
+				serverR2Download(portraitImageObjectKey, "portrait.png"),
+				serverR2Download(datapageImageObjectKey, "datapage.png"),
+			]);
+		} catch (error) {
+			captureException(error);
+			return Response.json(
+				{ ok: false, error: "Failed to download image(s) from R2" },
+				{ status: 500 },
+			);
+		}
 
 		const fullFrameRes = await generateFullFrame(
 			{
@@ -41,37 +73,25 @@ export async function POST(request: Request) {
 			type: "image/png",
 		});
 
-		const datapageData = new FormData();
-		datapageData.append("fullFrameImage", fullFrameFile);
-
 		try {
-			await uploadImageToR2("full", datapageData, String(trueID));
+			// FIXME: Here, it would be cleaner and faster to move the temporary
+			// datapage and portrait objects that are already in R2 to their
+			// final locations. However, the S3 client uses the FileReader API
+			// for either the Copy or Delete operation, which isn't supported in
+			// the Vercel Edge Runtime. So if we ever switch away from the Edge
+			// runtime, re-implement
+			// https://github.com/purduehackers/passport-issuing-office/commit/c41bca707fc3e36dfd67656c5ac5c97920e8f872
+			await Promise.all([
+				serverR2Upload(`${trueID}-full.png`, fullFrameFile),
+				serverR2Upload(`${trueID}-portrait.png`, portraitImage),
+				serverR2Upload(`${trueID}.png`, datapageImage),
+			]);
 		} catch (error) {
+			console.log(error);
+			captureException(error);
 			return Response.json(
-				{
-					ok: false,
-					error: `Error uploading full image to R2: ${error}`,
-				},
-				{
-					status: 500,
-				},
-			);
-		}
-
-		const portraitData = new FormData();
-		portraitData.append("portraitImage", portraitImage);
-
-		try {
-			await uploadImageToR2("portrait", portraitData, String(trueID));
-		} catch (error) {
-			return Response.json(
-				{
-					ok: false,
-					error: `Error uploading full image to R2: ${error}`,
-				},
-				{
-					status: 500,
-				},
+				{ ok: false, error: `Error uploading image(s) to R2` },
+				{ status: 500 },
 			);
 		}
 	}
