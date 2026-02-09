@@ -1,5 +1,6 @@
 import { auth, getDiscordId } from "@/auth";
 import { SignInButton } from "@/components/auth-buttons";
+import { Button } from "@/components/ui/button";
 import Playground from "@/components/playground";
 import UserInfo from "@/components/user-info";
 import {
@@ -72,7 +73,19 @@ export default async function Home(props: {
 									The info can be whatever you want. Some people have put their
 									real info, others have put totally wacky stuff. Half of the
 									passports have a cat set as their portrait.
-								</p>{" "}
+                </p>
+                <a
+									href="https://blog.purduehackers.com/posts/papers-please"
+									target="_blank"
+									className="mx-auto shadow-blocks-tiny shadow-amber-600 border-2 border-black bg-amber-500 hover:bg-amber-400 w-fit"
+								>
+									<Button
+										className="bg-amber-500 hover:bg-amber-400 text-black hover:text-black shadow-none border-none rounded-none h-6"
+										variant="auth"
+									>
+										Learn more about passports
+									</Button>
+								</a>{" "}
 								{userId ? (
 									<p className="text-base">
 										When you&#39;re ready to register for a passport ceremony,
