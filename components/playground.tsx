@@ -321,6 +321,7 @@ export default function Playground({
 		updateGenerationStepState("generating_data_page", "completed");
 
 		if (sendToDb) {
+			apiFormData.set("datapageKey", generatedDataPageObjectKey);
 			const generateFullFrameReq = await fetch(`/api/generate-full-frame`, {
 				method: "POST",
 				body: apiFormData,
