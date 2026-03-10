@@ -10,11 +10,11 @@ import { FooterSection } from "./footer";
 export function Passport({
 	data,
 	dataPageBgUrl,
-	datapageUrlB64,
+	stylizedPortraitUrlB64,
 }: {
 	data: PassportGenData;
 	dataPageBgUrl: string;
-	datapageUrlB64: string;
+	stylizedPortraitUrlB64: string;
 }) {
 	return (
 		<div
@@ -45,7 +45,7 @@ export function Passport({
 					gap: 19 * IMAGE_GENERATION_SCALE_FACTOR,
 				}}
 			>
-				<ImageSection imageUrl={datapageUrlB64} />
+				<ImageSection imageUrl={stylizedPortraitUrlB64} />
 				<DataSection
 					version={data.sendToDb ? CURRENT_PASSPORT_VERSION : 0}
 					passportNumber={data.passportNumber}

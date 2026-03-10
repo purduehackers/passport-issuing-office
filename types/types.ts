@@ -1,3 +1,4 @@
+import { GENERATION_STEPS } from "@/config";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import { JWT, User } from "next-auth";
 
@@ -40,21 +41,19 @@ export interface Users {
 export type GenerationStatus = "pending" | "completed" | "failed";
 export type GenerationStepId =
 	| "processing_portrait"
-	| "generating_data_page"
-	| "generating_frame"
 	| "assigning_passport_number"
-	| "uploading"
+	| "generating_passport"
+	| "downloading_passport"
 	| "summoning_elves";
 
 export interface GenerationStep {
 	id: GenerationStepId;
 	name: string;
 	status: GenerationStatus;
-}
-
-export interface GenerationSteps {
-	base: GenerationStep[];
-	register: GenerationStep[];
+	/**
+	 * If true, the step is only visible when registering for a ceremony.
+	 */
+	registerOnly?: true;
 }
 
 export interface PassportGenData {
@@ -67,7 +66,7 @@ export interface PassportGenData {
 	placeOfOrigin: string;
 	sendToDb: boolean;
 	portrait?: File;
-	datapage?: File;
+	stylizedPortrait?: File;
 }
 
 export type OptimizedLatestPassportImage = Awaited<

@@ -140,7 +140,7 @@ export default function Playground({
 	const [launchConfetti, setLaunchConfetti] = useState(false); // TODO: do this better
 	const [croppedImageFile, setCroppedImageFile] = useState<File>();
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
-		GENERATION_STEPS.base,
+		GENERATION_STEPS.filter((step) => !step.registerOnly),
 	);
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
 	const [openDialog, setOpenDialog] = useState(false);
@@ -238,7 +238,7 @@ export default function Playground({
 		if (!croppedImageFile) {
 			return; // TODO: handle error
 		}
-		const imageData = await processImage(croppedImageFile);
+		const stylizedPortrait = await processImage(croppedImageFile);
 		updateGenerationStepState("processing_portrait", "completed");
 
 		const apiFormData = new FormData();
@@ -255,12 +255,12 @@ export default function Playground({
 			}
 		}
 		try {
-			const [portraitKey, datapageKey] = await Promise.all([
+			const [portraitKey, stylizedPortraitKey] = await Promise.all([
 				clientR2Upload(croppedImageFile),
-				clientR2Upload(imageData),
+				clientR2Upload(stylizedPortrait),
 			]);
 			apiFormData.append("portraitKey", portraitKey);
-			apiFormData.append("datapageKey", datapageKey);
+			apiFormData.append("stylizedPortraitKey", stylizedPortraitKey);
 		} catch (error) {
 			alert(
 				"Failed to upload images. If this issue persists, please ask on our Discord for help!",
@@ -284,27 +284,27 @@ export default function Playground({
 
 		let postRes: { imageUrl: string; imageKey: string };
 		try {
-			const response = await fetch(`/api/generate-data-page`, {
+			const response = await fetch(`/api/generate-passport`, {
 				method: "POST",
 				body: apiFormData,
 			});
 			if (!response.ok) {
-				throw new Error(`Data page form upload failed`);
+				throw new Error(`Passport generation failed`);
 			}
 			postRes = await response.json();
 		} catch (error) {
 			alert(
-				"An error occurred while uploading the form data. Try again? If this issue persists, please ask on our Discord for help!",
+				"An error occurred while generating your passport. Try again? If this issue persists, please ask on our Discord for help!",
 			);
 			setIsLoading(false);
 			resetGenerationSteps();
 			throw error;
 		}
-		const generatedDataPageImageUrl = postRes.imageUrl;
-		const generatedDataPageObjectKey = postRes.imageKey;
+		updateGenerationStepState("generating_passport", "completed");
+		const generatedDataPageObjectUrl = postRes.imageUrl;
 		let generatedImageBlob: Blob;
 		try {
-			const response = await fetch(generatedDataPageImageUrl);
+			const response = await fetch(generatedDataPageObjectUrl);
 			if (!response.ok)
 				throw new Error("Failed to download data page image from R2", {
 					cause: response,
@@ -318,35 +318,15 @@ export default function Playground({
 			resetGenerationSteps();
 			throw error; // re-throw error for logging & Sentry
 		}
-		updateGenerationStepState("generating_data_page", "completed");
-
-		if (sendToDb) {
-			apiFormData.set("datapageKey", generatedDataPageObjectKey);
-			const generateFullFrameReq = await fetch(`/api/generate-full-frame`, {
-				method: "POST",
-				body: apiFormData,
-			});
-			if (generateFullFrameReq.status !== 200) {
-				alert(
-					"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew",
-				);
-				setIsLoading(false);
-				resetGenerationSteps();
-				return;
-			}
-			updateGenerationStepState("generating_frame", "completed");
-
-			updateGenerationStepState("uploading", "completed");
-		}
-
-		const generatedImageBuffer = Buffer.from(
-			await generatedImageBlob.arrayBuffer(),
-		);
-		const generatedImageUrl =
-			"data:image/png;base64," + generatedImageBuffer.toString("base64");
+		updateGenerationStepState("downloading_passport", "completed");
 		updateGenerationStepState("summoning_elves", "completed");
 
-		setGeneratedImageUrl(generatedImageUrl);
+		// We have to create a blob URL because the object URL itself is on a different domain.
+		// The <a> "download" attribute only works for same-origin URLs or local URLs like blobs.
+		setGeneratedImageUrl((prev) => {
+			URL.revokeObjectURL(prev);
+			return URL.createObjectURL(generatedImageBlob);
+		});
 		setIsLoading(false);
 		setIsDefaultImage(false);
 		resetGenerationSteps();
@@ -551,11 +531,13 @@ export default function Playground({
 																setCeremonyTime(e);
 																{
 																	if (e == "noPassportCeremony") {
-																		setGenerationSteps(GENERATION_STEPS.base);
-																	} else {
 																		setGenerationSteps(
-																			GENERATION_STEPS.register,
+																			GENERATION_STEPS.filter(
+																				(step) => !step.registerOnly,
+																			),
 																		);
+																	} else {
+																		setGenerationSteps([...GENERATION_STEPS]);
 																	}
 																}
 															}}
