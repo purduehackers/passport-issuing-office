@@ -4,25 +4,6 @@ import { PassportGenData } from "@/types/types";
 import { ImageResponse } from "next/og";
 
 export async function fetchAssets(data: PassportGenData, url?: string) {
-	let stylizedPortrait: File;
-	if (data.stylizedPortrait) {
-		stylizedPortrait = data.stylizedPortrait;
-	} else {
-		const defaultStylizedPortraitUrl = new URL(
-			"/passport/no-image.png",
-			url ?? "https://passport-data-pages.vercel.app",
-		).href;
-		const defaultStylizedPortraitRes = await fetch(defaultStylizedPortraitUrl);
-		const defaultStylizedPortraitBlob = await defaultStylizedPortraitRes.blob();
-		stylizedPortrait = new File([defaultStylizedPortraitBlob], "default_portrait.png", {
-			type: "image/png",
-		});
-	}
-
-	const stylizedPortraitImageBuffer = Buffer.from(await stylizedPortrait.arrayBuffer());
-	const stylizedPortraitUrlB64 =
-		`data:${stylizedPortrait.type};base64,` + stylizedPortraitImageBuffer.toString("base64");
-
 	const interFontData = await fetch(
 		new URL("../assets/Inter-Regular.ttf", import.meta.url),
 	).then((res) => res.arrayBuffer());
@@ -38,7 +19,6 @@ export async function fetchAssets(data: PassportGenData, url?: string) {
 	const dataPageBgUrl = `${process.env.R2_PUBLIC_URL}/data-page-bg.png`;
 
 	return {
-		stylizedPortraitUrlB64,
 		dataPageBgUrl,
 		interFontData,
 		interBoldFontData,
@@ -49,20 +29,18 @@ export async function fetchAssets(data: PassportGenData, url?: string) {
 export async function generateDataPage(
 	data: PassportGenData,
 	url?: string,
-): Promise<ImageResponse> {
+): Promise<File> {
 	const {
-		stylizedPortraitUrlB64,
 		dataPageBgUrl,
 		interFontData,
 		interBoldFontData,
 		OCRBProFontData,
 	} = await fetchAssets(data, url);
 
-	return new ImageResponse(
+	const imgResp = new ImageResponse(
 		(
 			<Passport
 				data={data}
-				stylizedPortraitUrlB64={stylizedPortraitUrlB64}
 				dataPageBgUrl={dataPageBgUrl}
 			/>
 		),
@@ -91,20 +69,17 @@ export async function generateDataPage(
 			],
 		},
 	);
+	const dataPageBlob = await imgResp.blob();
+	return new File([dataPageBlob], "data_page.png", {
+		type: "image/png",
+	});
 }
 
-export async function generateFullFrame(data: PassportGenData, url?: string) {
-	const { interFontData, interBoldFontData, OCRBProFontData } =
-		await fetchAssets(data, url);
-
-	const dataPage = Buffer.from(
-		await (await generateDataPage(data, url)).arrayBuffer(),
-	);
-	const dataPageUrlB64 = "data:image/png;base64," + dataPage.toString("base64");
-
+export async function generateFullFrame(dataPage: Blob) {
+	const dataPageUrlB64 = "data:image/png;base64," + Buffer.from(await dataPage.arrayBuffer()).toString("base64");
 	const secondHalfUrl = `${process.env.R2_PUBLIC_URL}/page-1-second-half.png`;
 
-	return new ImageResponse(
+	const imgResp = new ImageResponse(
 		(
 			<div
 				style={{
@@ -145,26 +120,10 @@ export async function generateFullFrame(data: PassportGenData, url?: string) {
 		{
 			width: 794.66 * IMAGE_GENERATION_SCALE_FACTOR,
 			height: 1028.49 * IMAGE_GENERATION_SCALE_FACTOR,
-			fonts: [
-				{
-					name: "Inter",
-					data: interFontData,
-					style: "normal",
-					weight: 500,
-				},
-				{
-					name: "Inter Bold",
-					data: interBoldFontData,
-					style: "normal",
-					weight: 800,
-				},
-				{
-					name: "OCR B",
-					data: OCRBProFontData,
-					style: "normal",
-					weight: 500,
-				},
-			],
 		},
 	);
+	const fullFrameBlob = await imgResp.blob();
+	return new File([fullFrameBlob], "full_frame.png", {
+		type: "image/png",
+	});
 }

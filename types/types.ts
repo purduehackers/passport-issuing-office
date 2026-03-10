@@ -65,8 +65,7 @@ export interface PassportGenData {
 	ceremonyTime: Date;
 	placeOfOrigin: string;
 	sendToDb: boolean;
-	portrait?: File;
-	stylizedPortrait?: File;
+	stylizedPortraitUrl: string;
 }
 
 export type OptimizedLatestPassportImage = Awaited<

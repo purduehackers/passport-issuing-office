@@ -47,21 +47,6 @@ export async function POST(request: Request) {
 		}
 	}
 
-	let portraitImage: File;
-	let stylizedPortraitImage: File;
-	try {
-		[portraitImage, stylizedPortraitImage] = await Promise.all([
-			serverR2Download(portraitKey, "portrait.png"),
-			serverR2Download(stylizedPortraitKey, "stylized-portrait.png"),
-		]);
-	} catch (error) {
-		captureException(error);
-		return Response.json(
-			{ ok: false, error: "Failed to download image(s) from R2" },
-			{ status: 500 },
-		);
-	}
-
 	const genData = {
 		passportNumber,
 		surname,
@@ -70,16 +55,14 @@ export async function POST(request: Request) {
 		dateOfIssue,
 		ceremonyTime,
 		placeOfOrigin,
-		portrait: portraitImage,
-		stylizedPortrait: stylizedPortraitImage,
+		stylizedPortraitUrl: `${process.env.R2_PUBLIC_URL}/${stylizedPortraitKey}`,
 		sendToDb,
 	};
 
-	const img = await generateDataPage(genData, request.url);
-	const dataPageBlob = await img.blob();
+	const dataPageFile = await generateDataPage(genData, request.url);
 	const dataPageKey = `temp/${crypto.randomUUID()}.png`;
 	try {
-		await serverR2Upload(dataPageKey, dataPageBlob);
+		await serverR2Upload(dataPageKey, dataPageFile);
 	} catch (error) {
 		captureException(error);
 		return Response.json(
@@ -88,37 +71,42 @@ export async function POST(request: Request) {
 		);
 	}
 
-	if (sendToDb && process.env.PRODUCTION) {
-		const dataPageFile = new File([dataPageBlob], "data_page.png", {
-			type: "image/png",
-		});
+	if (sendToDb) {
+		const fullFrameFile = await generateFullFrame(dataPageFile);
 
-		const fullFrameRes = await generateFullFrame(genData, request.url);
-		const fullFrameBlob = await fullFrameRes.blob();
-		const fullFrameFile = new File([fullFrameBlob], "full_frame.png", {
-			type: "image/png",
-		});
+		if (process.env.PRODUCTION) {
+			let portraitImage: File;
+			try {
+				portraitImage = await serverR2Download(portraitKey, "portrait.png");
+			} catch (error) {
+				captureException(error);
+				return Response.json(
+					{ ok: false, error: "Failed to download portrait from R2" },
+					{ status: 500 },
+				);
+			}
 
-		try {
-			// FIXME: Here, it would be cleaner and faster to move the temporary
-			// datapage and portrait objects that are already in R2 to their
-			// final locations. However, the S3 client uses the FileReader API
-			// for either the Copy or Delete operation, which isn't supported in
-			// the Vercel Edge Runtime. So if we ever switch away from the Edge
-			// runtime, re-implement
-			// https://github.com/purduehackers/passport-issuing-office/commit/c41bca707fc3e36dfd67656c5ac5c97920e8f872
-			await Promise.all([
-				serverR2Upload(`${passportNumber}-full.png`, fullFrameFile),
-				serverR2Upload(`${passportNumber}-portrait.png`, portraitImage),
-				serverR2Upload(`${passportNumber}.png`, dataPageFile),
-			]);
-		} catch (error) {
-			console.log(error);
-			captureException(error);
-			return Response.json(
-				{ ok: false, error: "Error uploading image(s) to R2" },
-				{ status: 500 },
-			);
+			try {
+				// FIXME: Here, it would be cleaner and faster to move the temporary
+				// datapage and portrait objects that are already in R2 to their
+				// final locations. However, the S3 client uses the FileReader API
+				// for either the Copy or Delete operation, which isn't supported in
+				// the Vercel Edge Runtime. So if we ever switch away from the Edge
+				// runtime, re-implement
+				// https://github.com/purduehackers/passport-issuing-office/commit/c41bca707fc3e36dfd67656c5ac5c97920e8f872
+				await Promise.all([
+					serverR2Upload(`${passportNumber}-full.png`, fullFrameFile),
+					serverR2Upload(`${passportNumber}-portrait.png`, portraitImage),
+					serverR2Upload(`${passportNumber}.png`, dataPageFile),
+				]);
+			} catch (error) {
+				console.log(error);
+				captureException(error);
+				return Response.json(
+					{ ok: false, error: "Error uploading image(s) to R2" },
+					{ status: 500 },
+				);
+			}
 		}
 	}
 
