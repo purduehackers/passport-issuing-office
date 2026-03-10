@@ -1,6 +1,6 @@
-import { GENERATION_STEPS } from "@/config";
 import { getOptimizedLatestPassportImage } from "@/lib/get-optimized-latest-passport-image";
 import { JWT, User } from "next-auth";
+import { z } from "zod";
 
 export interface MySession {
 	user: User;
@@ -72,3 +72,20 @@ export interface PassportGenData {
 export type OptimizedLatestPassportImage = Awaited<
 	ReturnType<typeof getOptimizedLatestPassportImage>
 >;
+
+export const GeneratePassportSchema = z.object({
+	surname: z.string().default("HACKER"),
+	firstName: z.string().default("WACK"),
+	placeOfOrigin: z.string().default("THE WOODS"),
+	dateOfBirth: z.coerce.date<string>(),
+	dateOfIssue: z.coerce.date<string>().default(() => new Date()),
+	ceremonyTime: z.coerce.date<string>().default(() => new Date()),
+	passportNumber: z.number().int().default(0),
+	portraitKey: z.string(),
+	stylizedPortraitKey: z.string(),
+	userId: z.string().optional(),
+	sendToDb: z.boolean(),
+});
+
+export type GeneratePassportRequest = z.infer<typeof GeneratePassportSchema>;
+export type GeneratePassportInput = z.input<typeof GeneratePassportSchema>;

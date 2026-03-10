@@ -29,11 +29,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ImageResponse } from "next/og";
 import Image from "next/image";
 import { createPassport } from "@/lib/actions";
 import { clientR2Upload } from "@/lib/r2";
 import {
+	GeneratePassportInput,
 	GenerationStatus,
 	GenerationStep,
 	GenerationStepId,
@@ -59,7 +59,6 @@ import {
 	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
 import CeremonyDropdown from "@/lib/ceremony-dropdown";
-import { Switch } from "./ui/switch";
 import { useKonamiCode } from "@/hooks/use-konami-code";
 import { SecretModalDescription } from "./secret-modal-description";
 import { StepLabel } from "./step-label";
@@ -114,7 +113,7 @@ export default function Playground({
 	optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
 	guildMember: object | null | undefined;
 }) {
-	const form = useForm<z.infer<typeof FormSchema>>({
+	const form = useForm<z.input<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
 			firstName: latestPassport?.name || "",
@@ -241,26 +240,13 @@ export default function Playground({
 		const stylizedPortrait = await processImage(croppedImageFile);
 		updateGenerationStepState("processing_portrait", "completed");
 
-		const apiFormData = new FormData();
-		for (const [key, val] of Object.entries(data)) {
-			if (key !== "image") {
-				if (key === "ceremonyTime" && val === "skipPassportCeremony") {
-					const noCeremonyVal = new Date(
-						"1970-01-01T00:00:00.000Z",
-					).toISOString();
-					apiFormData.append(key, noCeremonyVal);
-					continue;
-				}
-				apiFormData.append(key, String(val));
-			}
-		}
+		let portraitKey: string;
+		let stylizedPortraitKey: string;
 		try {
-			const [portraitKey, stylizedPortraitKey] = await Promise.all([
+			[portraitKey, stylizedPortraitKey] = await Promise.all([
 				clientR2Upload(croppedImageFile),
 				clientR2Upload(stylizedPortrait),
 			]);
-			apiFormData.append("portraitKey", portraitKey);
-			apiFormData.append("stylizedPortraitKey", stylizedPortraitKey);
 		} catch (error) {
 			alert(
 				"Failed to upload images. If this issue persists, please ask on our Discord for help!",
@@ -269,15 +255,34 @@ export default function Playground({
 			resetGenerationSteps();
 			throw error;
 		}
-		if (userId) {
-			apiFormData.append("userId", userId);
-		}
-		apiFormData.append("sendToDb", sendToDb.toString());
+
+		const apiBody: GeneratePassportInput = {
+			surname: data.surname,
+			firstName: data.firstName,
+			placeOfOrigin: data.placeOfOrigin,
+			dateOfBirth: data.dateOfBirth,
+			ceremonyTime:
+				data.ceremonyTime === "skipPassportCeremony"
+					? new Date(0).toISOString()
+					: data.ceremonyTime,
+			passportNumber: Number(data.passportNumber ?? 0),
+			portraitKey,
+			stylizedPortraitKey,
+			userId,
+			sendToDb,
+		};
 
 		if (sendToDb) {
-			const { passportNumber } = await createPassport(apiFormData);
+			const { passportNumber } = await createPassport({
+				surname: data.surname,
+				firstName: data.firstName,
+				dateOfBirth: data.dateOfBirth,
+				placeOfOrigin: data.placeOfOrigin,
+				ceremonyTime: apiBody.ceremonyTime,
+				userId,
+			});
 			generatedPassportNumber = String(passportNumber);
-			apiFormData.set("passportNumber", String(passportNumber));
+			apiBody.passportNumber = passportNumber;
 
 			updateGenerationStepState("assigning_passport_number", "completed");
 		}
@@ -286,7 +291,8 @@ export default function Playground({
 		try {
 			const response = await fetch(`/api/generate-passport`, {
 				method: "POST",
-				body: apiFormData,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(apiBody),
 			});
 			if (!response.ok) {
 				throw new Error(`Passport generation failed`);

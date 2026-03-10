@@ -1,6 +1,5 @@
 "use server";
 
-import { parseFormData } from "./parse-form-data";
 import { generatePreSignedUrl } from "./r2";
 
 /**
@@ -16,29 +15,28 @@ export async function getPreSignedUrl() {
 	};
 }
 
-export async function createPassport(formData: FormData) {
-	const {
-		trueSurname,
-		trueFirstName,
-		trueDateOfBirth,
-		trueDateOfIssue,
-		trueCeremonyTime,
-		placeOfOrigin,
-		stringUserId,
-	} = parseFormData(formData);
+export async function createPassport(data: {
+	surname: string;
+	firstName: string;
+	dateOfBirth: Date | string;
+	dateOfIssue?: Date | string;
+	placeOfOrigin: string;
+	ceremonyTime?: Date | string;
+	userId?: string;
+}) {
 	const newPassport = await fetch("https://id.purduehackers.com/api/new", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
 		body: JSON.stringify({
-			discord_id: stringUserId,
-			surname: trueSurname,
-			name: trueFirstName,
-			date_of_birth: trueDateOfBirth,
-			date_of_issue: trueDateOfIssue,
-			place_of_origin: placeOfOrigin,
-			ceremony_time: trueCeremonyTime,
+			discord_id: data.userId,
+			surname: data.surname,
+			name: data.firstName,
+			date_of_birth: data.dateOfBirth,
+			date_of_issue: data.dateOfIssue ?? new Date(),
+			place_of_origin: data.placeOfOrigin,
+			ceremony_time: data.ceremonyTime ?? new Date(),
 		}),
 	})
 		.then((r) => r.json())
