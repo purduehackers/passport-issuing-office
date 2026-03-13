@@ -121,34 +121,34 @@ export const ceremonyColumns: ColumnDef<Ceremony>[] = [
 
 const CreateFormSchema = z.object({
 	newCeremonyTime: z.date({
-		required_error: "A ceremony date is required.",
+		error: "A ceremony date is required.",
 	}),
 	maxRegistrations: z.string({
-		required_error: "You must set a maximum number of participants.",
+		error: "You must set a maximum number of participants.",
 	}),
 	openRegistration: z.boolean({
-		required_error: "You must select an option.",
+		error: "You must select an option.",
 	}),
 });
 
 const ModifyFormSchema = z.object({
 	modifyCeremonyTime: z.string({
-		required_error: "A ceremony date is required.",
+		error: "A ceremony date is required.",
 	}),
 	ceremonyTimeMod: z.date({
-		required_error: "You must set a ceremony date and time.",
+		error: "You must set a ceremony date and time.",
 	}),
 	maxRegistrationsMod: z.string({
-		required_error: "You must set a maximum number of participants.",
+		error: "You must set a maximum number of participants.",
 	}),
 	openRegistrationMod: z.boolean({
-		required_error: "You must select an option.",
+		error: "You must select an option.",
 	}),
 });
 
 const DeleteFormSchema = z.object({
 	deleteCeremonyTime: z.string({
-		required_error: "A date of birth is required.",
+		error: "A date of birth is required.",
 	}),
 });
 

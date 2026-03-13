@@ -1,4 +1,6 @@
 import {
+	CopyObjectCommand,
+	DeleteObjectCommand,
 	GetObjectCommand,
 	GetObjectCommandInput,
 	PutObjectCommand,
@@ -126,4 +128,27 @@ export async function serverR2Download(
 	return new File([Buffer.from(bytes)], filename ?? "downloaded-file", {
 		type: "image/png",
 	});
+}
+
+/**
+ * Copies an object in R2, then deletes the original.
+ * Effectively renames an object.
+ * @param src source object key
+ * @param dst destination object key
+ */
+export async function r2rename(src: string, dst: string) {
+	const s3 = getClient();
+	await s3.send(
+		new CopyObjectCommand({
+			Bucket: R2_BUCKET,
+			Key: dst,
+			CopySource: `${R2_BUCKET}/${src}`,
+		}),
+	);
+	await s3.send(
+		new DeleteObjectCommand({
+			Bucket: R2_BUCKET,
+			Key: src,
+		}),
+	);
 }

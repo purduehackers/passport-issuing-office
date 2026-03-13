@@ -29,11 +29,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { processImage } from "@/lib/process-image";
 import { Crop } from "./crop";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ImageResponse } from "next/og";
 import Image from "next/image";
 import { createPassport } from "@/lib/actions";
 import { clientR2Upload } from "@/lib/r2";
 import {
+	GeneratePassportInput,
 	GenerationStatus,
 	GenerationStep,
 	GenerationStepId,
@@ -59,7 +59,6 @@ import {
 	getCeremonyTimeStringTime,
 } from "@/lib/ceremony-data";
 import CeremonyDropdown from "@/lib/ceremony-dropdown";
-import { Switch } from "./ui/switch";
 import { useKonamiCode } from "@/hooks/use-konami-code";
 import { SecretModalDescription } from "./secret-modal-description";
 import { StepLabel } from "./step-label";
@@ -114,7 +113,7 @@ export default function Playground({
 	optimizedLatestPassportImage: OptimizedLatestPassportImage | null;
 	guildMember: object | null | undefined;
 }) {
-	const form = useForm<z.infer<typeof FormSchema>>({
+	const form = useForm<z.input<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 		defaultValues: {
 			firstName: latestPassport?.name || "",
@@ -140,7 +139,7 @@ export default function Playground({
 	const [launchConfetti, setLaunchConfetti] = useState(false); // TODO: do this better
 	const [croppedImageFile, setCroppedImageFile] = useState<File>();
 	const [generationSteps, setGenerationSteps] = useState<GenerationStep[]>(
-		GENERATION_STEPS.base,
+		GENERATION_STEPS.filter((step) => !step.registerOnly),
 	);
 	const [ceremonyTime, setCeremonyTime] = useState("noPassportCeremony");
 	const [openDialog, setOpenDialog] = useState(false);
@@ -238,29 +237,16 @@ export default function Playground({
 		if (!croppedImageFile) {
 			return; // TODO: handle error
 		}
-		const imageData = await processImage(croppedImageFile);
+		const stylizedPortrait = await processImage(croppedImageFile);
 		updateGenerationStepState("processing_portrait", "completed");
 
-		const apiFormData = new FormData();
-		for (const [key, val] of Object.entries(data)) {
-			if (key !== "image") {
-				if (key === "ceremonyTime" && val === "skipPassportCeremony") {
-					const noCeremonyVal = new Date(
-						"1970-01-01T00:00:00.000Z",
-					).toISOString();
-					apiFormData.append(key, noCeremonyVal);
-					continue;
-				}
-				apiFormData.append(key, String(val));
-			}
-		}
+		let portraitKey: string;
+		let stylizedPortraitKey: string;
 		try {
-			const [portraitKey, datapageKey] = await Promise.all([
+			[portraitKey, stylizedPortraitKey] = await Promise.all([
 				clientR2Upload(croppedImageFile),
-				clientR2Upload(imageData),
+				clientR2Upload(stylizedPortrait),
 			]);
-			apiFormData.append("portraitKey", portraitKey);
-			apiFormData.append("datapageKey", datapageKey);
 		} catch (error) {
 			alert(
 				"Failed to upload images. If this issue persists, please ask on our Discord for help!",
@@ -269,42 +255,62 @@ export default function Playground({
 			resetGenerationSteps();
 			throw error;
 		}
-		if (userId) {
-			apiFormData.append("userId", userId);
-		}
-		apiFormData.append("sendToDb", sendToDb.toString());
+
+		const apiBody: GeneratePassportInput = {
+			surname: data.surname,
+			firstName: data.firstName,
+			placeOfOrigin: data.placeOfOrigin,
+			dateOfBirth: data.dateOfBirth,
+			ceremonyTime:
+				data.ceremonyTime === "skipPassportCeremony"
+					? new Date(0).toISOString()
+					: data.ceremonyTime,
+			passportNumber: Number(data.passportNumber ?? 0),
+			portraitKey,
+			stylizedPortraitKey,
+			userId,
+			sendToDb,
+		};
 
 		if (sendToDb) {
-			const { passportNumber } = await createPassport(apiFormData);
+			const { passportNumber } = await createPassport({
+				surname: data.surname,
+				firstName: data.firstName,
+				dateOfBirth: data.dateOfBirth,
+				placeOfOrigin: data.placeOfOrigin,
+				ceremonyTime: apiBody.ceremonyTime,
+				userId,
+			});
 			generatedPassportNumber = String(passportNumber);
-			apiFormData.set("passportNumber", String(passportNumber));
+			apiBody.passportNumber = passportNumber;
 
 			updateGenerationStepState("assigning_passport_number", "completed");
 		}
 
 		let postRes: { imageUrl: string; imageKey: string };
 		try {
-			const response = await fetch(`/api/generate-data-page`, {
+			const response = await fetch(`/api/generate-passport`, {
 				method: "POST",
-				body: apiFormData,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(apiBody),
 			});
 			if (!response.ok) {
-				throw new Error(`Data page form upload failed`);
+				throw new Error(`Passport generation failed`);
 			}
 			postRes = await response.json();
 		} catch (error) {
 			alert(
-				"An error occurred while uploading the form data. Try again? If this issue persists, please ask on our Discord for help!",
+				"An error occurred while generating your passport. Try again? If this issue persists, please ask on our Discord for help!",
 			);
 			setIsLoading(false);
 			resetGenerationSteps();
 			throw error;
 		}
-		const generatedDataPageImageUrl = postRes.imageUrl;
-		const generatedDataPageObjectKey = postRes.imageKey;
+		updateGenerationStepState("generating_passport", "completed");
+		const generatedDataPageObjectUrl = postRes.imageUrl;
 		let generatedImageBlob: Blob;
 		try {
-			const response = await fetch(generatedDataPageImageUrl);
+			const response = await fetch(generatedDataPageObjectUrl);
 			if (!response.ok)
 				throw new Error("Failed to download data page image from R2", {
 					cause: response,
@@ -318,35 +324,15 @@ export default function Playground({
 			resetGenerationSteps();
 			throw error; // re-throw error for logging & Sentry
 		}
-		updateGenerationStepState("generating_data_page", "completed");
-
-		if (sendToDb) {
-			apiFormData.set("datapageKey", generatedDataPageObjectKey);
-			const generateFullFrameReq = await fetch(`/api/generate-full-frame`, {
-				method: "POST",
-				body: apiFormData,
-			});
-			if (generateFullFrameReq.status !== 200) {
-				alert(
-					"Wtf for some reason your full data page failed to upload. Try again? If this issue persists DM Matthew",
-				);
-				setIsLoading(false);
-				resetGenerationSteps();
-				return;
-			}
-			updateGenerationStepState("generating_frame", "completed");
-
-			updateGenerationStepState("uploading", "completed");
-		}
-
-		const generatedImageBuffer = Buffer.from(
-			await generatedImageBlob.arrayBuffer(),
-		);
-		const generatedImageUrl =
-			"data:image/png;base64," + generatedImageBuffer.toString("base64");
+		updateGenerationStepState("downloading_passport", "completed");
 		updateGenerationStepState("summoning_elves", "completed");
 
-		setGeneratedImageUrl(generatedImageUrl);
+		// We have to create a blob URL because the object URL itself is on a different domain.
+		// The <a> "download" attribute only works for same-origin URLs or local URLs like blobs.
+		setGeneratedImageUrl((prev) => {
+			URL.revokeObjectURL(prev);
+			return URL.createObjectURL(generatedImageBlob);
+		});
 		setIsLoading(false);
 		setIsDefaultImage(false);
 		resetGenerationSteps();
@@ -551,11 +537,13 @@ export default function Playground({
 																setCeremonyTime(e);
 																{
 																	if (e == "noPassportCeremony") {
-																		setGenerationSteps(GENERATION_STEPS.base);
-																	} else {
 																		setGenerationSteps(
-																			GENERATION_STEPS.register,
+																			GENERATION_STEPS.filter(
+																				(step) => !step.registerOnly,
+																			),
 																		);
+																	} else {
+																		setGenerationSteps([...GENERATION_STEPS]);
 																	}
 																}
 															}}
