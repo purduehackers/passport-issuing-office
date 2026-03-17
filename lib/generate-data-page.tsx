@@ -2,19 +2,17 @@ import { Passport } from "@/components/passport";
 import { IMAGE_GENERATION_SCALE_FACTOR } from "@/config";
 import { PassportGenData } from "@/types/types";
 import { ImageResponse } from "next/og";
+import fs from "node:fs/promises";
+import path from "node:path";
 
 export async function fetchAssets(data: PassportGenData, url?: string) {
-	const interFontData = await fetch(
-		new URL("../assets/Inter-Regular.ttf", import.meta.url),
-	).then((res) => res.arrayBuffer());
-
-	const interBoldFontData = await fetch(
-		new URL("../assets/Inter-Bold.ttf", import.meta.url),
-	).then((res) => res.arrayBuffer());
-
-	const OCRBProFontData = await fetch(
-		new URL("../assets/OCRB-Regular.ttf", import.meta.url),
-	).then((res) => res.arrayBuffer());
+	const [interFontData, interBoldFontData, OCRBProFontData] = await Promise.all(
+		[
+			fs.readFile(path.join(process.cwd(), "assets/Inter-Regular.ttf")),
+			fs.readFile(path.join(process.cwd(), "assets/Inter-Bold.ttf")),
+			fs.readFile(path.join(process.cwd(), "assets/OCRB-Regular.ttf")),
+		],
+	);
 
 	const dataPageBgUrl = `${process.env.R2_PUBLIC_URL}/data-page-bg.png`;
 
@@ -30,12 +28,8 @@ export async function generateDataPage(
 	data: PassportGenData,
 	url?: string,
 ): Promise<File> {
-	const {
-		dataPageBgUrl,
-		interFontData,
-		interBoldFontData,
-		OCRBProFontData,
-	} = await fetchAssets(data, url);
+	const { dataPageBgUrl, interFontData, interBoldFontData, OCRBProFontData } =
+		await fetchAssets(data, url);
 
 	const imgResp = new ImageResponse(
 		(
@@ -76,7 +70,9 @@ export async function generateDataPage(
 }
 
 export async function generateFullFrame(dataPage: Blob) {
-	const dataPageUrlB64 = "data:image/png;base64," + Buffer.from(await dataPage.arrayBuffer()).toString("base64");
+	const dataPageUrlB64 =
+		"data:image/png;base64," +
+		Buffer.from(await dataPage.arrayBuffer()).toString("base64");
 	const secondHalfUrl = `${process.env.R2_PUBLIC_URL}/page-1-second-half.png`;
 
 	const imgResp = new ImageResponse(
