@@ -295,7 +295,7 @@ export default function Playground({
 				body: JSON.stringify(apiBody),
 			});
 			if (!response.ok) {
-				throw new Error(`Passport generation failed`);
+				throw new Error(`Passport generation failed`, { cause: response });
 			}
 			postRes = await response.json();
 		} catch (error) {
