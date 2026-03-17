@@ -93,13 +93,15 @@ export async function serverR2Upload(
 	contentType: string = "image/png",
 	attempts: number = 2,
 ) {
+	const body =
+		file instanceof Blob ? Buffer.from(await file.arrayBuffer()) : file;
 	for (let i = 0; i < attempts; i++) {
 		try {
 			const response = await getClient().send(
 				new PutObjectCommand({
 					Bucket: R2_BUCKET,
 					Key: key,
-					Body: file,
+					Body: body,
 					ContentType: contentType,
 				}),
 			);
