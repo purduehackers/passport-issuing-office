@@ -61,20 +61,30 @@ export async function clientR2Upload(
 	// avoid abuse via uploading gigabytes of files.
 	const { url, objectKey } = await getPreSignedUrl();
 	for (let i = 0; i < attempts; i++) {
-		const response = await fetch(url, {
-			method: "PUT",
-			body: file,
-			headers: {
-				"Content-Type": contentType,
-			},
-		});
-		if (response.ok) break;
-		console.warn("Error uploading to R2", response);
-		if (i === attempts - 1) {
-			throw new Error(
-				`Error uploading to R2: ${response.status} ${response.statusText}`,
-				{ cause: response },
-			);
+		try {
+			const response = await fetch(url, {
+				method: "PUT",
+				body: file,
+				headers: {
+					"Content-Type": contentType,
+				},
+			});
+			if (response.ok) break;
+			console.warn("Error uploading to R2 (bad response)", response);
+			if (i === attempts - 1) {
+				throw new Error(
+					`Error uploading to R2 (bad response): ${response.status} ${response.statusText}`,
+					{ cause: response },
+				);
+			}
+		} catch (error) {
+			if (i === attempts - 1 && error instanceof Error) {
+				throw new Error(`Error uploading to R2 (fetch failed)`, {
+					cause: error,
+				});
+			} else {
+				console.warn("Error uploading to R2 (fetch failed)", error);
+			}
 		}
 	}
 	return objectKey;
