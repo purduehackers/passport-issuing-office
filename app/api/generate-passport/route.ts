@@ -128,6 +128,7 @@ export async function POST(request: Request) {
 							),
 						]),
 				);
+				dataPageKey = `${passportNumber}.png`;
 			} catch (error) {
 				console.log(error);
 				captureException(error);
