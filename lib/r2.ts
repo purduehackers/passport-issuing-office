@@ -16,7 +16,7 @@ const R2_BUCKET = "passport-portraits";
 function getClient(): S3Client {
 	return new S3Client({
 		region: "auto",
-		endpoint: `${process.env.R2_ENDPOINT}`,
+		endpoint: process.env.R2_ENDPOINT,
 		credentials: {
 			accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
 			secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
