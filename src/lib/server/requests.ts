@@ -2,7 +2,7 @@ import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { PORTRAIT_MAX_BYTES, validateFields, type PassportFields } from "../passport";
 import type { User } from "./auth";
 import { db } from "./db";
-import { passportRequest, type RequestStatus } from "./db/schema";
+import { passportRequest, type PassportRequest, type RequestStatus } from "./db/schema";
 import { remove, store } from "./storage";
 
 export class RequestError extends Error {
@@ -13,6 +13,10 @@ export class RequestError extends Error {
     super(message);
   }
 }
+
+/** Where browsers load a request's portrait. The version changes when the request changes. */
+export const portraitPath = (request: Pick<PassportRequest, "id" | "updatedAt">) =>
+  `/portraits/${request.id}?v=${request.updatedAt.getTime()}`;
 
 export async function latestRequestOf(userId: string) {
   const [row] = await db

@@ -7,7 +7,7 @@ import Checkbox from "../../components/ph/Checkbox.astro";
 import Dialog from "../../components/ph/Dialog.astro";
 import Icon from "../../components/ph/Icon.astro";
 import { REQUEST_STATUSES, type RequestStatus } from "../../lib/server/db/schema";
-import { listRequests } from "../../lib/server/requests";
+import { listRequests, portraitPath } from "../../lib/server/requests";
 import { formatDateTime, formatDay } from "../../lib/format";
 import { ORIGINS } from "../../lib/passport";
 
@@ -91,9 +91,9 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
                       data-surname={r.surname}
                       data-place-of-origin={r.placeOfOrigin}
                       data-date-of-birth={r.dateOfBirth}
-                      data-portrait-url={r.portraitUrl}
+                      data-portrait-url={portraitPath(r)}
                     >
-                      <img src={r.portraitUrl} alt="" loading="lazy" class="h-12 w-[38px] shrink-0 object-cover" />
+                      <img src={portraitPath(r)} alt="" loading="lazy" class="h-12 w-[38px] shrink-0 object-cover" />
                       <span class="flex flex-col">
                         <span class="font-medium uppercase">
                           {r.firstName} {r.surname}

@@ -8,7 +8,7 @@ import Callout from "../components/ph/Callout.astro";
 import Dialog from "../components/ph/Dialog.astro";
 import DitherButton from "../components/ph/DitherButton.astro";
 import PassportHero from "../components/PassportHero.astro";
-import { latestRequestOf } from "../lib/server/requests";
+import { latestRequestOf, portraitPath } from "../lib/server/requests";
 import { formatDay } from "../lib/format";
 
 const user = Astro.locals.user;
@@ -50,7 +50,9 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
             <DitherButton href="/login">Sign in with ID</DitherButton>
           </div>
         </div>
-        <PassportHero />
+        <div class="hidden sm:block">
+          <PassportHero />
+        </div>
       </section>
     )
   }
@@ -63,7 +65,7 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
         </h2>
         <Editor
           initial={latest ? fieldsOf(latest) : null}
-          portraitUrl={pending?.portraitUrl ?? null}
+          portraitUrl={pending ? portraitPath(pending) : null}
           editing={!!pending}
         />
       </section>
@@ -93,7 +95,7 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
         </div>
         <DataPage
           fields={fieldsOf(pending)}
-          portraitUrl={pending.portraitUrl}
+          portraitUrl={portraitPath(pending)}
           tilt
           stamp={{ label: "Requested", date: pending.createdAt }}
         />
@@ -129,7 +131,7 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
         </div>
         <DataPage
           fields={fieldsOf(exported)}
-          portraitUrl={exported.portraitUrl}
+          portraitUrl={portraitPath(exported)}
           tilt
           stamp={{ label: "Printed", date: exported.exportedAt ?? exported.updatedAt }}
         />

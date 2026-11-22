@@ -4,7 +4,7 @@ import { isAdmin, readSession } from "./lib/server/auth";
 const ADMIN_PATHS = /^\/(admin|api\/admin)(\/|$)/;
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  if (context.isPrerendered || context.url.pathname.startsWith("/dev-blob/")) return next();
+  if (context.isPrerendered) return next();
 
   context.locals.user = await readSession(context.cookies);
 
@@ -21,6 +21,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   const response = await next();
-  response.headers.set("cache-control", "private, no-store");
+  if (!response.headers.has("cache-control")) response.headers.set("cache-control", "private, no-store");
   return response;
 });
