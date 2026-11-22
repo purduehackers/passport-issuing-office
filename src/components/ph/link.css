@@ -1,0 +1,35 @@
+.ph-link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--link, var(--rule));
+  padding-inline: 3px;
+  margin-inline: -3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  transition:
+    color 150ms var(--ph-ease),
+    background-color 150ms var(--ph-ease);
+}
+
+.ph-link:focus-visible,
+.ph-link:hover {
+  color: var(--foreground);
+  background-color: var(--border);
+}
+
+/* Half ink keeps the tint's hue while clearing 4.5:1. */
+@supports (color: color-mix(in oklab, red, red)) {
+  .ph-link:focus-visible,
+  .ph-link:hover {
+    color: color-mix(in oklab, var(--link, var(--foreground)) 50%, var(--foreground));
+    background-color: color-mix(in oklab, var(--link, var(--rule)) 15%, var(--background));
+  }
+}
+
+@media (hover: none) {
+  .ph-link:hover {
+    background-color: transparent;
+  }
+}

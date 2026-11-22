@@ -1,0 +1,25 @@
+---
+import Icon from "./Icon.astro";
+import type { IconName } from "./icons";
+
+type Props = {
+  title?: string;
+  icon?: IconName;
+  class?: string;
+};
+
+const { title, icon = "info-circle", class: className } = Astro.props;
+---
+
+<aside
+  class:list={[
+    "flex items-start gap-4 border-2 border-dashed border-ph-purple bg-ph-yellow/30 p-5 sm:p-6 dark:border-ph-yellow dark:bg-ph-purple/15",
+    className,
+  ]}
+>
+  <Icon name={icon} class="mt-0.5 size-6 text-ph-purple dark:text-ph-yellow" />
+  <div class="flex flex-col gap-2">
+    {title && <p class="font-pixel text-base uppercase sm:text-lg">{title}</p>}
+    <div class="text-sm leading-[1.5] sm:text-base"><slot /></div>
+  </div>
+</aside>

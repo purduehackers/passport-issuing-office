@@ -1,0 +1,11 @@
+.ph-toggle__chip {
+  width: calc((100% - 4px) / var(--count));
+  transform: translateX(calc(100% * var(--index)));
+  transition: transform 200ms var(--ph-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-toggle__chip {
+    transition: none;
+  }
+}

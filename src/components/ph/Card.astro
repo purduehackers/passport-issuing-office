@@ -1,0 +1,26 @@
+---
+type Props = {
+  href?: string;
+  title?: string;
+  class?: string;
+};
+
+const { href, title, class: className } = Astro.props;
+const Tag = href ? "a" : "div";
+const external = href && /^https?:\/\//.test(href);
+---
+
+<Tag
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class:list={[
+    "flex flex-col gap-3 border border-border bg-card p-5 text-card-foreground no-underline",
+    href && "transition-colors duration-150 ease-quint hover:border-foreground",
+    className,
+  ]}
+>
+  {Astro.slots.has("media") && <div class="-mx-5 -mt-5 border-b border-border"><slot name="media" /></div>}
+  {title && <h3 class="ph-headline text-3xl">{title}</h3>}
+  <div class="flex flex-col gap-2 leading-[1.45]"><slot /></div>
+</Tag>

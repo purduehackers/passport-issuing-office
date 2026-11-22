@@ -1,0 +1,201 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import DataPage from "../../components/DataPage.astro";
+import Badge from "../../components/ph/Badge.astro";
+import Button from "../../components/ph/Button.astro";
+import Checkbox from "../../components/ph/Checkbox.astro";
+import Dialog from "../../components/ph/Dialog.astro";
+import Icon from "../../components/ph/Icon.astro";
+import { REQUEST_STATUSES, type RequestStatus } from "../../lib/server/db/schema";
+import { listRequests } from "../../lib/server/requests";
+import { formatDateTime, formatDay } from "../../lib/format";
+import { ORIGINS } from "../../lib/passport";
+
+const raw = Astro.url.searchParams.get("status");
+const status: RequestStatus | "all" = raw === "all" || REQUEST_STATUSES.includes(raw as RequestStatus) ? (raw as RequestStatus | "all") : "pending";
+const requests = await listRequests(status);
+
+const filters = [
+  { value: "pending", label: "Pending" },
+  { value: "exported", label: "Exported" },
+  { value: "all", label: "All" },
+] as const;
+const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dateOfBirth: "" };
+---
+
+<Layout title="Requests" current="/admin">
+  <section class="flex flex-col gap-3 pt-6 pb-10 md:pt-10">
+    <h1 class="ph-headline text-5xl md:text-6xl">Passport requests</h1>
+    <p class="max-w-[38rem] leading-[1.5]">Select the ones to print, then export them.</p>
+  </section>
+
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <nav class="flex gap-1" aria-label="Filter by status">
+        {
+          filters.map((f) => (
+            <Button
+              href={f.value === "pending" ? "/admin" : `/admin?status=${f.value}`}
+              size="sm"
+              variant={status === f.value ? "solid" : "ghost"}
+              aria-current={status === f.value ? "page" : undefined}
+            >
+              {f.label}
+            </Button>
+          ))
+        }
+      </nav>
+      <div class="flex items-center gap-4">
+        <span data-selected-count class="font-mono text-[13px] uppercase">0 selected</span>
+        <Button icon="download" data-export disabled>Export</Button>
+      </div>
+    </div>
+
+    <p data-export-message class="flex items-center gap-1.5 text-[15px]" hidden>
+      <Icon name="info-circle" class="size-4 text-ph-purple" /><span></span>
+    </p>
+
+    {
+      requests.length === 0 ? (
+        <div class="grid-bg flex flex-col items-center gap-2 border border-border px-6 py-16 text-center">
+          <p class="ph-headline text-3xl">Nothing here</p>
+          <p>{status === "pending" ? "No one is waiting for a passport right now." : "No requests match this filter."}</p>
+        </div>
+      ) : (
+        <div class="overflow-x-auto border border-border">
+          <table class="w-full min-w-[56rem] border-collapse text-left text-[15px]">
+            <thead class="border-b border-foreground">
+              <tr class="ph-subheadline text-[12px]">
+                <th class="w-12 px-4 py-3">
+                  <Checkbox data-select-all aria-label="Select all" />
+                </th>
+                <th class="px-2 py-3">Data page</th>
+                <th class="px-4 py-3">Member</th>
+                <th class="px-4 py-3">Born</th>
+                <th class="px-4 py-3">Requested</th>
+                <th class="px-4 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.map((r) => (
+                <tr class="border-b border-border last:border-b-0 has-[:checked]:bg-ph-yellow/25">
+                  <td class="px-4 py-3 align-middle">
+                    <Checkbox data-select value={r.id} aria-label={`Select ${r.firstName} ${r.surname}`} />
+                  </td>
+                  <td class="px-2 py-3">
+                    <button
+                      type="button"
+                      class="flex cursor-pointer items-center gap-3 text-left hover:underline"
+                      data-preview
+                      data-first-name={r.firstName}
+                      data-surname={r.surname}
+                      data-place-of-origin={r.placeOfOrigin}
+                      data-date-of-birth={r.dateOfBirth}
+                      data-portrait-url={r.portraitUrl}
+                    >
+                      <img src={r.portraitUrl} alt="" loading="lazy" class="h-12 w-[38px] shrink-0 object-cover" />
+                      <span class="flex flex-col">
+                        <span class="font-medium uppercase">
+                          {r.firstName} {r.surname}
+                        </span>
+                        <span class="text-[13px]">From {r.placeOfOrigin}</span>
+                      </span>
+                    </button>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="flex flex-col">
+                      <span>{r.name}</span>
+                      <span class="font-mono text-[13px]">
+                        {[r.username && `@${r.username}`, r.email].filter(Boolean).join(" · ")}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 font-mono text-[13px] whitespace-nowrap">{r.dateOfBirth}</td>
+                  <td class="px-4 py-3 whitespace-nowrap">{formatDateTime(r.createdAt)}</td>
+                  <td class="px-4 py-3 whitespace-nowrap">
+                    {r.status === "pending" ? (
+                      <Badge color="yellow">Pending</Badge>
+                    ) : (
+                      <span class="flex flex-col gap-1">
+                        <Badge color="lime">Exported</Badge>
+                        {r.exportedAt && <span class="text-[13px]">{formatDay(r.exportedAt)}</span>}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+  </div>
+
+  <Dialog id="preview-dialog" title="Data page" class="w-[min(44rem,calc(100vw-2rem))]!">
+    <DataPage fields={emptyFields} />
+  </Dialog>
+</Layout>
+
+<script>
+  import { updateDataPage } from "../../lib/client/data-page";
+
+  const boxes = [...document.querySelectorAll<HTMLInputElement>("input[data-select]")];
+  const all = document.querySelector<HTMLInputElement>("input[data-select-all]");
+  const count = document.querySelector<HTMLElement>("[data-selected-count]")!;
+  const exportButton = document.querySelector<HTMLButtonElement>("[data-export]")!;
+  const message = document.querySelector<HTMLElement>("[data-export-message]")!;
+
+  const selected = () => boxes.filter((box) => box.checked).map((box) => box.value);
+  function sync() {
+    const n = selected().length;
+    count.textContent = `${n} selected`;
+    exportButton.disabled = n === 0;
+    if (all) {
+      all.checked = n > 0 && n === boxes.length;
+      all.indeterminate = n > 0 && n < boxes.length;
+    }
+  }
+  for (const box of boxes) box.addEventListener("change", sync);
+  all?.addEventListener("change", () => {
+    for (const box of boxes) box.checked = all.checked;
+    sync();
+  });
+  sync();
+
+  exportButton.addEventListener("click", async () => {
+    exportButton.disabled = true;
+    message.hidden = true;
+    try {
+      const response = await fetch("/api/admin/export", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ ids: selected() }),
+      });
+      const result = (await response.json().catch(() => ({}))) as { error?: string; message?: string };
+      message.querySelector("span")!.textContent = result.message ?? result.error ?? "Export finished.";
+      message.hidden = false;
+      if (response.ok) location.reload();
+    } finally {
+      sync();
+    }
+  });
+
+  const dialog = document.querySelector<HTMLDialogElement>("#preview-dialog")!;
+  const page = dialog.querySelector<HTMLElement>("[data-page]")!;
+  for (const trigger of document.querySelectorAll<HTMLElement>("[data-preview]")) {
+    trigger.addEventListener("click", () => {
+      const d = trigger.dataset;
+      updateDataPage(
+        page,
+        {
+          firstName: d.firstName ?? "",
+          surname: d.surname ?? "",
+          placeOfOrigin: d.placeOfOrigin ?? "",
+          dateOfBirth: d.dateOfBirth ?? "",
+        },
+        d.portraitUrl ?? null,
+      );
+      dialog.showModal();
+    });
+  }
+</script>

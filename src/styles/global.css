@@ -1,0 +1,319 @@
+@import "tailwindcss";
+@import "./ph.css";
+
+@font-face {
+  font-family: "Passport Inter";
+  font-weight: 500;
+  font-display: block;
+  src: url("/fonts/Inter-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Passport Inter";
+  font-weight: 800;
+  font-display: block;
+  src: url("/fonts/Inter-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "OCR B";
+  font-weight: 500;
+  font-display: block;
+  src: url("/fonts/OCRB-Regular.ttf") format("truetype");
+}
+
+/* The printed data page. Sizes are in data page points (1/472 of its width). */
+.data-page {
+  container-type: inline-size;
+  aspect-ratio: 472 / 322;
+  width: 100%;
+}
+
+.data-page__sheet {
+  --u: calc(100cqw / 472);
+  --ink: #4a2aa6;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #000;
+  font-family: "Passport Inter", sans-serif;
+  font-weight: 500;
+  font-size: calc(13.333 * var(--u));
+  background: url("/passport/data-page-bg.png") center / 100% 100%;
+  line-height: normal;
+  user-select: none;
+  pointer-events: none;
+}
+
+.dark .data-page__sheet {
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.08),
+    0 24px 90px -12px rgb(125 59 255 / 0.6);
+}
+
+.data-page__top {
+  position: absolute;
+  top: calc(24 * var(--u));
+  left: calc(16 * var(--u));
+  right: calc(16 * var(--u));
+  display: flex;
+  gap: calc(19 * var(--u));
+}
+
+.data-page__image {
+  display: flex;
+  flex-direction: column;
+  gap: calc(22 * var(--u));
+}
+
+.data-page__label {
+  height: calc(12 * var(--u));
+  color: var(--ink);
+  font-size: calc(8 * var(--u));
+  font-weight: 800;
+  letter-spacing: calc(1.16 * var(--u));
+  text-transform: uppercase;
+}
+
+.data-page__portrait {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: calc(148 * var(--u));
+  height: calc(185 * var(--u));
+  border-radius: calc(8 * var(--u));
+  background: url("/passport/portrait-bg.png") center / cover;
+}
+
+.data-page__portrait::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: calc(8 * var(--u)) solid rgb(255 255 255 / 0.75);
+  border-radius: calc(8 * var(--u));
+}
+
+.data-page__portrait img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: color-burn;
+}
+
+.data-page__data,
+.data-page__column {
+  display: flex;
+  flex-direction: column;
+  gap: calc(8 * var(--u));
+}
+
+.data-page__row {
+  display: flex;
+  gap: calc(12 * var(--u));
+}
+
+.data-page__row--wide {
+  gap: calc(48 * var(--u));
+}
+
+.data-page__item {
+  display: flex;
+  flex-direction: column;
+  gap: calc(2 * var(--u));
+  white-space: nowrap;
+}
+
+.data-page__item dt {
+  height: calc(10 * var(--u));
+  color: var(--ink);
+  font-size: calc(8 * var(--u));
+  letter-spacing: calc(0.64 * var(--u));
+  text-transform: uppercase;
+}
+
+.data-page__item dd {
+  height: calc(13 * var(--u));
+  font-family: "OCR B", monospace;
+  font-size: calc(11 * var(--u));
+  letter-spacing: calc(2.667 * var(--u));
+  text-transform: uppercase;
+}
+
+.data-page__mrz {
+  position: absolute;
+  top: calc(282.333 * var(--u));
+  left: calc(16 * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(4 * var(--u));
+}
+
+.data-page__mrz p {
+  display: flex;
+  justify-content: space-between;
+  width: calc(440 * var(--u));
+  height: calc(14 * var(--u));
+  color: #4a2ba6;
+  font-family: "OCR B", monospace;
+  font-size: calc(12 * var(--u));
+  text-transform: uppercase;
+}
+
+@property --mx {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 30%;
+}
+
+@property --my {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 20%;
+}
+
+.data-page[data-tilt] .data-page__sheet {
+  transform: perspective(1400px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+}
+
+/* Holographic laminate: a sheen and a rainbow glider watermark that follow the light. */
+.data-page__holo,
+.data-page__holo::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.data-page__holo {
+  z-index: 2;
+  background: linear-gradient(105deg, transparent 38%, rgb(255 255 255 / 0.5) 50%, transparent 62%) var(--mx) 0 / 260% 100%;
+  mix-blend-mode: soft-light;
+}
+
+.data-page__holo::after {
+  content: "";
+  background: linear-gradient(115deg, #ff7ad9, #ffe76a, #6af0ff, #b18cff, #ff7ad9) var(--mx) var(--my) / 300% 300%;
+  mix-blend-mode: color-dodge;
+  opacity: 0.55;
+  mask-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M4 2h1v1H4zM5 3h1v1H5zM3 4h3v1H3z'/%3E%3C/svg%3E"),
+    radial-gradient(circle at var(--mx) var(--my), #000 0, transparent 45%);
+  mask-size: calc(20 * var(--u)) calc(20 * var(--u)), 100% 100%;
+  mask-composite: intersect;
+}
+
+.data-page__scan {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: calc(-12 * var(--u));
+  height: calc(12 * var(--u));
+  opacity: 0;
+  pointer-events: none;
+  background: linear-gradient(transparent, rgb(125 59 255 / 0.28) 80%, rgb(255 255 255 / 0.9) 92%, transparent);
+}
+
+.data-page__scan.is-scanning {
+  animation: data-page-scan 650ms var(--ph-ease);
+}
+
+@keyframes data-page-scan {
+  from {
+    top: calc(-12 * var(--u));
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  to {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Rubber stamp. The mask gives the ink a worn texture. */
+.data-page__stamp {
+  position: absolute;
+  z-index: 3;
+  right: calc(30 * var(--u));
+  bottom: calc(62 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(1 * var(--u));
+  padding: calc(5 * var(--u)) calc(12 * var(--u));
+  border: calc(3.5 * var(--u)) double currentColor;
+  color: #e5420f;
+  mix-blend-mode: multiply;
+  opacity: 0.88;
+  rotate: -12deg;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3 0 0 0 2.25'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mask-size: calc(90 * var(--u));
+}
+
+.data-page__stamp-big {
+  font-family: var(--ph-font-pixel);
+  font-size: calc(30 * var(--u));
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.data-page__stamp-small {
+  font-family: var(--ph-font-mono);
+  font-size: calc(7 * var(--u));
+  font-weight: 700;
+  letter-spacing: calc(1.5 * var(--u));
+  text-transform: uppercase;
+}
+
+.data-page__stamp.is-slamming {
+  animation: stamp-slam 380ms cubic-bezier(0.55, 0, 0.75, 0.3) both;
+}
+
+@keyframes stamp-slam {
+  from {
+    rotate: -2deg;
+    scale: 3;
+    opacity: 0;
+  }
+  70% {
+    rotate: -12deg;
+    scale: 0.93;
+    opacity: 0.95;
+  }
+  to {
+    rotate: -12deg;
+    scale: 1;
+    opacity: 0.88;
+  }
+}
+
+.is-shaking {
+  animation: shake 320ms linear;
+}
+
+@keyframes shake {
+  20% {
+    translate: -7px 4px;
+  }
+  40% {
+    translate: 6px -5px;
+  }
+  60% {
+    translate: -4px 2px;
+  }
+  80% {
+    translate: 2px -1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .data-page__scan.is-scanning,
+  .data-page__stamp.is-slamming,
+  .is-shaking {
+    animation: none;
+  }
+}

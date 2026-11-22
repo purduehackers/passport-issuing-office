@@ -1,0 +1,38 @@
+---
+import Icon from "./Icon.astro";
+import "./dialog.css";
+
+type Props = {
+  id: string;
+  title: string;
+  class?: string;
+};
+
+const { id, title, class: className } = Astro.props;
+---
+
+<dialog id={id} data-ph-dialog aria-labelledby={`${id}-title`} class:list={["ph-dialog", className]}>
+  <div class="flex items-center justify-between gap-4 border-b border-foreground px-5 py-3">
+    <h2 id={`${id}-title`} class="ph-subheadline text-[13px]">{title}</h2>
+    <button type="button" data-ph-dialog-close aria-label="Close" class="-mr-1.5 cursor-pointer p-1.5 hover:bg-foreground/[0.08]">
+      <Icon name="times" class="size-3.5" />
+    </button>
+  </div>
+  <div class="flex flex-col gap-3 px-5 py-4 leading-[1.5]"><slot /></div>
+</dialog>
+
+<script>
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement;
+    const opener = target.closest<HTMLElement>("[data-ph-dialog-open]");
+    if (opener) {
+      document.querySelector<HTMLDialogElement>(`#${opener.dataset.phDialogOpen}`)?.showModal();
+      return;
+    }
+    if (target.closest("[data-ph-dialog-close]")) {
+      target.closest("dialog")?.close();
+      return;
+    }
+    if (target instanceof HTMLDialogElement && target.matches("[data-ph-dialog]")) target.close();
+  });
+</script>

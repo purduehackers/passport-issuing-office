@@ -1,0 +1,11 @@
+---
+import "./skeleton.css";
+
+type Props = {
+  class?: string;
+};
+
+const { class: className } = Astro.props;
+---
+
+<span aria-hidden="true" class:list={["ph-skeleton", className]}></span>

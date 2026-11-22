@@ -1,0 +1,28 @@
+---
+import Icon from "./Icon.astro";
+
+type Props = {
+  label: string;
+  for?: string;
+  hint?: string;
+  error?: string;
+  class?: string;
+};
+
+const { label, for: htmlFor, hint, error, class: className } = Astro.props;
+---
+
+<div class:list={["flex flex-col gap-1.5", className]}>
+  <label for={htmlFor} class="ph-subheadline text-[12px]">{label}</label>
+  <slot />
+  {
+    error ? (
+      <p class="flex items-center gap-1.5 text-[13px]">
+        <Icon name="exclamation-triangle" class="size-3.5 text-ph-orange" />
+        {error}
+      </p>
+    ) : (
+      hint && <p class="text-[13px]">{hint}</p>
+    )
+  }
+</div>

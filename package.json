@@ -7,11 +7,28 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && if [ \"$VERCEL_ENV\" = \"production\" ]; then drizzle-kit migrate; fi",
     "preview": "astro preview",
-    "astro": "astro"
+    "check": "astro check",
+    "astro": "astro",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "astro": "^7.4.13"
+    "@astrojs/vercel": "^11.0.22",
+    "@libsql/client": "^0.18.0",
+    "@tailwindcss/vite": "^4.3.5",
+    "@vercel/blob": "^2.9.0",
+    "astro": "^7.4.13",
+    "drizzle-orm": "^0.45.4",
+    "oauth4webapi": "^3.8.9",
+    "tailwindcss": "^4.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "^6.0.3"
   }
 }

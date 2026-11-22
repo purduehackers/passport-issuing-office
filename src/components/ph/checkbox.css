@@ -1,0 +1,40 @@
+.ph-checkbox {
+  appearance: none;
+  display: inline-grid;
+  place-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: none;
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  background: var(--background);
+  cursor: pointer;
+}
+
+.ph-checkbox::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--background);
+  -webkit-mask: var(--ph-check) center / contain no-repeat;
+  mask: var(--ph-check) center / contain no-repeat;
+  opacity: 0;
+}
+
+.ph-checkbox:checked {
+  background: var(--foreground);
+}
+
+.ph-checkbox:checked::before {
+  opacity: 1;
+}
+
+.ph-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.ph-checkbox {
+  --ph-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpolygon points='22 4 22 6 21 6 21 7 20 7 20 8 19 8 19 9 18 9 18 10 17 10 17 11 16 11 16 12 15 12 15 13 14 13 14 14 13 14 13 15 12 15 12 16 11 16 11 17 10 17 10 18 8 18 8 17 7 17 7 16 6 16 6 15 5 15 5 14 4 14 4 13 3 13 3 12 2 12 2 10 4 10 4 11 5 11 5 12 6 12 6 13 7 13 7 14 8 14 8 15 10 15 10 14 11 14 11 13 12 13 12 12 13 12 13 11 14 11 14 10 15 10 15 9 16 9 16 8 17 8 17 7 18 7 18 6 19 6 19 5 20 5 20 4 22 4'/%3E%3C/svg%3E");
+}

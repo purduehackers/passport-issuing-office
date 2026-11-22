@@ -1,0 +1,17 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/ph/Button.astro";
+
+Astro.response.status = 403;
+---
+
+<Layout title="No access">
+  <section class="flex flex-col items-start gap-5 pt-10 pb-16">
+    <h1 class="ph-headline text-5xl md:text-6xl">Organizers only</h1>
+    <p class="max-w-[38rem] leading-[1.5]">
+      Passport requests are for Purdue Hackers organizers. If you are an organizer, ask an admin to give you the role in
+      Purdue Hackers ID, then sign out and sign in again.
+    </p>
+    <Button href="/" icon="arrow-left">Back to your passport</Button>
+  </section>
+</Layout>

@@ -1,0 +1,61 @@
+---
+import { icons, type IconName } from "./icons";
+import "./segmented-toggle.css";
+
+type Option = {
+  value: string;
+  label: string;
+  icon?: IconName;
+};
+
+type Props = {
+  name: string;
+  options: Option[];
+  value?: string;
+  label?: string;
+  class?: string;
+};
+
+const { name, options, value = options[0]?.value, label, class: className } = Astro.props;
+const index = Math.max(0, options.findIndex((o) => o.value === value));
+---
+
+<div
+  role="group"
+  aria-label={label ?? name}
+  data-ph-toggle={name}
+  class:list={["relative isolate grid w-fit shrink-0 auto-cols-fr grid-flow-col bg-foreground/[0.08] p-0.5", className]}
+  style={`--count: ${options.length}; --index: ${index}`}
+>
+  <span aria-hidden="true" class="ph-toggle__chip pointer-events-none absolute inset-y-0.5 left-0.5 -z-10 bg-background"></span>
+  {
+    options.map((o) => (
+      <button
+        type="button"
+        data-value={o.value}
+        aria-pressed={o.value === value ? "true": "false"}
+        aria-label={o.icon ? o.label : undefined}
+        class="flex min-w-8 cursor-pointer items-center justify-center px-2 py-1.5 transition-colors duration-200 ease-quint"
+      >
+        {o.icon ? <svg viewBox="0 0 24 24" fill="currentColor" class="size-3.5" aria-hidden="true" set:html={icons[o.icon]} /> : o.label}
+      </button>
+    ))
+  }
+</div>
+
+<script>
+  for (const group of document.querySelectorAll<HTMLElement>("[data-ph-toggle]")) {
+    const buttons = [...group.querySelectorAll<HTMLButtonElement>("button[data-value]")];
+
+    for (const [i, b] of buttons.entries()) {
+      b.addEventListener("click", () => {
+        if (b.getAttribute("aria-pressed") === "true") return;
+        for (const other of buttons) other.setAttribute("aria-pressed", String(other === b));
+        group.style.setProperty("--index", String(i));
+        group.dispatchEvent(
+          new CustomEvent("ph:change", { bubbles: true, detail: { name: group.dataset.phToggle, value: b.dataset.value } }),
+        );
+      });
+    }
+  }
+</script>

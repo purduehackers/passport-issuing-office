@@ -1,0 +1,134 @@
+---
+import Button from "./ph/Button.astro";
+import Dialog from "./ph/Dialog.astro";
+import DitherButton from "./ph/DitherButton.astro";
+import Field from "./ph/Field.astro";
+import Icon from "./ph/Icon.astro";
+import Input from "./ph/Input.astro";
+import SegmentedToggle from "./ph/SegmentedToggle.astro";
+import DataPage from "./DataPage.astro";
+import { NAME_MAX, ORIGIN_MAX, ORIGINS, today, type PassportFields } from "../lib/passport";
+
+type Props = {
+  initial?: PassportFields | null;
+  portraitUrl?: string | null;
+  editing?: boolean;
+};
+
+const { initial, portraitUrl = null, editing = false } = Astro.props;
+const fields: PassportFields = initial ?? {
+  firstName: "",
+  surname: "",
+  placeOfOrigin: ORIGINS[0],
+  dateOfBirth: "",
+};
+const customOrigin = !ORIGINS.includes(fields.placeOfOrigin);
+const originOptions = [...ORIGINS.map((o) => ({ value: o, label: o })), { value: "", label: "Other" }];
+---
+
+<form
+  data-editor
+  data-has-portrait={portraitUrl ? "" : undefined}
+  novalidate
+  class="grid items-start gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]"
+>
+  <div class="flex flex-col gap-6">
+    <Field label="First name" for="firstName">
+      <Input id="firstName" name="firstName" class="uppercase" value={fields.firstName} maxlength={NAME_MAX} placeholder="Wack" autocomplete="given-name" required />
+      <p data-error-for="firstName" class="flex items-center gap-1.5 text-[13px]" hidden>
+        <Icon name="exclamation-triangle" class="size-3.5 text-ph-orange" /><span></span>
+      </p>
+    </Field>
+
+    <Field label="Last name" for="surname">
+      <Input id="surname" name="surname" class="uppercase" value={fields.surname} maxlength={NAME_MAX} placeholder="Hacker" autocomplete="family-name" required />
+      <p data-error-for="surname" class="flex items-center gap-1.5 text-[13px]" hidden>
+        <Icon name="exclamation-triangle" class="size-3.5 text-ph-orange" /><span></span>
+      </p>
+    </Field>
+
+    <Field label="Place of origin" for="placeOfOrigin">
+      <SegmentedToggle
+        name="origin"
+        label="Place of origin"
+        options={originOptions}
+        value={customOrigin ? "" : fields.placeOfOrigin}
+        class="w-full text-[13px]"
+      />
+      <Input
+        id="placeOfOrigin"
+        name="placeOfOrigin"
+        class="uppercase"
+        value={fields.placeOfOrigin}
+        maxlength={ORIGIN_MAX}
+        placeholder="Write your own"
+        hidden={!customOrigin}
+        required
+      />
+      <p data-error-for="placeOfOrigin" class="flex items-center gap-1.5 text-[13px]" hidden>
+        <Icon name="exclamation-triangle" class="size-3.5 text-ph-orange" /><span></span>
+      </p>
+    </Field>
+
+    <Field label="Date of birth" for="dateOfBirth">
+      <Input id="dateOfBirth" name="dateOfBirth" type="date" value={fields.dateOfBirth} min="1000-01-01" max={today()} required />
+      <p data-error-for="dateOfBirth" class="flex items-center gap-1.5 text-[13px]" hidden>
+        <Icon name="exclamation-triangle" class="size-3.5 text-ph-orange" /><span></span>
+      </p>
+    </Field>
+
+    <Field label="Portrait" for="portrait-file" hint="Half of all passports have a cat on them. Don't let this pressure you.">
+      <input id="portrait-file" type="file" accept="image/*" class="sr-only" />
+      <Button variant="outline" icon="upload" data-pick-portrait>
+        <span data-pick-label>{portraitUrl ? "Change picture" : "Choose a picture"}</span>
+      </Button>
+      <p data-error-for="portrait" class="flex items-center gap-1.5 text-[13px]" hidden>
+        <Icon name="exclamation-triangle" class="size-3.5 text-ph-orange" /><span></span>
+      </p>
+    </Field>
+
+    <div class="flex flex-col gap-3 pt-2">
+      <p data-form-error class="flex items-center gap-1.5 text-[15px]" hidden>
+        <Icon name="exclamation-triangle" class="size-4 text-ph-orange" /><span></span>
+      </p>
+      <div class="flex flex-wrap items-center gap-4">
+        <DitherButton type="submit" data-submit>{editing ? "Save changes" : "Request passport"}</DitherButton>
+        {editing && <Button href="/" variant="ghost">Cancel</Button>}
+      </div>
+    </div>
+  </div>
+
+  <aside class="order-first flex flex-col gap-3 lg:sticky lg:top-6 lg:order-none">
+    <DataPage fields={fields} portraitUrl={portraitUrl} tilt stamp={{ label: "Requested", hidden: true }} />
+    <p class="text-[13px]">Your passport number and date of issue are set when it is printed.</p>
+  </aside>
+</form>
+
+<Dialog id="crop-dialog" title="Crop portrait">
+  <div
+    data-crop-view
+    role="img"
+    tabindex="0"
+    aria-label="Portrait crop. Drag or use the arrow keys to move it. Scroll or use + and - to zoom."
+    class="relative aspect-[4/5] w-full cursor-grab touch-none overflow-hidden bg-foreground/[0.08] outline-offset-2 select-none focus-visible:outline-2 active:cursor-grabbing"
+  >
+    <img data-crop-image alt="" draggable="false" class="invisible absolute top-0 left-0 max-w-none origin-top-left" />
+  </div>
+  <label class="flex items-center gap-3">
+    <span class="sr-only">Zoom</span>
+    <Icon name="minus" class="size-3.5" />
+    <input data-crop-zoom type="range" min="1" max="4" step="0.01" value="1" class="w-full accent-foreground" />
+    <Icon name="plus" class="size-3.5" />
+  </label>
+  <div class="flex justify-end gap-2">
+    <Button variant="ghost" size="sm" data-ph-dialog-close>Cancel</Button>
+    <Button size="sm" icon="check" data-crop-save>Use picture</Button>
+  </div>
+</Dialog>
+
+<script>
+  import { mountEditor } from "../lib/client/editor";
+
+  const form = document.querySelector<HTMLFormElement>("[data-editor]");
+  if (form) mountEditor(form, document.querySelector<HTMLDialogElement>("#crop-dialog")!);
+</script>

@@ -1,0 +1,30 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { pixelOrder } from "./dither";
+import "./dither-button.css";
+
+type Props = Omit<HTMLAttributes<"a"> & HTMLAttributes<"button">, "type"> & {
+  href?: string;
+  type?: "button" | "submit" | "reset";
+  tone?: "light" | "dark";
+  cols?: number;
+  rows?: number;
+};
+
+const { href, type = "button", tone, cols = 10, rows = 5, class: className, style, ...rest } = Astro.props;
+const Tag = href ? "a" : "button";
+---
+
+<Tag
+  href={href}
+  type={href ? undefined : type}
+  data-tone={tone}
+  class:list={["ph-dither-btn", className]}
+  style={[`--cols: ${cols}`, style].filter(Boolean).join("; ")}
+  {...rest}
+>
+  <span class="ph-dither-btn__pixels" aria-hidden="true">
+    {pixelOrder(cols * rows).map((i) => <span class="ph-dither-btn__pixel" style={`--i: ${i}`} />)}
+  </span>
+  <span class="ph-dither-btn__label"><slot /></span>
+</Tag>

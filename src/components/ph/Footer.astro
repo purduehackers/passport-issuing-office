@@ -1,0 +1,35 @@
+---
+import Glider from "./Glider.astro";
+import Link from "./Link.astro";
+
+type FooterLink = {
+  label: string;
+  href: string;
+};
+
+type Props = {
+  links?: FooterLink[];
+  class?: string;
+};
+
+const { links = [], class: className } = Astro.props;
+---
+
+<footer class:list={["flex flex-col gap-6 border-t border-foreground py-8", className]}>
+  <div class="flex flex-wrap items-end justify-between gap-6">
+    <div class="flex items-end gap-3">
+      <Glider class="size-8" />
+      <span class="ph-headline text-3xl">Purdue Hackers</span>
+    </div>
+    {
+      links.length > 0 && (
+        <nav class="flex flex-wrap gap-x-5 gap-y-2 font-mono text-[13px] uppercase">
+          {links.map((l) => (
+            <Link href={l.href}>{l.label}</Link>
+          ))}
+        </nav>
+      )
+    }
+  </div>
+  <div class="text-[13px] leading-[1.5]"><slot /></div>
+</footer>

@@ -1,0 +1,73 @@
+---
+import "../styles/global.css";
+import Button from "../components/ph/Button.astro";
+import Footer from "../components/ph/Footer.astro";
+import Link from "../components/ph/Link.astro";
+import Navbar from "../components/ph/Navbar.astro";
+import Airport from "../components/Airport.astro";
+import { isAdmin } from "../lib/server/auth";
+
+type Props = {
+  title?: string;
+  current?: string;
+  calm?: boolean;
+};
+
+const { title, current, calm = !!Astro.locals.user } = Astro.props;
+const user = Astro.locals.user;
+const links = isAdmin(user) ? [{ label: "Requests", href: "/admin" }] : [];
+const returnTo = encodeURIComponent(Astro.url.pathname + Astro.url.search);
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="description"
+      content="Design the biographical page of your Purdue Hackers passport."
+    />
+    <title>{title ? `${title} · Passport Issuing Office` : "Passport Issuing Office"}</title>
+  </head>
+  <body class="flex min-h-dvh flex-col bg-background font-sans text-foreground antialiased">
+    <Airport dim={calm} />
+    <Navbar links={links} current={current}>
+      <Fragment slot="actions">
+        {
+          user ? (
+            <form method="post" action="/logout" class="flex items-center gap-3">
+              <span class="hidden font-mono text-[13px] sm:inline">{user.username ? `@${user.username}` : user.name}</span>
+              <Button type="submit" variant="outline" size="sm">
+                Sign out
+              </Button>
+            </form>
+          ) : (
+            <Button href={`/login?returnTo=${returnTo}`} size="sm" icon="user">
+              Sign in
+            </Button>
+          )
+        }
+      </Fragment>
+    </Navbar>
+
+    <main class="relative z-10 flex-1 px-6 pb-16 md:px-8">
+      <div class="mx-auto w-full max-w-6xl"><slot /></div>
+    </main>
+
+    <div class="relative z-10 px-6 md:px-8">
+      <Footer
+        class="mx-auto w-full max-w-6xl"
+        links={[
+          { label: "Purdue Hackers ID", href: "https://id.purduehackers.com" },
+          { label: "Source", href: "https://github.com/purduehackers/passport-issuing-office" },
+        ]}
+      >
+        <p>
+          Pixel icons from the <Link href="https://pixeliconlibrary.com">HackerNoon Pixel Icon Library</Link>, CC BY 4.0.
+        </p>
+      </Footer>
+    </div>
+  </body>
+</html>

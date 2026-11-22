@@ -1,0 +1,21 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import "./nav-link.css";
+
+type Props = HTMLAttributes<"a"> & {
+  href: string;
+  tone?: "light" | "dark";
+};
+
+const { href, tone, class: className, ...rest } = Astro.props;
+const external = /^https?:\/\//.test(href);
+---
+
+<a
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  data-tone={tone}
+  class:list={["ph-nav-link", className]}
+  {...rest}><slot /></a
+>

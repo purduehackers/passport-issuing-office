@@ -1,0 +1,54 @@
+.ph-dialog {
+  width: min(480px, calc(100vw - 32px));
+  max-height: calc(100dvh - 64px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  background: var(--background);
+  color: var(--foreground);
+  opacity: 0;
+  scale: 0.97;
+  transition:
+    opacity 150ms var(--ph-ease),
+    scale 150ms var(--ph-ease),
+    overlay 150ms allow-discrete,
+    display 150ms allow-discrete;
+}
+
+.ph-dialog[open] {
+  opacity: 1;
+  scale: 1;
+}
+
+@starting-style {
+  .ph-dialog[open] {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+
+.ph-dialog::backdrop {
+  background: rgb(0 0 0 / 0);
+  transition:
+    background 150ms var(--ph-ease),
+    overlay 150ms allow-discrete,
+    display 150ms allow-discrete;
+}
+
+.ph-dialog[open]::backdrop {
+  background: rgb(0 0 0 / 0.4);
+}
+
+@starting-style {
+  .ph-dialog[open]::backdrop {
+    background: rgb(0 0 0 / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-dialog,
+  .ph-dialog::backdrop {
+    transition: none;
+  }
+}

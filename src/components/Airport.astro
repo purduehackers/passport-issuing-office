@@ -1,0 +1,26 @@
+---
+type Props = { dim?: boolean };
+const { dim } = Astro.props;
+---
+
+<canvas data-airport aria-hidden="true" class="pointer-events-none fixed inset-0 z-0 h-dvh w-screen [image-rendering:pixelated]"></canvas>
+<div aria-hidden="true" class:list={["airport-scrim pointer-events-none fixed inset-0 z-0", dim && "airport-scrim--dim"]}></div>
+
+<style>
+  .airport-scrim {
+    background:
+      linear-gradient(90deg, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.15) 45%, transparent 70%),
+      linear-gradient(rgb(0 0 0 / 0.25), transparent 30%);
+  }
+
+  .airport-scrim--dim {
+    background: rgb(0 0 0 / 0.6);
+  }
+</style>
+
+<script>
+  import { pixelAirport } from "../lib/client/pixel-airport.js";
+
+  const canvas = document.querySelector<HTMLCanvasElement>("[data-airport]");
+  if (canvas) pixelAirport(canvas, { boardMinWidth: 200 });
+</script>

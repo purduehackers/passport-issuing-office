@@ -24,3 +24,8 @@ pnpm-debug.log*
 .idea/
 
 .direnv
+.vercel
+
+# local data
+local.db*
+.local-blob/

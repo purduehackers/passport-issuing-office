@@ -1,0 +1,103 @@
+---
+import Glider from "./Glider.astro";
+import NavLink from "./NavLink.astro";
+import "./navbar.css";
+
+type NavItem = {
+  label: string;
+  href: string;
+};
+
+type Props = {
+  links: NavItem[];
+  homeHref?: string;
+  tone?: "light" | "dark";
+  current?: string;
+  class?: string;
+};
+
+const { links, homeHref = "/", tone, current, class: className } = Astro.props;
+const external = (href: string) => /^https?:\/\//.test(href);
+---
+
+<header data-ph-navbar data-tone={tone} class:list={["ph-navbar relative z-30", className]}>
+  <div class="ph-navbar__bar relative z-30 flex items-center justify-between px-6 py-5 md:px-8 md:py-6">
+    <a href={homeHref} aria-label="Purdue Hackers home" class="inline-flex text-current transition-opacity hover:opacity-70">
+      <Glider class="size-8" />
+    </a>
+
+    <div class="flex items-center gap-6 md:gap-8">
+    <nav class="hidden gap-8 md:flex">
+      {
+        links.map((l) => (
+          <NavLink href={l.href} aria-current={current === l.href ? "page" : undefined}>
+            {l.label}
+          </NavLink>
+        ))
+      }
+    </nav>
+
+    <slot name="actions" />
+
+    {links.length > 0 && (
+    <button
+      type="button"
+      data-ph-navbar-toggle
+      aria-expanded="false"
+      aria-label="Open menu"
+      class="ph-navbar__burger flex size-10 cursor-pointer flex-col items-center justify-center gap-1.5 md:hidden"
+    >
+      <span class="ph-navbar__burger-line" aria-hidden="true"></span>
+      <span class="ph-navbar__burger-line" aria-hidden="true"></span>
+      <span class="ph-navbar__burger-line" aria-hidden="true"></span>
+    </button>
+    )}
+    </div>
+  </div>
+
+  {links.length > 0 && (
+  <div data-ph-navbar-menu class="ph-navbar__menu fixed inset-0 z-20 bg-ph-black md:hidden" aria-hidden="true">
+    <nav class="flex min-h-full flex-col justify-center gap-6 px-8 py-24">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            target={external(l.href) ? "_blank" : undefined}
+            rel={external(l.href) ? "noopener noreferrer" : undefined}
+            class="ph-navbar__menu-link"
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+  )}
+</header>
+
+<script>
+  for (const bar of document.querySelectorAll<HTMLElement>("[data-ph-navbar]")) {
+    const toggle = bar.querySelector<HTMLButtonElement>("[data-ph-navbar-toggle]");
+    const menu = bar.querySelector<HTMLElement>("[data-ph-navbar-menu]");
+    if (!toggle || !menu) continue;
+
+    const set = (open: boolean) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      menu.toggleAttribute("data-open", open);
+      menu.setAttribute("aria-hidden", String(!open));
+      menu.inert = !open;
+      bar.toggleAttribute("data-menu-open", open);
+      document.documentElement.style.overflow = open ? "hidden" : "";
+    };
+
+    set(false);
+    toggle.addEventListener("click", () => set(toggle.getAttribute("aria-expanded") !== "true"));
+    menu.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("a")) set(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") set(false);
+    });
+  }
+</script>

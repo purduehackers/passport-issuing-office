@@ -1,16 +1,152 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import DataPage from "../components/DataPage.astro";
+import Editor from "../components/Editor.astro";
+import Badge from "../components/ph/Badge.astro";
+import Button from "../components/ph/Button.astro";
+import Callout from "../components/ph/Callout.astro";
+import Dialog from "../components/ph/Dialog.astro";
+import DitherButton from "../components/ph/DitherButton.astro";
+import PassportHero from "../components/PassportHero.astro";
+import { latestRequestOf } from "../lib/server/requests";
+import { formatDay } from "../lib/format";
+
+const user = Astro.locals.user;
+const params = Astro.url.searchParams;
+const latest = user ? await latestRequestOf(user.id) : null;
+const pending = latest?.status === "pending" ? latest : null;
+const exported = latest?.status === "exported" ? latest : null;
+
+const showEditor = !!user && (!latest || (pending && params.has("edit")) || (exported && params.has("new")));
+const fieldsOf = (r: NonNullable<typeof latest>) => ({
+  firstName: r.firstName,
+  surname: r.surname,
+  placeOfOrigin: r.placeOfOrigin,
+  dateOfBirth: r.dateOfBirth,
+});
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout current="/">
+  {
+    params.get("error") === "signin" && (
+      <Callout title="Sign-in failed" icon="exclamation-triangle" class="mt-6 max-w-[38rem]">
+        We could not sign you in with Purdue Hackers ID. Try again and if it keeps happening, contact us on Discord.
+      </Callout>
+    )
+  }
+
+  {
+    user ? (
+      <h1 class="enter ph-headline pt-6 pb-10 text-4xl leading-[0.95] md:pt-10 md:pb-14 md:text-6xl" style="--i: 0">
+        Passport Issuing Office
+      </h1>
+    ) : (
+      <section class="grid min-h-[70dvh] items-center gap-12 py-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div class="relative z-10 flex flex-col items-start gap-6">
+          <h1 class="enter ph-headline text-6xl leading-[0.9] md:text-8xl" style="--i: 0">
+            Passport Issuing Office
+          </h1>
+          <div class="enter" style="--i: 2">
+            <DitherButton href="/login">Sign in with ID</DitherButton>
+          </div>
+        </div>
+        <PassportHero />
+      </section>
+    )
+  }
+
+  {
+    showEditor && (
+      <section class="flex flex-col gap-8">
+        <h2 class="ph-subheadline text-[15px]">
+          {pending ? "Change your request" : exported ? "Request another passport" : "Design your data page"}
+        </h2>
+        <Editor
+          initial={latest ? fieldsOf(latest) : null}
+          portraitUrl={pending?.portraitUrl ?? null}
+          editing={!!pending}
+        />
+      </section>
+    )
+  }
+
+  {
+    user && pending && !showEditor && (
+      <section class="grid items-start gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col gap-3">
+            <Badge color="yellow">Requested</Badge>
+            <h2 class="ph-headline text-4xl md:text-5xl">Request received</h2>
+            <p class="leading-[1.5]">
+              You sent this on {formatDay(pending.createdAt)}. You can
+              change your biographical page until yours is printed by an organizer.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <Button href="/?edit" icon="refresh">
+              Change request
+            </Button>
+            <Button variant="ghost" data-ph-dialog-open="withdraw-dialog">
+              Cancel request
+            </Button>
+          </div>
+        </div>
+        <DataPage
+          fields={fieldsOf(pending)}
+          portraitUrl={pending.portraitUrl}
+          tilt
+          stamp={{ label: "Requested", date: pending.createdAt }}
+        />
+        <Dialog id="withdraw-dialog" title="Cancel request">
+          <p>Your request and portrait will be deleted.</p>
+          <div class="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" data-ph-dialog-close>
+              Keep it
+            </Button>
+            <Button size="sm" data-withdraw>
+              Cancel request
+            </Button>
+          </div>
+        </Dialog>
+      </section>
+    )
+  }
+
+  {
+    user && exported && !showEditor && (
+      <section class="grid items-start gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        <div class="flex flex-col gap-6">
+          <div class="flex flex-col gap-3">
+            <Badge color="lime">Sent to print</Badge>
+            <h2 class="ph-headline text-4xl md:text-5xl">Your passport is on its way</h2>
+            <p class="leading-[1.5]">
+              Organizers sent your passport for printing on {formatDay(exported.exportedAt ?? exported.updatedAt)}.
+            </p>
+          </div>
+          <Button href="/?new" variant="outline" icon="plus">
+            Request another passport
+          </Button>
+        </div>
+        <DataPage
+          fields={fieldsOf(exported)}
+          portraitUrl={exported.portraitUrl}
+          tilt
+          stamp={{ label: "Printed", date: exported.exportedAt ?? exported.updatedAt }}
+        />
+      </section>
+    )
+  }
+</Layout>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>("[data-withdraw]");
+  button?.addEventListener("click", async () => {
+    button.disabled = true;
+    const response = await fetch("/api/request", { method: "DELETE" }).catch(() => null);
+    if (response?.ok) location.assign("/");
+    else {
+      button.disabled = false;
+      alert("Could not cancel the request. Try again.");
+    }
+  });
+</script>

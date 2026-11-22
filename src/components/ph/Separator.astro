@@ -1,0 +1,19 @@
+---
+type Props = {
+  label?: string;
+  class?: string;
+};
+
+const { label, class: className } = Astro.props;
+---
+
+{
+  label ? (
+    <div role="separator" class:list={["flex items-center gap-2", className]}>
+      <span class="font-mono text-[11px] leading-none tracking-wide uppercase">{label}</span>
+      <span class="h-px flex-1 bg-foreground" />
+    </div>
+  ) : (
+    <div role="separator" class:list={["h-px w-full bg-border", className]} />
+  )
+}

@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import "./link.css";
+
+type Props = HTMLAttributes<"a"> & {
+  href: string;
+  tint?: string;
+};
+
+const { href, tint, class: className, style, ...rest } = Astro.props;
+const external = /^https?:\/\//.test(href);
+---
+
+<a
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  data-tint={tint ? "" : undefined}
+  class:list={["ph-link", className]}
+  style={[tint && `--link: ${tint}`, style].filter(Boolean).join("; ") || undefined}
+  {...rest}><slot /></a
+>

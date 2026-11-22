@@ -1,0 +1,92 @@
+---
+import {
+  formatNumber,
+  formatPageDate,
+  machineReadableZone,
+  parseDate,
+  type PassportFields,
+} from "../lib/passport";
+
+type Props = {
+  fields: PassportFields;
+  portraitUrl?: string | null;
+  passportNumber?: number;
+  issued?: Date;
+  /** Tilts toward the pointer. */
+  tilt?: boolean;
+  stamp?: { label: string; date?: Date; hidden?: boolean };
+  class?: string;
+};
+
+const { fields, portraitUrl, passportNumber = 0, issued = new Date(), tilt, stamp, class: className } = Astro.props;
+const birth = parseDate(fields.dateOfBirth);
+const [top, bottom] = machineReadableZone(fields, passportNumber, issued);
+const expiry = new Date(Date.UTC(issued.getUTCFullYear() + 1000, 0, 1));
+---
+
+<div
+  class:list={["data-page", className]}
+  data-page
+  data-tilt={tilt ? "" : undefined}
+  data-number={passportNumber}
+  data-issued={issued.toISOString()}
+  role="img"
+  aria-label={`Biographical page for ${fields.firstName} ${fields.surname}`}
+>
+  <div class="data-page__sheet" aria-hidden="true">
+    <div class="data-page__top">
+      <div class="data-page__image">
+        <div class="data-page__label">Passport</div>
+        <div class="data-page__portrait">
+          <img data-portrait src={portraitUrl ?? undefined} hidden={!portraitUrl} alt="" />
+        </div>
+      </div>
+      <dl class="data-page__data">
+        <div class="data-page__row">
+          <div class="data-page__item" style="width: calc(64 * var(--u))"><dt>Type</dt><dd>PH</dd></div>
+          <div class="data-page__item" style="width: calc(64 * var(--u))"><dt>Code</dt><dd>HAK</dd></div>
+          <div class="data-page__item"><dt>No.</dt><dd data-field="number">{formatNumber(passportNumber)}</dd></div>
+        </div>
+        <div class="data-page__item"><dt>Surname</dt><dd data-field="surname">{fields.surname}</dd></div>
+        <div class="data-page__item"><dt>Name</dt><dd data-field="firstName">{fields.firstName}</dd></div>
+        <div class="data-page__item"><dt>Nationality</dt><dd>Republic of Hackerland</dd></div>
+        <div class="data-page__row data-page__row--wide">
+          <div class="data-page__column" style="width: calc(104 * var(--u))">
+            <div class="data-page__item">
+              <dt>Date of birth</dt><dd data-field="dateOfBirth">{birth ? formatPageDate(birth) : ""}</dd>
+            </div>
+            <div class="data-page__item"><dt>Date of issue</dt><dd>{formatPageDate(issued)}</dd></div>
+          </div>
+          <div class="data-page__column">
+            <div class="data-page__item">
+              <dt>Place of origin</dt><dd data-field="placeOfOrigin">{fields.placeOfOrigin}</dd>
+            </div>
+            <div class="data-page__item"><dt>Date of expiration</dt><dd>{formatPageDate(expiry)}</dd></div>
+          </div>
+        </div>
+        <div class="data-page__item"><dt>Authority</dt><dd>id.purduehackers.com</dd></div>
+      </dl>
+    </div>
+    <div class="data-page__mrz">
+      <p data-mrz="top">{[...top].map((char) => <span>{char}</span>)}</p>
+      <p data-mrz="bottom">{[...bottom].map((char) => <span>{char}</span>)}</p>
+    </div>
+    <div class="data-page__holo"></div>
+    <div class="data-page__scan" data-scan></div>
+    {
+      stamp && (
+        <div class="data-page__stamp" data-stamp hidden={stamp.hidden}>
+          <span class="data-page__stamp-small">Purdue Hackers</span>
+          <span class="data-page__stamp-big">{stamp.label}</span>
+          <span class="data-page__stamp-small">{formatPageDate(stamp.date ?? new Date())}</span>
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<script>
+  import { bindTilt } from "../lib/client/tilt";
+
+  for (const page of document.querySelectorAll<HTMLElement>("[data-page][data-tilt]")) bindTilt(page, 10);
+</script>

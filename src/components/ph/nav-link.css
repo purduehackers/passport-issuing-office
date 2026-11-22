@@ -1,0 +1,41 @@
+.ph-nav-link,
+.ph-nav-link[data-tone="light"] {
+  --nav-fg: var(--ph-black);
+  --nav-hover-bg: var(--ph-black);
+  --nav-hover-fg: var(--ph-yellow);
+}
+
+.dark .ph-nav-link:not([data-tone="light"]),
+[data-tone="dark"] .ph-nav-link:not([data-tone="light"]),
+.ph-nav-link[data-tone="dark"] {
+  --nav-fg: var(--ph-cream);
+  --nav-hover-bg: var(--ph-cream);
+  --nav-hover-fg: var(--ph-purple);
+}
+
+.ph-nav-link {
+  padding: 0.25rem 0.5rem;
+  color: var(--nav-fg);
+  font-family: var(--ph-font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition:
+    color 300ms ease,
+    background-color 300ms ease;
+}
+
+.ph-nav-link:hover,
+.ph-nav-link:focus-visible,
+.ph-nav-link[aria-current="page"] {
+  background: var(--nav-hover-bg);
+  color: var(--nav-hover-fg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-nav-link {
+    transition: none;
+  }
+}

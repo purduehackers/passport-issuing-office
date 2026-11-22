@@ -1,0 +1,95 @@
+.ph-dither-btn,
+.ph-dither-btn[data-tone="light"] {
+  --btn-bg: var(--ph-black);
+  --pixel: var(--ph-purple);
+  --pixel-hover: var(--ph-black);
+  --label: var(--ph-cream);
+  --label-hover: var(--ph-cream);
+}
+
+.dark .ph-dither-btn:not([data-tone="light"]),
+[data-tone="dark"] .ph-dither-btn:not([data-tone="light"]),
+.ph-dither-btn[data-tone="dark"] {
+  --btn-bg: var(--ph-cream);
+  --pixel: var(--ph-cream);
+  --pixel-hover: var(--ph-yellow);
+  --label: var(--ph-black);
+  --label-hover: var(--ph-black);
+}
+
+.ph-dither-btn {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0.75rem 1.5rem;
+  background: var(--btn-bg);
+  border: 0;
+  cursor: pointer;
+  font-family: var(--ph-font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.ph-dither-btn__pixels {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  align-content: center;
+  pointer-events: none;
+}
+
+.ph-dither-btn__pixel {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--pixel);
+}
+
+/* Duration 0: each pixel snaps, only the delay staggers. */
+.ph-dither-btn__pixel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--pixel-hover);
+  opacity: 0;
+  transition: opacity 0s calc(var(--i) * 18ms);
+}
+
+.ph-dither-btn__label {
+  position: relative;
+  z-index: 1;
+  color: var(--label);
+  transition: color 200ms ease;
+}
+
+.ph-dither-btn:focus-visible .ph-dither-btn__pixel::after {
+  opacity: 1;
+}
+
+.ph-dither-btn:focus-visible .ph-dither-btn__label {
+  color: var(--label-hover);
+}
+
+@media (hover: hover) {
+  .ph-dither-btn:hover .ph-dither-btn__pixel::after {
+    opacity: 1;
+  }
+
+  .ph-dither-btn:hover .ph-dither-btn__label {
+    color: var(--label-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-dither-btn__pixel::after,
+  .ph-dither-btn__label {
+    transition: none;
+  }
+}
