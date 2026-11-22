@@ -15,9 +15,9 @@ const user = Astro.locals.user;
 const params = Astro.url.searchParams;
 const latest = user ? await latestRequestOf(user.id) : null;
 const pending = latest?.status === "pending" ? latest : null;
-const exported = latest?.status === "exported" ? latest : null;
+const issued = latest?.status === "issued" ? latest : null;
 
-const showEditor = !!user && (!latest || (pending && params.has("edit")) || (exported && params.has("new")));
+const showEditor = !!user && (!latest || (pending && params.has("edit")) || (issued && params.has("new")));
 const fieldsOf = (r: NonNullable<typeof latest>) => ({
   firstName: r.firstName,
   surname: r.surname,
@@ -61,7 +61,7 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
     showEditor && (
       <section class="flex flex-col gap-8">
         <h2 class="ph-subheadline text-[15px]">
-          {pending ? "Change your request" : exported ? "Request another passport" : "Design your biographical page"}
+          {pending ? "Change your request" : issued ? "Request another passport" : "Design your biographical page"}
         </h2>
         <Editor
           initial={latest ? fieldsOf(latest) : null}
@@ -115,14 +115,15 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
   }
 
   {
-    user && exported && !showEditor && (
+    user && issued && !showEditor && (
       <section class="grid items-start gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <div class="flex flex-col gap-6">
           <div class="flex flex-col gap-3">
-            <Badge color="lime">Sent to print</Badge>
-            <h2 class="ph-headline text-4xl md:text-5xl">Your passport is on its way</h2>
+            <Badge color="lime">Issued</Badge>
+            <h2 class="ph-headline text-4xl md:text-5xl">Your passport is issued</h2>
             <p class="leading-[1.5]">
-              Organizers sent your passport for printing on {formatDay(exported.exportedAt ?? exported.updatedAt)}.
+              Organizers issued passport No. {issued.passportNumber} to your Purdue Hackers ID account on{" "}
+              {formatDay(issued.issuedAt ?? issued.updatedAt)} and sent it for printing.
             </p>
           </div>
           <Button href="/?new" variant="outline" icon="plus">
@@ -130,10 +131,12 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
           </Button>
         </div>
         <DataPage
-          fields={fieldsOf(exported)}
-          portraitUrl={portraitPath(exported)}
+          fields={fieldsOf(issued)}
+          portraitUrl={portraitPath(issued)}
+          passportNumber={issued.passportNumber ?? 0}
+          issued={issued.issuedAt ?? undefined}
           tilt
-          stamp={{ label: "Printed", date: exported.exportedAt ?? exported.updatedAt }}
+          stamp={{ label: "Issued", date: issued.issuedAt ?? issued.updatedAt }}
         />
       </section>
     )

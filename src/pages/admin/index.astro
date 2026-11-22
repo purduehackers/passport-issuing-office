@@ -17,16 +17,17 @@ const requests = await listRequests(status);
 
 const filters = [
   { value: "pending", label: "Pending" },
-  { value: "exported", label: "Exported" },
+  { value: "issued", label: "Issued" },
   { value: "all", label: "All" },
 ] as const;
 const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dateOfBirth: "" };
+const issuedCount = Number(Astro.url.searchParams.get("issued")) || 0;
 ---
 
 <Layout title="Requests" current="/admin">
   <section class="flex flex-col gap-3 pt-6 pb-10 md:pt-10">
     <h1 class="ph-headline text-5xl md:text-6xl">Passport requests</h1>
-    <p class="max-w-[38rem] leading-[1.5]">Select the ones to print, then export them.</p>
+    <p class="max-w-[38rem] leading-[1.5]">Oldest first. Select the ones to issue.</p>
   </section>
 
   <div class="flex flex-col gap-4">
@@ -47,11 +48,20 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
       </nav>
       <div class="flex items-center gap-4">
         <span data-selected-count class="font-mono text-[13px] uppercase">0 selected</span>
-        <Button icon="download" data-export disabled>Export</Button>
+        <Button icon="check" data-issue disabled>Issue</Button>
       </div>
     </div>
 
-    <p data-export-message class="flex items-center gap-1.5 text-[15px]" hidden>
+    {
+      issuedCount > 0 && (
+        <p class="flex items-center gap-1.5 text-[15px]">
+          <Icon name="check-circle" class="size-4 text-ph-lime" />
+          Issued {issuedCount} {issuedCount === 1 ? "passport" : "passports"}.
+        </p>
+      )
+    }
+
+    <p data-issue-message class="flex items-center gap-1.5 text-[15px]" hidden>
       <Icon name="info-circle" class="size-4 text-ph-purple" /><span></span>
     </p>
 
@@ -92,6 +102,7 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
                       data-place-of-origin={r.placeOfOrigin}
                       data-date-of-birth={r.dateOfBirth}
                       data-portrait-url={portraitPath(r)}
+                      data-number={r.passportNumber ?? 0}
                     >
                       <img src={portraitPath(r)} alt="" loading="lazy" class="h-12 w-[38px] shrink-0 object-cover" />
                       <span class="flex flex-col">
@@ -117,8 +128,9 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
                       <Badge color="yellow">Pending</Badge>
                     ) : (
                       <span class="flex flex-col gap-1">
-                        <Badge color="lime">Exported</Badge>
-                        {r.exportedAt && <span class="text-[13px]">{formatDay(r.exportedAt)}</span>}
+                        <Badge color="lime">Issued</Badge>
+                        <span class="font-mono text-[13px]">No. {r.passportNumber}</span>
+                        {r.issuedAt && <span class="text-[13px]">{formatDay(r.issuedAt)}</span>}
                       </span>
                     )}
                   </td>
@@ -131,6 +143,45 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
     }
   </div>
 
+  <Dialog id="issue-dialog" title="Issue passports" class="w-[min(36rem,calc(100vw-2rem))]!">
+    <p class="ph-headline text-3xl" data-issue-summary></p>
+    <p>For every request you selected:</p>
+    <ul class="list-disc pl-5 leading-[1.5]">
+      <li>Purdue Hackers ID creates the passport and gives it a number.</li>
+      <li>The passport is linked to the member's ID account.</li>
+      <li>The request moves to Issued, and the member sees that their passport is issued.</li>
+      <li>You get the print files: the data pages and a set of stamp pages for each passport.</li>
+    </ul>
+
+    <div class="flex justify-end gap-2">
+      <Button variant="ghost" size="sm" data-ph-dialog-close>Cancel</Button>
+      <Button size="sm" icon="check" data-issue-confirm><span data-issue-label>Issue passports</span></Button>
+    </div>
+  </Dialog>
+
+  <Dialog id="print-dialog" title="Ready to print" class="w-[min(36rem,calc(100vw-2rem))]!">
+    <div class="flex flex-col gap-2 border border-border p-4">
+      <p class="ph-subheadline text-[12px]">Data pages</p>
+      <ul class="list-disc pl-5 leading-[1.5]">
+        <li>White cardstock</li>
+        <li>Single-sided</li>
+        <li>100% scale</li>
+        <li>Cut after the book tape is on</li>
+      </ul>
+      <Button href="#" size="sm" icon="download" data-download="data">Download data pages</Button>
+    </div>
+    <div class="flex flex-col gap-2 border border-border p-4">
+      <p class="ph-subheadline text-[12px]">Stamp pages</p>
+      <ul class="list-disc pl-5 leading-[1.5]">
+        <li>Printer paper</li>
+        <li>Double-sided, flip on long edge</li>
+        <li>100% scale</li>
+        <li data-stamp-sets></li>
+      </ul>
+      <Button href="#" size="sm" icon="download" data-download="stamps">Download stamp pages</Button>
+    </div>
+  </Dialog>
+
   <Dialog id="preview-dialog" title="Biographical page" class="w-[min(44rem,calc(100vw-2rem))]!">
     <DataPage fields={emptyFields} />
   </Dialog>
@@ -142,14 +193,14 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
   const boxes = [...document.querySelectorAll<HTMLInputElement>("input[data-select]")];
   const all = document.querySelector<HTMLInputElement>("input[data-select-all]");
   const count = document.querySelector<HTMLElement>("[data-selected-count]")!;
-  const exportButton = document.querySelector<HTMLButtonElement>("[data-export]")!;
-  const message = document.querySelector<HTMLElement>("[data-export-message]")!;
+  const issueButton = document.querySelector<HTMLButtonElement>("[data-issue]")!;
+  const message = document.querySelector<HTMLElement>("[data-issue-message]")!;
 
   const selected = () => boxes.filter((box) => box.checked).map((box) => box.value);
   function sync() {
     const n = selected().length;
     count.textContent = `${n} selected`;
-    exportButton.disabled = n === 0;
+    issueButton.disabled = n === 0;
     if (all) {
       all.checked = n > 0 && n === boxes.length;
       all.indeterminate = n > 0 && n < boxes.length;
@@ -162,20 +213,87 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
   });
   sync();
 
-  exportButton.addEventListener("click", async () => {
-    exportButton.disabled = true;
-    message.hidden = true;
+  const issueDialog = document.querySelector<HTMLDialogElement>("#issue-dialog")!;
+  const printDialog = document.querySelector<HTMLDialogElement>("#print-dialog")!;
+  const offer = (kind: string, bytes: Uint8Array, filename: string) => {
+    const link = printDialog.querySelector<HTMLAnchorElement>(`[data-download="${kind}"]`)!;
+    link.href = URL.createObjectURL(new Blob([bytes as BlobPart], { type: "application/pdf" }));
+    link.download = filename;
+  };
+  const confirm = issueDialog.querySelector<HTMLButtonElement>("[data-issue-confirm]")!;
+  const say = (text: string) => {
+    message.querySelector("span")!.textContent = text;
+    message.hidden = false;
+  };
+
+  issueButton.addEventListener("click", () => {
+    const n = selected().length;
+    issueDialog.querySelector("[data-issue-summary]")!.textContent = `Issue ${n} ${n === 1 ? "passport" : "passports"}?`;
+    confirm.querySelector("[data-issue-label]")!.textContent = n === 1 ? "Issue passport" : `Issue ${n} passports`;
+    issueDialog.showModal();
+  });
+
+  confirm.addEventListener("click", async () => {
+    issueDialog.close();
+    issueButton.disabled = true;
     try {
-      const response = await fetch("/api/admin/export", {
+      say("Issuing passports…");
+      const response = await fetch("/api/admin/issue", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ ids: selected() }),
       });
-      const result = (await response.json().catch(() => ({}))) as { error?: string; message?: string };
-      message.querySelector("span")!.textContent = result.message ?? result.error ?? "Export finished.";
-      message.hidden = false;
-      if (response.ok) location.reload();
-    } finally {
+      const result = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        passports?: { id: string; number: number }[];
+      };
+      if (!response.ok || !result.passports) throw new Error(result.error ?? "Could not issue the passports.");
+      const passports = result.passports;
+
+      const pages: Uint8Array[] = new Array(passports.length);
+      let done = 0;
+      say(`Rendering data pages: 0 of ${passports.length}…`);
+      const queue = passports.map((passport, i) => async () => {
+        const page = await fetch(`/api/admin/data-pages/${passport.id}`);
+        if (!page.ok) {
+          const error = (await page.json().catch(() => ({}))) as { error?: string };
+          throw new Error(`Passport ${passport.number}: ${error.error ?? "could not render it."}`);
+        }
+        pages[i] = new Uint8Array(await page.arrayBuffer());
+        say(`Rendering data pages: ${++done} of ${passports.length}…`);
+      });
+      const workers = Array.from({ length: Math.min(3, queue.length) }, async () => {
+        for (let job = queue.shift(); job; job = queue.shift()) await job();
+      });
+      await Promise.all(workers);
+
+      say("Building the PDFs…");
+      const { buildPassportPdf, buildStampPdf } = await import("../../lib/client/print");
+      const load = async (path: string) => {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(`Could not load ${path}.`);
+        return new Uint8Array(await response.arrayBuffer());
+      };
+      const [dataPdf, stampPdf] = await Promise.all([
+        buildPassportPdf(pages, await load("/passport/visa-page.jpg")),
+        buildStampPdf(passports.length, (file) => load(`/passport/stamps/${file}`)),
+      ]);
+      const first = passports[0].number;
+      const last = passports[passports.length - 1].number;
+      const range = first === last ? `${first}` : `${first}-${last}`;
+      offer("data", dataPdf, `data-pages-${range}.pdf`);
+      offer("stamps", stampPdf, `stamp-pages-${range}.pdf`);
+      printDialog.querySelector("[data-stamp-sets]")!.textContent =
+        `${passports.length} ${passports.length === 1 ? "set" : "sets"} of 3 sheets`;
+      message.hidden = true;
+      printDialog.addEventListener("close", () => {
+        const params = new URLSearchParams(location.search);
+        params.set("issued", String(passports.length));
+        location.assign(`/admin?${params}`);
+      });
+      printDialog.showModal();
+    } catch (error) {
+      say(`${(error as Error).message} Passports that were issued stay issued. Select them again to get their print files.`);
       sync();
     }
   });
@@ -185,6 +303,7 @@ const emptyFields = { firstName: "", surname: "", placeOfOrigin: ORIGINS[0], dat
   for (const trigger of document.querySelectorAll<HTMLElement>("[data-preview]")) {
     trigger.addEventListener("click", () => {
       const d = trigger.dataset;
+      page.dataset.number = d.number ?? "0";
       updateDataPage(
         page,
         {

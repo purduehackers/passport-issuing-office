@@ -98,7 +98,7 @@ export function machineReadableZone(
   version = CURRENT_PASSPORT_VERSION,
 ) {
   const birth = parseDate(fields.dateOfBirth) ?? new Date(0);
-  const top = `PHHAK${mrzName(fields.surname)}<<${mrzName(fields.firstName)}`.padEnd(44, "<").slice(0, 44);
+  const top = `PHHAK${mrzName(fields.surname)}<<${mrzName(fields.firstName)}`.toUpperCase().padEnd(44, "<").slice(0, 44);
 
   const document = pad(version, 3) + pad(passportNumber, 6);
   const birthDigits = pad(birth.getUTCFullYear(), 4) + pad(birth.getUTCMonth() + 1, 2) + pad(birth.getUTCDate(), 2);

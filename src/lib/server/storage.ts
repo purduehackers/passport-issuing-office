@@ -46,6 +46,12 @@ export async function open(ref: string): Promise<{ body: BodyInit; contentType: 
   return { body: result.stream, contentType: result.blob.contentType };
 }
 
+/** Reads a whole stored file. Returns null if it does not exist. */
+export async function read(ref: string) {
+  const file = await open(ref);
+  return file ? Buffer.from(await new Response(file.body).arrayBuffer()) : null;
+}
+
 export async function remove(ref: string) {
   if (ref.startsWith(LOCAL_PREFIX)) {
     await rm(localPath(ref.slice(LOCAL_PREFIX.length)), { force: true });

@@ -8,6 +8,20 @@
       "when": 1795383268818,
       "tag": "0000_magenta_kabuki",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795389605131,
+      "tag": "0001_reflective_dragon_lord",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795391396141,
+      "tag": "0002_issued_status",
+      "breakpoints": true
     }
   ]
 }

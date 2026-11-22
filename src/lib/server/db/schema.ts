@@ -18,7 +18,7 @@ export const session = sqliteTable(
   (table) => [index("session_expiresAt_idx").on(table.expiresAt)],
 );
 
-export const REQUEST_STATUSES = ["pending", "exported"] as const;
+export const REQUEST_STATUSES = ["pending", "issued"] as const;
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
 export const passportRequest = sqliteTable(
@@ -37,7 +37,8 @@ export const passportRequest = sqliteTable(
     status: text("status", { enum: REQUEST_STATUSES }).default("pending").notNull(),
     createdAt: integer("created_at", { mode: "timestamp_ms" }).default(now).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" }).default(now).notNull(),
-    exportedAt: integer("exported_at", { mode: "timestamp_ms" }),
+    issuedAt: integer("exported_at", { mode: "timestamp_ms" }),
+    passportNumber: integer("passport_number").unique(),
   },
   (table) => [
     index("passportRequest_status_createdAt_idx").on(table.status, table.createdAt),

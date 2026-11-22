@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && if [ \"$VERCEL_ENV\" = \"production\" ]; then drizzle-kit migrate; fi",
+    "build": "astro build && node scripts/migrate-in-production.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro",
@@ -19,11 +19,15 @@
   "dependencies": {
     "@astrojs/vercel": "^11.0.22",
     "@libsql/client": "^0.18.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.5",
     "@vercel/blob": "^2.9.0",
     "astro": "^7.4.13",
     "drizzle-orm": "^0.45.4",
     "oauth4webapi": "^3.8.9",
+    "pdf-lib": "^1.17.1",
+    "satori": "^0.63.2",
+    "sharp": "^0.35.5",
     "tailwindcss": "^4.3.5"
   },
   "devDependencies": {

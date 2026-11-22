@@ -5,21 +5,21 @@
   font-family: "Passport Inter";
   font-weight: 500;
   font-display: block;
-  src: url("/fonts/Inter-Regular.ttf") format("truetype");
+  src: url("../assets/fonts/Inter-Regular.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "Passport Inter";
   font-weight: 800;
   font-display: block;
-  src: url("/fonts/Inter-Bold.ttf") format("truetype");
+  src: url("../assets/fonts/Inter-Bold.ttf") format("truetype");
 }
 
 @font-face {
   font-family: "OCR B";
   font-weight: 500;
   font-display: block;
-  src: url("/fonts/OCRB-Regular.ttf") format("truetype");
+  src: url("../assets/fonts/OCRB-Regular.ttf") format("truetype");
 }
 
 /* The printed data page. Sizes are in data page points (1/472 of its width). */
@@ -40,7 +40,7 @@
   font-family: "Passport Inter", sans-serif;
   font-weight: 500;
   font-size: calc(13.333 * var(--u));
-  background: url("/passport/data-page-bg.png") center / 100% 100%;
+  background: url("../assets/passport/data-page-bg.png") center / 100% 100%;
   line-height: normal;
   user-select: none;
   pointer-events: none;
@@ -83,7 +83,7 @@
   width: calc(148 * var(--u));
   height: calc(185 * var(--u));
   border-radius: calc(8 * var(--u));
-  background: url("/passport/portrait-bg.png") center / cover;
+  background: url("../assets/passport/portrait-bg.png") center / cover;
 }
 
 .data-page__portrait::before {

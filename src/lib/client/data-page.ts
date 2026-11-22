@@ -1,4 +1,4 @@
-import { formatPageDate, machineReadableZone, parseDate, type PassportFields } from "../passport";
+import { formatNumber, formatPageDate, machineReadableZone, parseDate, type PassportFields } from "../passport";
 
 function fillLine(line: HTMLElement | null, text: string) {
   if (!line) return;
@@ -22,6 +22,8 @@ export function updateDataPage(root: HTMLElement, fields: PassportFields, portra
   set("surname", fields.surname);
   set("placeOfOrigin", fields.placeOfOrigin);
   set("dateOfBirth", birth ? formatPageDate(birth) : "");
+  const number = root.querySelector("[data-field=number]");
+  if (number) number.textContent = formatNumber(Number(root.dataset.number ?? 0));
 
   const [top, bottom] = machineReadableZone(fields, Number(root.dataset.number ?? 0), new Date(root.dataset.issued ?? Date.now()));
   fillLine(root.querySelector("[data-mrz=top]"), top);

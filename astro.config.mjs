@@ -30,5 +30,7 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // The admin page loads pdf-lib on demand. Bundling it up front stops the dev server reloading mid-export.
+    optimizeDeps: { include: ["pdf-lib"] },
   },
 });

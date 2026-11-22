@@ -3,6 +3,7 @@ import { PORTRAIT_MAX_BYTES, validateFields, type PassportFields } from "../pass
 import type { User } from "./auth";
 import { db } from "./db";
 import { passportRequest, type PassportRequest, type RequestStatus } from "./db/schema";
+import { createPassports } from "./id-passports";
 import { remove, store } from "./storage";
 
 export class RequestError extends Error {
@@ -104,4 +105,27 @@ export async function listRequests(status: RequestStatus | "all") {
 export async function requestsById(ids: string[]) {
   if (!ids.length) return [];
   return db.select().from(passportRequest).where(inArray(passportRequest.id, ids)).orderBy(asc(passportRequest.createdAt));
+}
+
+/**
+ * Issues passports: creates them in ID for the requests that have none and marks all of them issued.
+ * Requests that were issued before keep their passports, so they can be printed again.
+ */
+export async function issuePassports(ids: string[]) {
+  const requests = await requestsById(ids);
+  const unnumbered = requests.filter((r) => r.passportNumber === null);
+  const numbers = unnumbered.length ? await createPassports(unnumbered) : [];
+  const now = new Date();
+  for (const r of requests) {
+    const index = unnumbered.indexOf(r);
+    if (index >= 0) r.passportNumber = numbers[index];
+    r.issuedAt ??= now;
+    await db
+      .update(passportRequest)
+      .set({ status: "issued", passportNumber: r.passportNumber, issuedAt: r.issuedAt, updatedAt: now })
+      .where(eq(passportRequest.id, r.id));
+  }
+  return requests
+    .map((r) => ({ id: r.id, number: r.passportNumber!, name: `${r.firstName} ${r.surname}` }))
+    .sort((a, b) => a.number - b.number);
 }
