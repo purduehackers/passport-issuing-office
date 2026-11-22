@@ -59,7 +59,7 @@ const fieldsOf = (r: NonNullable<typeof latest>) => ({
     showEditor && (
       <section class="flex flex-col gap-8">
         <h2 class="ph-subheadline text-[15px]">
-          {pending ? "Change your request" : exported ? "Request another passport" : "Design your data page"}
+          {pending ? "Change your request" : exported ? "Request another passport" : "Design your biographical page"}
         </h2>
         <Editor
           initial={latest ? fieldsOf(latest) : null}
