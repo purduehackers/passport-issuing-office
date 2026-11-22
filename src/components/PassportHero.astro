@@ -145,6 +145,48 @@ const first = IDENTITIES[0];
     }
   }
 
+  @property --rx {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0deg;
+  }
+
+  @property --ry {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 0deg;
+  }
+
+  @media (max-width: 640px) {
+    .hero-passport {
+      padding-top: 30%;
+    }
+    .hero-passport__book {
+      transform: rotateX(calc(10deg + var(--rx, 0deg))) rotateY(var(--ry, 0deg));
+    }
+  }
+
+  /* Without a mouse, the passport sways by itself. */
+  @media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+    .hero-passport__book {
+      animation: passport-sway 9s ease-in-out infinite;
+    }
+  }
+
+  @keyframes passport-sway {
+    0%,
+    100% {
+      --rx: 0deg;
+      --ry: -5deg;
+      --mx: 20%;
+    }
+    50% {
+      --rx: 4deg;
+      --ry: 5deg;
+      --mx: 80%;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero-passport__cover {
       display: none;

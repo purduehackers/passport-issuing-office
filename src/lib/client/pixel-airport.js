@@ -1226,15 +1226,24 @@ export function pixelAirport(canvas, options = {}) {
   function resize() {
     const box = canvas.getBoundingClientRect();
     const cell = options.cell ?? Math.max(3, Math.round(Math.min(box.width / 320, box.height / 215)));
-    W = Math.max(64, Math.ceil(box.width / cell));
-    H = Math.max(64, Math.ceil(box.height / cell));
+    const nextW = Math.max(64, Math.ceil(box.width / cell));
+    const nextH = Math.max(64, Math.ceil(box.height / cell));
+    if (nextW === W && nextH === H) return;
+    // When only the height changes (a phone toolbar, for example), the people and planes stay.
+    const keep = nextW === W && L !== null;
+    W = nextW;
+    H = nextH;
     canvas.width = W;
     canvas.height = H;
     context.imageSmoothingEnabled = false;
-    random = rng(seed);
     L = layout();
     twinkles = [];
     layers = { sky: buildSky(), outside: buildOutside(), interior: buildInterior(), desk: buildDesk(), seats: buildSeats() };
+    if (keep) {
+      draw();
+      return;
+    }
+    random = rng(seed);
     buildBoard();
     travelers = [];
     strollers = [];
@@ -1254,6 +1263,7 @@ export function pixelAirport(canvas, options = {}) {
     } else {
       // Warm up so the scene starts busy.
       for (let i = 0; i < 400; i++) update(0.05);
+      draw();
     }
   }
 
@@ -1276,7 +1286,8 @@ export function pixelAirport(canvas, options = {}) {
   observer.observe(canvas);
   resize();
   document.addEventListener("visibilitychange", toggle);
-  if (interactive && !still) {
+  // Touch scrolling also sends pointer events, so only a real mouse moves the view.
+  if (interactive && !still && matchMedia("(pointer: fine)").matches) {
     addEventListener("pointermove", move, { passive: true });
     document.documentElement.addEventListener("pointerleave", leave);
   }

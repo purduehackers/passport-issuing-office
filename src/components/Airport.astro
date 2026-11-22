@@ -3,8 +3,8 @@ type Props = { dim?: boolean };
 const { dim } = Astro.props;
 ---
 
-<canvas data-airport aria-hidden="true" class="pointer-events-none fixed inset-0 z-0 h-dvh w-screen [image-rendering:pixelated]"></canvas>
-<div aria-hidden="true" class:list={["airport-scrim pointer-events-none fixed inset-0 z-0", dim && "airport-scrim--dim"]}></div>
+<canvas data-airport aria-hidden="true" class="pointer-events-none fixed inset-x-0 top-0 z-0 h-lvh w-screen [image-rendering:pixelated]"></canvas>
+<div aria-hidden="true" class:list={["airport-scrim pointer-events-none fixed inset-x-0 top-0 z-0 h-lvh", dim && "airport-scrim--dim"]}></div>
 
 <style>
   .airport-scrim {

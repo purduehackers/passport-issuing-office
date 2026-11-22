@@ -21,7 +21,8 @@ export function mountHero(root: HTMLElement) {
   let timer = 0;
   let onScreen = true;
 
-  if (!reduce) {
+  // Touch scrolling also sends pointer events, so only a real mouse tilts the passport.
+  if (!reduce && matchMedia("(pointer: fine)").matches) {
     const tilt = smoothTilt(({ x, y }) => {
       book.style.setProperty("--rx", `${-y * 16}deg`);
       book.style.setProperty("--ry", `${x * 22}deg`);
