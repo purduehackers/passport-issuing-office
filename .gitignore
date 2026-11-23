@@ -29,3 +29,6 @@ pnpm-debug.log*
 # local data
 local.db*
 .local-blob/
+
+# rust build output
+target/
