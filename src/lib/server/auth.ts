@@ -24,12 +24,12 @@ export type User = {
 
 export const isAdmin = (user: User | null | undefined) => !!user?.roles.includes(ADMIN_ROLE);
 
-const client: oauth.Client = { client_id: ID_CLIENT_ID };
-const clientAuth = oauth.ClientSecretBasic(ID_CLIENT_SECRET);
+export const client: oauth.Client = { client_id: ID_CLIENT_ID };
+export const clientAuth = oauth.ClientSecretBasic(ID_CLIENT_SECRET);
 const issuer = new URL(ID_ISSUER);
 
 let discovery: Promise<oauth.AuthorizationServer> | null = null;
-function authorizationServer() {
+export function authorizationServer() {
   discovery ??= oauth
     .discoveryRequest(issuer, { algorithm: "oidc" })
     .then((response) => oauth.processDiscoveryResponse(issuer, response))
