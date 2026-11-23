@@ -48,6 +48,7 @@ const issuedCount = Number(Astro.url.searchParams.get("issued")) || 0;
       </nav>
       <div class="flex items-center gap-4">
         <span data-selected-count class="font-mono text-[13px] uppercase">0 selected</span>
+        <Button variant="outline" icon="download" data-export disabled>Export</Button>
         <Button icon="check" data-issue disabled>Issue</Button>
       </div>
     </div>
@@ -90,7 +91,12 @@ const issuedCount = Number(Astro.url.searchParams.get("issued")) || 0;
               {requests.map((r) => (
                 <tr class="border-b border-border last:border-b-0 has-[:checked]:bg-ph-yellow/25">
                   <td class="px-4 py-3 align-middle">
-                    <Checkbox data-select value={r.id} aria-label={`Select ${r.firstName} ${r.surname}`} />
+                    <Checkbox
+                      data-select
+                      data-number={r.passportNumber ?? undefined}
+                      value={r.id}
+                      aria-label={`Select ${r.firstName} ${r.surname}`}
+                    />
                   </td>
                   <td class="px-2 py-3">
                     <button
@@ -194,13 +200,14 @@ const issuedCount = Number(Astro.url.searchParams.get("issued")) || 0;
   const all = document.querySelector<HTMLInputElement>("input[data-select-all]");
   const count = document.querySelector<HTMLElement>("[data-selected-count]")!;
   const issueButton = document.querySelector<HTMLButtonElement>("[data-issue]")!;
+  const exportButton = document.querySelector<HTMLButtonElement>("[data-export]")!;
   const message = document.querySelector<HTMLElement>("[data-issue-message]")!;
 
   const selected = () => boxes.filter((box) => box.checked).map((box) => box.value);
   function sync() {
     const n = selected().length;
     count.textContent = `${n} selected`;
-    issueButton.disabled = n === 0;
+    issueButton.disabled = exportButton.disabled = n === 0;
     if (all) {
       all.checked = n > 0 && n === boxes.length;
       all.indeterminate = n > 0 && n < boxes.length;
@@ -233,9 +240,50 @@ const issuedCount = Number(Astro.url.searchParams.get("issued")) || 0;
     issueDialog.showModal();
   });
 
+  type PrintItem = { id: string; number: number | null };
+
+  /** Renders the data pages, builds both PDFs and offers them in the print dialog. */
+  async function makePrintFiles(items: PrintItem[], name: string, onClose: () => void) {
+    const pages: Uint8Array[] = new Array(items.length);
+    let done = 0;
+    say(`Rendering data pages: 0 of ${items.length}…`);
+    const queue = items.map((item, i) => async () => {
+      const page = await fetch(`/api/admin/data-pages/${item.id}`);
+      if (!page.ok) {
+        const error = (await page.json().catch(() => ({}))) as { error?: string };
+        throw new Error(`${item.number ? `Passport ${item.number}` : "A request"}: ${error.error ?? "could not render it."}`);
+      }
+      pages[i] = new Uint8Array(await page.arrayBuffer());
+      say(`Rendering data pages: ${++done} of ${items.length}…`);
+    });
+    const workers = Array.from({ length: Math.min(3, queue.length) }, async () => {
+      for (let job = queue.shift(); job; job = queue.shift()) await job();
+    });
+    await Promise.all(workers);
+
+    say("Building the PDFs…");
+    const { buildPassportPdf, buildStampPdf } = await import("../../lib/client/print");
+    const load = async (path: string) => {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`Could not load ${path}.`);
+      return new Uint8Array(await response.arrayBuffer());
+    };
+    const [dataPdf, stampPdf] = await Promise.all([
+      buildPassportPdf(pages, await load("/passport/visa-page.jpg")),
+      buildStampPdf(items.length, (file) => load(`/passport/stamps/${file}`)),
+    ]);
+    offer("data", dataPdf, `data-pages-${name}.pdf`);
+    offer("stamps", stampPdf, `stamp-pages-${name}.pdf`);
+    printDialog.querySelector("[data-stamp-sets]")!.textContent =
+      `${items.length} ${items.length === 1 ? "set" : "sets"} of 3 sheets`;
+    message.hidden = true;
+    printDialog.onclose = onClose;
+    printDialog.showModal();
+  }
+
   confirm.addEventListener("click", async () => {
     issueDialog.close();
-    issueButton.disabled = true;
+    issueButton.disabled = exportButton.disabled = true;
     try {
       say("Issuing passports…");
       const response = await fetch("/api/admin/issue", {
@@ -249,51 +297,28 @@ const issuedCount = Number(Astro.url.searchParams.get("issued")) || 0;
       };
       if (!response.ok || !result.passports) throw new Error(result.error ?? "Could not issue the passports.");
       const passports = result.passports;
-
-      const pages: Uint8Array[] = new Array(passports.length);
-      let done = 0;
-      say(`Rendering data pages: 0 of ${passports.length}…`);
-      const queue = passports.map((passport, i) => async () => {
-        const page = await fetch(`/api/admin/data-pages/${passport.id}`);
-        if (!page.ok) {
-          const error = (await page.json().catch(() => ({}))) as { error?: string };
-          throw new Error(`Passport ${passport.number}: ${error.error ?? "could not render it."}`);
-        }
-        pages[i] = new Uint8Array(await page.arrayBuffer());
-        say(`Rendering data pages: ${++done} of ${passports.length}…`);
-      });
-      const workers = Array.from({ length: Math.min(3, queue.length) }, async () => {
-        for (let job = queue.shift(); job; job = queue.shift()) await job();
-      });
-      await Promise.all(workers);
-
-      say("Building the PDFs…");
-      const { buildPassportPdf, buildStampPdf } = await import("../../lib/client/print");
-      const load = async (path: string) => {
-        const response = await fetch(path);
-        if (!response.ok) throw new Error(`Could not load ${path}.`);
-        return new Uint8Array(await response.arrayBuffer());
-      };
-      const [dataPdf, stampPdf] = await Promise.all([
-        buildPassportPdf(pages, await load("/passport/visa-page.jpg")),
-        buildStampPdf(passports.length, (file) => load(`/passport/stamps/${file}`)),
-      ]);
       const first = passports[0].number;
       const last = passports[passports.length - 1].number;
-      const range = first === last ? `${first}` : `${first}-${last}`;
-      offer("data", dataPdf, `data-pages-${range}.pdf`);
-      offer("stamps", stampPdf, `stamp-pages-${range}.pdf`);
-      printDialog.querySelector("[data-stamp-sets]")!.textContent =
-        `${passports.length} ${passports.length === 1 ? "set" : "sets"} of 3 sheets`;
-      message.hidden = true;
-      printDialog.addEventListener("close", () => {
+      await makePrintFiles(passports, first === last ? `${first}` : `${first}-${last}`, () => {
         const params = new URLSearchParams(location.search);
         params.set("issued", String(passports.length));
         location.assign(`/admin?${params}`);
       });
-      printDialog.showModal();
     } catch (error) {
       say(`${(error as Error).message} Passports that were issued stay issued. Select them again to get their print files.`);
+      sync();
+    }
+  });
+
+  exportButton.addEventListener("click", async () => {
+    issueButton.disabled = exportButton.disabled = true;
+    const items = boxes
+      .filter((box) => box.checked)
+      .map((box) => ({ id: box.value, number: Number(box.dataset.number) || null }));
+    try {
+      await makePrintFiles(items, new Date().toISOString().slice(0, 10), sync);
+    } catch (error) {
+      say((error as Error).message);
       sync();
     }
   });
